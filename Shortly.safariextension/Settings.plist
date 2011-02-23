@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>DefaultValue</key>
+		<string>goo.gl</string>
+		<key>Key</key>
+		<string>shortenService</string>
+		<key>Title</key>
+		<string>Preferred Service</string>
+		<key>Titles</key>
+		<array>
+			<string>goo.gl</string>
+			<string>bit.ly</string>
+			<string>TinyURL</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>goo.gl</string>
+			<string>bit.ly</string>
+			<string>tinyurl</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>toolbarMode</string>
+		<key>Title</key>
+		<string>Toolbar mode (enabled after reloading opened page)</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Type</key>
+		<string>Separator</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Using your own bit.ly account:</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>bitlyUsername</string>
+		<key>Secure</key>
+		<true/>
+		<key>Title</key>
+		<string>Username</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>bitlyAPIKey</string>
+		<key>Password</key>
+		<true/>
+		<key>Secure</key>
+		<true/>
+		<key>Title</key>
+		<string>API Key</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+</array>
+</plist>

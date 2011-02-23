@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link type="text/css" rel="stylesheet" href="toolbarTemplate.css">
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+</head>
+
+<body>
+<div id="-shortly-toolbar">
+  <a class="hideBar glymp" href="#" title="Close Shortly toolbar">&times;</a>
+  <input id="ipbShortUrl" type="text" value="http://goo.gl/xdGC" />
+  <p id="txtPageTitle">Page title here</p>
+  <a class="hideBar button" href="#" title="Close Shortly toolbar">Close</a>
+</div>
+<script language="javascript">
+  $(document).ready(function() {
+    $('#-shortly-toolbar').toggleClass('activated');
+    $('#-shortly-toolbar input#ipbShortUrl').select();
+  });
+  $('a.hideBar').click(function(event) {
+    $('#-shortly-toolbar').removeClass('activated');
+    event.preventDefault();
+  });
+</script>
+</body>
+</html>
