@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>goo.gl OAuth</title>
+        <script src="jsOAuth-0.8.js"></script>
+    </head>
+    <body>
+        <script>
+            var options = {
+                consumerKey: 'anonymous',
+                consumerSecret: 'anonymous',
+            };
+            
+            var params = {
+              'xoauth_displayname': 'Shortly Extension',
+              'scope': 'https://www.googleapis.com/auth/urlshortener'
+            };
+
+            var oauth = OAuth(options);
+            oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
+                location.href('https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1] );
+            });
+        </script>
+    </body>
+</html>
+
