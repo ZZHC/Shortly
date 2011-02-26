@@ -4,6 +4,15 @@
  *  Copyright (c) 2010 Rob Griffiths (http://bytespider.eu)
  *  jsOAuth is freely distributable under the terms of an MIT-style license.
  */
+ 
+/*
+  Modified by Zhusee (zhusee@zzhc.org).
+  
+  This file is modified based on Rob Griffiths's 0.8 release in order to
+  deal with 3-legged oauth autentication expected to be used in 
+  Shorly Safari Extension.
+*/
+
 var exports = exports || this;
 exports.OAuth = (function (global) {
 
@@ -263,7 +272,9 @@ exports.OAuth = (function (global) {
                 consumerSecret: options.consumerSecret,
                 accessTokenKey: options.accessTokenKey || empty,
                 accessTokenSecret: options.accessTokenSecret || empty,
-                verifier: '',
+                verifier: options.verifier || empty,
+                
+                callback: options.callback || 'oob',
 
                 signatureMethod: options.signatureMethod || 'HMAC-SHA1'
             };
@@ -360,7 +371,7 @@ exports.OAuth = (function (global) {
                 };
 
                 headerParams = {
-                    'oauth_callback': 'oob',
+                    'oauth_callback': oauth.callback,
                     'oauth_consumer_key': oauth.consumerKey,
                     'oauth_token': oauth.accessTokenKey,
                     'oauth_signature_method': oauth.signatureMethod,
