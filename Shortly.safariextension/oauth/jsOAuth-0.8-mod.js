@@ -274,7 +274,7 @@ exports.OAuth = (function (global) {
                 accessTokenSecret: options.accessTokenSecret || empty,
                 verifier: options.verifier || empty,
                 
-                callback: options.callback || 'oob',
+                callback: options.callback || empty,
 
                 signatureMethod: options.signatureMethod || 'HMAC-SHA1'
             };
