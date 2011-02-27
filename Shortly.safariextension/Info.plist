@@ -34,6 +34,20 @@
 				<key>Tool Tip</key>
 				<string>Get shortened address of the current page</string>
 			</dict>
+			<dict>
+				<key>Command</key>
+				<string>startOauth</string>
+				<key>Identifier</key>
+				<string>btnOauth</string>
+				<key>Image</key>
+				<string>icon-32.png</string>
+				<key>Label</key>
+				<string>oauth</string>
+				<key>Palette Label</key>
+				<string>oauth</string>
+				<key>Tool Tip</key>
+				<string>Start OAuth</string>
+			</dict>
 		</array>
 	</dict>
 	<key>Content</key>

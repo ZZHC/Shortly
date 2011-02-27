@@ -34,6 +34,10 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 
 function performCommand(event) {
   
+  if (event.command === "startOauth") {
+    safari.application.activeBrowserWindow.openTab().url = safari.extension.baseURI + 'oauth/start.html'
+  }
+  
   if (event.command === "shortenURL") {
     var onlineFlag = navigator.onLine;
     

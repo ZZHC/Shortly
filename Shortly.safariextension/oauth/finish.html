@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>goo.gl OAuth Finish!</title>
+        <script src="jsOAuth-0.8-mod.js"></script>
+        <script src="../jquery-1.4.2.min.js"></script>
+    </head>
+    <body>
+      <h1>Congratulations!</h1>
+      <p>You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account. Please visit <a href="http://code.google.com/apis/urlshortener/">Google URL Shortener API</a> for more information.</p>
+      
+      <script>
+        var url = location.href;
+        var oauth_token_secret = safari.extension.secureSettings.getItem("oauth_token_secret");
+        
+        var queryParse = function(uri) {
+          var queryStrArray = uri.split('?')[1].split('&');
+          var queryHash = {};
+          
+          $.each(queryStrArray, function(index, value) {
+            var param = value.split('=');  
+            queryHash[param[0]] = decodeURIComponent(param[1]);
+          });
+    
+          return queryHash;
+        };
+  
+        var tokens = queryParse(url);
+        
+        alert('Starting to exchange Access Token');
+        
+         var options = {
+            consumerKey: 'anonymous',
+            consumerSecret: 'anonymous',
+            accessTokenKey: tokens.oauth_token,
+            accessTokenSecret: oauth_token_secret,
+            verifier: tokens.oauth_verifier
+          };
+
+          var oauthAccessTokenExchanger = OAuth(options);
+          
+          oauthAccessTokenExchanger.get('https://www.google.com/accounts/OAuthGetAccessToken', function (data) {
+              alert(data);
+          });
+
+        
+      </script>
+    </body>
+</html>
+

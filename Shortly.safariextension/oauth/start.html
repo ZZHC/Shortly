@@ -6,21 +6,32 @@
     </head>
     <body>
         <script>
-            var options = {
-                consumerKey: 'anonymous',
-                consumerSecret: 'anonymous',
-                callback: 'http://zzhc.org/oauth'
-            };
-            
-            var params = {
-              'xoauth_displayname': 'Shortly Extension',
-              'scope': 'https://www.googleapis.com/auth/urlshortener'
-            };
+          var oauth_token = safari.extension.secureSettings.getItem("oauth_token");
+          
+          
+          if(oauth_token === null) {
+      
+          var options = {
+              consumerKey: 'anonymous',
+              consumerSecret: 'anonymous',
+              callback: safari.extension.baseURI + 'oauth/finish.html'
+          };
+          
+          var params = {
+            'xoauth_displayname': 'Shortly Extension',
+            'scope': 'https://www.googleapis.com/auth/urlshortener'
+          };
 
-            var oauth = OAuth(options);
-            oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
-                window.open('https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1] );
-            });
+          var oauth = OAuth(options);
+          oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
+              safari.extension.secureSettings.setItem("oauth_token_secret", data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+              
+              location.href = 'https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1];
+          });
+          
+          } else {
+            alert('Access Token: ' + oauth_token );
+          }
         </script>
     </body>
 </html>

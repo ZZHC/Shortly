@@ -39,6 +39,16 @@
 		<string>Separator</string>
 	</dict>
 	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>googleAuth</string>
+		<key>Title</key>
+		<string>Shorten goo.gl links with your Google Account</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
 		<key>Title</key>
 		<string>Using your own bit.ly account:</string>
 		<key>Type</key>
@@ -65,6 +75,18 @@
 		<string>API Key</string>
 		<key>Type</key>
 		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>oauth_token</string>
+		<key>Secure</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>oauth_token_secret</string>
+		<key>Secure</key>
+		<true/>
 	</dict>
 </array>
 </plist>
