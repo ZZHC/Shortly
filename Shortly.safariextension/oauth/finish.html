@@ -11,7 +11,11 @@
       
       <script>
         var url = location.href;
-        var oauth_token_secret = safari.extension.secureSettings.getItem("oauth_token_secret");
+        var oauth_token_secret = localStorage.getItem('googl_oauth_token_secret');
+        
+        if(oauth_token_secret == null) {
+          alert('Fail');
+        }
         
         var queryParse = function(uri) {
           var queryStrArray = uri.split('?')[1].split('&');
@@ -27,7 +31,6 @@
   
         var tokens = queryParse(url);
         
-        alert('Starting to exchange Access Token');
         
          var options = {
             consumerKey: 'anonymous',
@@ -40,7 +43,10 @@
           var oauthAccessTokenExchanger = OAuth(options);
           
           oauthAccessTokenExchanger.get('https://www.google.com/accounts/OAuthGetAccessToken', function (data) {
-              alert(data);
+          
+              localStorage.setItem('googl_oauth_token', data.text.match(/oauth_token=([^\&]+)/)[1]);
+              localStorage.setItem('googl_oauth_token_secret', data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+              
           });
 
         

@@ -6,11 +6,6 @@
     </head>
     <body>
         <script>
-          var oauth_token = safari.extension.secureSettings.getItem("oauth_token");
-          
-          
-          if(oauth_token === null) {
-      
           var options = {
               consumerKey: 'anonymous',
               consumerSecret: 'anonymous',
@@ -23,15 +18,17 @@
           };
 
           var oauth = OAuth(options);
+          
+          localStorage.removeItem('googl_oauth_token');
+          localStorage.removeItem('googl_oauth_token_secret');
+          
           oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
-              safari.extension.secureSettings.setItem("oauth_token_secret", data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+              var token_secret = decodeURIComponent(data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+              
+              localStorage.setItem('googl_oauth_token_secret', token_secret);
               
               location.href = 'https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1];
           });
-          
-          } else {
-            alert('Access Token: ' + oauth_token );
-          }
         </script>
     </body>
 </html>

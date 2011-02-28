@@ -76,17 +76,5 @@
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
-	<dict>
-		<key>Key</key>
-		<string>oauth_token</string>
-		<key>Secure</key>
-		<true/>
-	</dict>
-	<dict>
-		<key>Key</key>
-		<string>oauth_token_secret</string>
-		<key>Secure</key>
-		<true/>
-	</dict>
 </array>
 </plist>
