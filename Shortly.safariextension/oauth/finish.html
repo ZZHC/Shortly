@@ -43,9 +43,11 @@
           var oauthAccessTokenExchanger = OAuth(options);
           
           oauthAccessTokenExchanger.get('https://www.google.com/accounts/OAuthGetAccessToken', function (data) {
+              var oauth_token = data.text.match(/oauth_token=([^\&]+)/)[1];
+              var oauth_token_secret = data.text.match(/oauth_token_secret=([^\&]+)/)[1];
           
-              localStorage.setItem('googl_oauth_token', data.text.match(/oauth_token=([^\&]+)/)[1]);
-              localStorage.setItem('googl_oauth_token_secret', data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+              localStorage.setItem('googl_oauth_token', decodeURIComponent(oauth_token));
+              localStorage.setItem('googl_oauth_token_secret', decodeURIComponent(oauth_token_secret));
               
           });
 
