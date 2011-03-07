@@ -35,7 +35,7 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 function performCommand(event) {
   
   if (event.command === "startOauth") {
-    startOAuthDanceWithGoogle();
+    runOauthTest();
   }
   
   if (event.command === "shortenURL") {
@@ -259,6 +259,9 @@ function respondToMessage(messageEvent) {
   if(messageEvent.name === "toolbarReady") {
     confirmedInjectedToolbarReady();
   }
+  if(messageEvent.name === "oauthComplete") {
+    saveOauthTokensToSettings();
+  }
 }
 
 function receiveFlickrShortlink(message) {
@@ -423,32 +426,41 @@ function shortenWithTinyURL(url) {
 
 /* OAuth experimental support */
 
+function runOauthTest() {
+  startOAuthDanceWithGoogle();
+}
+
 function startOAuthDanceWithGoogle() {
-  var oauth_token = safari.extension.secureSettings.getItem('googl_oauth_token');
-  var oauth_token_secret = safari.extension.secureSettings.getItem('googl_oauth_token_secret');
+  var oauth = {
+    token: safari.extension.secureSettings.getItem('googl_oauth_token'),
+    token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret')
+  };
   
-  if(oauth_token !== null && oauth_token_secret !== null) {
-    alert(oauth_token);
+  if(oauth.token !== null && oauth.token_secret !== null) {
+    alert(oauth.token);
   } else {
     safari.extension.secureSettings.removeItem('googl_oauth_token');
     safari.extension.secureSettings.removeItem('googl_oauth_token_secret');
     
+    safari.extension.addContentScriptFromURL(safari.extension.baseURI + 'oauth/inject.js');
     safari.application.activeBrowserWindow.openTab().url = safari.extension.baseURI + 'oauth/start.html';
   }
 }
 
 
-function listenToLocalStorage(event) {
-  alert();
-  if(event.key === 'googl_oauth_token_secret' && event.newValue !== null) {
-    var oauth_token = localStorage.getItem('googl_oauth_token');
-    var oauth_token_secret = event.newValue;
-    
-    if(oauth_token !== null) {
-      safari.extension.secureSettings.setItem('googl_oauth_token', oauth_token);
-      safari.extension.secureSettings.setItem('googl_oauth_token_secret', oauth_token_secret);
-    }
-    
-    localStorage.clear();
+function saveOauthTokensToSettings() {
+  var oauth = {
+    token: localStorage.getItem('googl_oauth_token'),
+    token_secret: localStorage.getItem('googl_oauth_token_secret')
+  };
+  
+  if(oauth.token !== null && oauth.token_secret !== null) {
+    safari.extension.secureSettings.setItem('googl_oauth_token', oauth.token);
+    safari.extension.secureSettings.setItem('googl_oauth_token_secret', oauth.token_secret);
+  } else {
+    alert('Error: OAuth failed.');
   }
+    
+  localStorage.clear();
+  safari.extension.removeContentScript(safari.extension.baseURI + 'oauth/inject.js');
 }
