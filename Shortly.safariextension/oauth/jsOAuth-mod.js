@@ -1,6 +1,6 @@
 /**
  *  @license
- *  jsOAuth version 0.8
+ *  jsOAuth version 0.10
  *  Copyright (c) 2010 Rob Griffiths (http://bytespider.eu)
  *  jsOAuth is freely distributable under the terms of an MIT-style license.
  */
@@ -8,7 +8,7 @@
 /*
   Modified by Zhusee (zhusee@zzhc.org).
   
-  This file is modified based on Rob Griffiths's 0.8 release in order to
+  This file is modified based on Rob Griffiths's 0.10 release in order to
   deal with 3-legged oauth autentication expected to be used in 
   Shorly Safari Extension.
 */
@@ -242,7 +242,7 @@ exports.OAuth = (function (global) {
 	        }
 	    }
 	};    /** @const */ var OAUTH_VERSION_1_0 = '1.0';
-    /** @const */ var OAUTH_VERSION_2_0 = '2.0';
+    /** @const */ /*var OAUTH_VERSION_2_0 = '2.0';*/
 
     /**
      * OAuth
@@ -272,8 +272,7 @@ exports.OAuth = (function (global) {
                 consumerSecret: options.consumerSecret,
                 accessTokenKey: options.accessTokenKey || empty,
                 accessTokenSecret: options.accessTokenSecret || empty,
-                verifier: options.verifier || empty,
-                
+                verifier: '',
                 callback: options.callback || empty,
 
                 signatureMethod: options.signatureMethod || 'HMAC-SHA1'
@@ -293,13 +292,12 @@ exports.OAuth = (function (global) {
                 oauth.accessTokenSecret = tokenArray[1];
             };
 
-            this.getAccessToken = function () {
-                return [oauth.accessTokenKey, oauth.accessTokenSecret];
+            this.getVerifier = function () {
+                return oauth.verifier;
             };
 
-            this.setAccessToken = function (tokenArray) {
-                oauth.accessTokenKey = tokenArray[0];
-                oauth.accessTokenSecret = tokenArray[1];
+            this.setVerifier = function (verifier) {
+                oauth.verifier = verifier;
             };
 
             /**
@@ -332,14 +330,6 @@ exports.OAuth = (function (global) {
                     netscape.security.PrivilegeManager
                         .enablePrivilege("UniversalBrowserRead UniversalBrowserWrite");
                 }
-                
-                /** 
-                 * @see https://github.com/bytespider/jsOAuth/blob/0.2/src/uri.js
-                 * Parse the URl here breaking up and normalising it
-                 * 
-                 * At 5.8kb, the implimentation may be to big for jsOAuth as is,
-                 * however, some simplification may allow it to drop right in
-                 */
 
                 xhr = Request();
                 xhr.onreadystatechange = function () {
@@ -362,10 +352,14 @@ exports.OAuth = (function (global) {
                             }
                         }
 
-                        if(xhr.status == 200 || xhr.status === 0) {
-                            success({text: xhr.responseText, requestHeaders: requestHeaders, responseHeaders: responseHeaders});//, xml: xhr.responseXML});
-                        } else if(xhr.status != 200 && xhr.status !== 0) {
-                            failure({text: xhr.responseText, requestHeaders: requestHeaders, responseHeaders: responseHeaders});//, xml: xhr.responseXML});
+                        var responseObject = {text: xhr.responseText, requestHeaders: requestHeaders, responseHeaders: responseHeaders};
+
+                        // 200, 201 and 304 are valid responses
+                        if((xhr.status >= 200 && xhr.status < 400 )|| xhr.status === 0) {
+                            success(responseObject);
+                        // everything what is 400 and above is a failure code
+                        } else if(xhr.status >= 400 && xhr.status !== 0) {
+                            failure(responseObject);
                         }
                     }
                 };
@@ -382,12 +376,12 @@ exports.OAuth = (function (global) {
                 };
 
                 signatureMethod = oauth.signatureMethod;
-                
+
                 params = url.query.toObject();
                 for (i in params) {
                 	signatureData[i] = params[i];
                 }
-                
+
                 for (i in data) {
                 	signatureData[i] = data[i];
                 }
@@ -397,12 +391,6 @@ exports.OAuth = (function (global) {
                 signature = OAuth.signatureMethod[signatureMethod](oauth.consumerSecret, oauth.accessTokenSecret, signatureString);
 
                 headerParams.oauth_signature = signature;
-
-                /*for(i in data) {
-                    query.push(OAuth.urlEncode(i) + '=' + OAuth.urlEncode(data[i] + ''));
-                }
-
-                query = query.sort().join('&');*/
 
                 if(appendQueryString || method == 'GET') {
 	                url.query.setQueryParams(data);
@@ -414,7 +402,7 @@ exports.OAuth = (function (global) {
                 	query = query.sort().join('&');
                     headers['Content-Type'] = 'application/x-www-form-urlencoded';
                 }
-				
+
                 xhr.open(method, url+'', true);
 
                 xhr.setRequestHeader('Authorization', 'OAuth ' + toHeaderString(headerParams));
@@ -465,6 +453,36 @@ exports.OAuth = (function (global) {
             this.get(url, function (data) {
                 success(JSON.parse(data.text));
             } , failure);
+        },
+
+        parseTokenRequest: function (tokenRequestString) {
+        	var i = 0, arr = tokenRequestString.split('&'), len = arr.length, obj = {};
+        	for (; i < len; ++i) {
+        		var pair = arr[i].split('=');
+        		obj[pair[0]] = pair[1];
+        	}
+
+        	return obj;
+        },
+        
+        fetchRequestToken: function (success, failure) {
+        	var url = this.authorizationUrl;
+        	var oauth = this;
+        	this.get(this.requestTokenUrl, function (data) {
+        		var token = oauth.parseTokenRequest(data.text);
+        		oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+        		success(url + '?' + data.text);
+        	}, failure);
+        },
+        
+        fetchAccessToken: function (success, failure) {
+        	var oauth = this;
+        	this.get(this.accessTokenUrl, function (data) {
+        		var token = oauth.parseTokenRequest(data.text);
+        		oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+        		
+        		success(data);
+        	}, failure);
         }
     };
 
@@ -586,16 +604,16 @@ exports.OAuth = (function (global) {
         return value;
     }
 
-    /** 
+    /**
      * rfc3986 compatable encode of a string
-     * 
+     *
      * @param {String} string
      */
     OAuth.urlEncode = function (string) {
     	function hex(code) {
     		return '%' + code.toString(16).toUpperCase();
     	}
-    
+
         if (!string) {
             return '';
         }
@@ -603,11 +621,11 @@ exports.OAuth = (function (global) {
         string = string + '';
         var reserved_chars = /[ !*"'();:@&=+$,\/?%#\[\]<>{}|`^\\\u0080-\uffff]/,
             str_len = string.length, i, string_arr = string.split(''), c;
-		
+
         for (i = 0; i < str_len; i++) {
             if (c = string_arr[i].match(reserved_chars)) {
             	c = c[0].charCodeAt(0);
-            
+
 	            if (c < 128) {
 	            	string_arr[i] = hex(c);
 	            } else if (c < 2048) {
@@ -623,9 +641,9 @@ exports.OAuth = (function (global) {
         return string_arr.join('');
     };
 
-    /** 
+    /**
      * rfc3986 compatable decode of a string
-     * 
+     *
      * @param {String} string
      */
     OAuth.urlDecode = function (string){
