@@ -31,6 +31,7 @@
   
         var tokens = queryParse(url);
         
+        /* @@ Setting up for exchanging Access Token @@ */
         
          var options = {
             consumerKey: 'anonymous',
@@ -42,16 +43,22 @@
 
           var oauthAccessTokenExchanger = OAuth(options);
           
+          /* @@ Ask to exchange Access Token @@ */
+
           oauthAccessTokenExchanger.get('https://www.google.com/accounts/OAuthGetAccessToken', function (data) {
               var oauth_token = data.text.match(/oauth_token=([^\&]+)/)[1];
               var oauth_token_secret = data.text.match(/oauth_token_secret=([^\&]+)/)[1];
-              var ocevt = document.createEvent('Event');
 
+              /* @@ Create an event to inform injected script @@ */
+
+              var ocevt = document.createEvent('Event');
               ocevt.initEvent('oauthComplete', false, true);
           
               localStorage.setItem('googl_oauth_token', decodeURIComponent(oauth_token));
               localStorage.setItem('googl_oauth_token_secret', decodeURIComponent(oauth_token_secret));
               
+              /* @@ Tell injected script to save tokens @@ */
+
               document.dispatchEvent(ocevt);
           });
 

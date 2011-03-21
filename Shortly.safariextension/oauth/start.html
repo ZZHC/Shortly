@@ -17,16 +17,22 @@
             'scope': 'https://www.googleapis.com/auth/urlshortener'
           };
 
+          /* @@ Initialize and cleanup @@ */
+
           var oauth = OAuth(options);
           
           localStorage.removeItem('googl_oauth_token');
           localStorage.removeItem('googl_oauth_token_secret');
-          
+
+          /* @@ Ask for Request Token @@ */
+
           oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
               var token_secret = decodeURIComponent(data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
               
               localStorage.setItem('googl_oauth_token_secret', token_secret);
-              
+
+              /* @@ Navigate to auth page @@ */
+
               location.href = 'https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1];
           });
         </script>
