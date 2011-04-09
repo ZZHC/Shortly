@@ -384,12 +384,12 @@ function shortenWithBitlyWithAPI(url, username, APIKey) {
       
         finalizeShortening(first_result.shortUrl, null);
       } catch(e) {
-        if(data.statusCode === "ERROR") {
-          if(data.errorCode === 203) {
-            generalAjaxErrorHandler(null, 'authFail', 'bit.ly auth fail. Please check your login information, restart Safari and try again.');
-          } else {
-            generalAjaxErrorHandler(null, 'error', data.errorMessage);
-          }
+        if(data.statusCode === "INVALID_APIKEY") {
+          generalAjaxErrorHandler(null, 'authFail', 'bit.ly auth fail. Please check you have your API key (not password) entered, restart Safari and try again.');
+        } else if(data.statusCode === "MISSING_ARG_APIKEY" || data.statusCode === "INVALID_LOGIN") {
+          generalAjaxErrorHandler(null, 'authFail', 'bit.ly auth fail. Please check your login information, restart Safari and try again.');
+        } else if(data.statusCode !== "OK") {
+          generalAjaxErrorHandler(null, 'error', 'bit.ly error: ' + data.statusCode);
         }
       }
     }
