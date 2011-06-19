@@ -2,8 +2,7 @@
 <html>
     <head>
         <title>goo.gl OAuth Finish!</title>
-        <script src="jsOAuth-mod.js"></script>
-        <script src="../jquery-1.4.2.min.js"></script>
+        <script src="jsOAuth-1.2.js"></script>
     </head>
     <body>
       <h1>Congratulations!</h1>
@@ -11,57 +10,54 @@
       
       <script>
         var url = location.href;
+
+        /* @@ Restoring Token Secret @@ */
         var oauth_token_secret = localStorage.getItem('googl_oauth_token_secret');
         
         if(oauth_token_secret == null) {
-          alert('Fail');
+          alert('OAuth Fail: lost token secret');
         }
-        
-        var queryParse = function(uri) {
-          var queryStrArray = uri.split('?')[1].split('&');
-          var queryHash = {};
-          
-          $.each(queryStrArray, function(index, value) {
-            var param = value.split('=');  
-            queryHash[param[0]] = decodeURIComponent(param[1]);
-          });
-    
-          return queryHash;
-        };
-  
-        var tokens = queryParse(url);
         
         /* @@ Setting up for exchanging Access Token @@ */
         
          var options = {
             consumerKey: 'anonymous',
             consumerSecret: 'anonymous',
-            accessTokenKey: tokens.oauth_token,
-            accessTokenSecret: oauth_token_secret,
-            verifier: tokens.oauth_verifier
+            accessTokenUrl: 'https://www.google.com/accounts/OAuthGetAccessToken'
           };
 
-          var oauthAccessTokenExchanger = OAuth(options);
+          var oauthExchanger = OAuth(options);
+
+          /* @@ Set tokens and verifier @@ */
+
+          var token = oauthExchanger.parseTokenRequest(decodeURIComponent(url.split('?')[1]));
+          oauth_token_secret = decodeURIComponent(oauth_token_secret);
           
+          oauthExchanger.setAccessToken([token.oauth_token, oauth_token_secret]);
+          oauthExchanger.setVerifier(token.oauth_verifier);
+
           /* @@ Ask to exchange Access Token @@ */
-
-          oauthAccessTokenExchanger.get('https://www.google.com/accounts/OAuthGetAccessToken', function (data) {
-              var oauth_token = data.text.match(/oauth_token=([^\&]+)/)[1];
-              var oauth_token_secret = data.text.match(/oauth_token_secret=([^\&]+)/)[1];
-
-              /* @@ Create an event to inform injected script @@ */
-
-              var ocevt = document.createEvent('Event');
-              ocevt.initEvent('oauthComplete', false, true);
           
-              localStorage.setItem('googl_oauth_token', decodeURIComponent(oauth_token));
-              localStorage.setItem('googl_oauth_token_secret', decodeURIComponent(oauth_token_secret));
-              
-              /* @@ Tell injected script to save tokens @@ */
+          oauthExchanger.fetchAccessToken(function(data) {
+            var finalTokens = oauthExchanger.parseTokenRequest(decodeURIComponent(data.text));
+            
+            /* @@ Create an event to inform injected script @@ */
+            
+            var ocevt = document.createEvent('Event');
+            ocevt.initEvent('oauthComplete', false, true);
 
-              document.dispatchEvent(ocevt);
+            localStorage.setItem('googl_oauth_token', finalTokens.oauth_token);
+            localStorage.setItem('googl_oauth_token_secret', finalTokens.oauth_token_secret);
+            localStorage.setItem('googl_oauth_date', (new Date()).getTime());
+
+            /* @@ Tell injected script to save tokens @@ */
+
+            document.dispatchEvent(ocevt);
+            
+          }, function(data) {
+            alert('OAuth Fail: Unable to exchange Access Token');
+            console.log(data);
           });
-
         
       </script>
     </body>

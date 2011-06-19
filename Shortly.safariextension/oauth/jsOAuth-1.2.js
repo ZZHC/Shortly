@@ -1,247 +1,238 @@
 /**
  *  @license
- *  jsOAuth version 0.10
- *  Copyright (c) 2010 Rob Griffiths (http://bytespider.eu)
+ *  jsOAuth version 1.2
+ *  Copyright (c) 2010, 2011 Rob Griffiths (http://bytespider.eu)
  *  jsOAuth is freely distributable under the terms of an MIT-style license.
  */
- 
-/*
-  Modified by Zhusee (zhusee@zzhc.org).
-  
-  This file is modified based on Rob Griffiths's 0.10 release in order to
-  deal with 3-legged oauth autentication expected to be used in 
-  Shorly Safari Extension.
-*/
-
 var exports = exports || this;
 exports.OAuth = (function (global) {
 
-	/** signed.applets.codebase_principal_support to enable support in Firefox **/	function Collection(obj) {
-	    var args = arguments, args_callee = args.callee, args_length = args.length,
-	        i, collection = this;
-	       
-	    if (!(this instanceof args_callee)) {
-	        return new args_callee(obj);
-	    }
-	     
-	    for(i in obj) {
-	        if (obj.hasOwnProperty(i)) {
-	            collection[i] = obj[i];
-	        }
-	    }
-	             
-	    return collection;
-	};
-	 
-	function Hash() {}
-	Hash.prototype = {
-		join: function(string){
-		    string = string || '';
-		    return this.values().join(string);
-		},
-		keys: function(){
-		    var i, arr = [], self = this;
-		    for (i in self) {
-		        if (self.hasOwnProperty(i)) {
-		            arr.push(i);
-		        }
-		    }
-		     
-		    return arr;
-		},
-		values: function(){
-		    var i, arr = [], self = this;
-		    for (i in self) {
-		        if (self.hasOwnProperty(i)) {
-		            arr.push(self[i]);
-		        }
-		    }
-		     
-		    return arr; 
-		},
-		shift: function(){throw 'not implimented'},
-		unshift: function(){throw 'not implimented'},
-		push: function(){throw 'not implimented'},
-		pop: function(){throw 'not implimented'},
-		sort: function(){throw 'not implimented'},
-		 
-		ksort: function(func){
-		    var self = this, keys = self.keys(), i, value, key;
-		     
-		    if (func == undefined) {
-		        keys.sort();
-		    } else {
-		        keys.sort(func);
-		    }
-		     
-		    for (i = 0; i  < keys.length; i++) {
-		        key = keys[i];
-		        value = self[key];
-		        delete self[key];
-		        self[key] = value;
-		    }
-		     
-		    return self;
-		},
-		toObject: function () {
-			var obj = {}, i, self = this;;
-			for (i in self) {
-				if (self.hasOwnProperty(i)) {
-				    obj[i] = self[i];
-				}
-			}
-			
-			return obj;
-		}
-	};
-	Collection.prototype = new Hash;	/**
-	 * Url
-	 * 
-	 * @constructor
-	 * @param {String} url
-	 */
-	function URI(url) {
-	    var args = arguments, args_callee = args.callee,
-	        parsed_uri, scheme, host, port, path, query, anchor,
-	        parser = /^([^:\/?#]+?:\/\/)*([^\/:?#]*)?(:[^\/?#]*)*([^?#]*)(\?[^#]*)?(#(.*))*/
-	        uri = this;
-	 
-	    if (!(this instanceof args_callee)) {
-	        return new args_callee(url);
-	    }
-	     
-	    uri.scheme = '';
-	    uri.host = '';
-	    uri.port = '';
-	    uri.path = '';
-	    uri.query = new QueryString();
-	    uri.anchor = '';
-	     
-	    if (url !== null) {
-	        parsed_uri = url.match(parser);
-	         
-	        scheme = parsed_uri[1];
-	        host = parsed_uri[2];
-	        port = parsed_uri[3];
-	        path = parsed_uri[4];
-	        query = parsed_uri[5];
-	        anchor = parsed_uri[6];
-	         
-	        scheme = (scheme !== undefined) ? scheme.replace('://', '').toLowerCase() : 'http';
-	        port = (port ? port.replace(':', '') : (scheme === 'https' ? '443' : '80'));
-	        // correct the scheme based on port number
-	        scheme = (scheme == 'http' && port === '443' ? 'https' : scheme);
-	        query = query ? query.replace('?', '') : '';
-	        anchor = anchor ? anchor.replace('#', '') : '';
-	         
-	         
-	        // Fix the host name to include port if non-standard ports were given
-	        if ((scheme === 'https' && port !== '443') || (scheme === 'http' && port !== '80')) {
-	            host = host + ':' + port;
-	        }
-	         
-	        uri.scheme = scheme;
-	        uri.host = host;
-	        uri.port = port;
-	        uri.path = path || '/';
-	        uri.query.setQueryParams(query);
-	        uri.anchor = anchor || '';
-	    }
-	}
-	
-	URI.prototype = {
-		scheme: '',
-		host: '',
-		port: '',
-		path: '',
-		query: '',
-		anchor: '',
-		toString: function () {
-		    var self = this, query = self.query + '';
-		    return self.scheme + '://' + self.host + self.path + (query != '' ? '?' + query : '') + (self.anchor !== '' ? '#' + self.anchor : '');
-		}
-	};
-	 
-	/**
-	 * Create and manage a query string
-	 * 
-	 * @param {Object} obj
-	 */
-	function QueryString(obj){
-	    var args = arguments, args_callee = args.callee, args_length = args.length,
-	        i, querystring = this;
-	       
-	    if (!(this instanceof args_callee)) {
-	        return new args_callee(obj);
-	    }
-	     
-	    if (obj != undefined) {
-	        for (i in obj) {
-	            if (obj.hasOwnProperty(i)) {
-	                querystring[i] = obj[i];
-	            }
-	        }
-	    }
-	     
-	    return querystring;
-	}
-	// QueryString is a type of collection So inherit
-	QueryString.prototype = new Collection();
-	 
-	QueryString.prototype.toString = function () {
-	    var i, self = this, q_arr = [], ret = '', 
-	    val = '', encode = OAuth.urlEncode;
-	    self.ksort(); // lexicographical byte value ordering of the keys
-	     
-	    for (i in self) {
-	        if (self.hasOwnProperty(i)) {
-	            if (i != undefined && self[i] != undefined) {
-	                val = encode(i) + '=' + encode(self[i]);
-	            }
-	            q_arr.push(val);
-	        }
-	    }
-	 
-	    if (q_arr.length > 0) {
-	        ret = q_arr.join('&');
-	    }
-	 
-	    return ret;
-	};
-	 
-	/**
-	 * 
-	 * @param {Object} query
-	 */
-	QueryString.prototype.setQueryParams = function (query) {
-	    var args = arguments, args_length = args.length, i, query_array, 
-	        query_array_length, querystring = this, key_value;
-	         
-	    if (args_length == 1) {
-	        if (typeof query === 'object') {
-	            // iterate
-	            for (i in query) {
-	                if (query.hasOwnProperty(i)) {
-	                    querystring[i] = query[i];
-	                }
-	            }
-	        } else if (typeof query === 'string') {
-	            // split string on '&'
-	            query_array = query.split('&');
-	            // iterate over each of the array items
-	            for (i = 0, query_array_length = query_array.length; i < query_array_length; i++) {
-	                // split on '=' to get key, value
-	                key_value = query_array[i].split('=');
-	                querystring[key_value[0]] = key_value[1];
-	            }
-	        }
-	    } else {
-	        for (i = 0; i < arg_length; i += 2) {
-	            // treat each arg as key, then value
-	            querystring[args[i]] = args[i+1];
-	        }
-	    }
-	};    /** @const */ var OAUTH_VERSION_1_0 = '1.0';
+    /** signed.applets.codebase_principal_support to enable support in Firefox **/    function Collection(obj) {
+        var args = arguments, args_callee = args.callee, args_length = args.length,
+            i, collection = this;
+           
+        if (!(this instanceof args_callee)) {
+            return new args_callee(obj);
+        }
+         
+        for(i in obj) {
+            if (obj.hasOwnProperty(i)) {
+                collection[i] = obj[i];
+            }
+        }
+                 
+        return collection;
+    };
+     
+    function Hash() {}
+    Hash.prototype = {
+        join: function(string){
+            string = string || '';
+            return this.values().join(string);
+        },
+        keys: function(){
+            var i, arr = [], self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i)) {
+                    arr.push(i);
+                }
+            }
+             
+            return arr;
+        },
+        values: function(){
+            var i, arr = [], self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i)) {
+                    arr.push(self[i]);
+                }
+            }
+             
+            return arr; 
+        },
+        shift: function(){throw 'not implimented'},
+        unshift: function(){throw 'not implimented'},
+        push: function(){throw 'not implimented'},
+        pop: function(){throw 'not implimented'},
+        sort: function(){throw 'not implimented'},
+         
+        ksort: function(func){
+            var self = this, keys = self.keys(), i, value, key;
+             
+            if (func == undefined) {
+                keys.sort();
+            } else {
+                keys.sort(func);
+            }
+             
+            for (i = 0; i  < keys.length; i++) {
+                key = keys[i];
+                value = self[key];
+                delete self[key];
+                self[key] = value;
+            }
+             
+            return self;
+        },
+        toObject: function () {
+            var obj = {}, i, self = this;;
+            for (i in self) {
+                if (self.hasOwnProperty(i)) {
+                    obj[i] = self[i];
+                }
+            }
+            
+            return obj;
+        }
+    };
+    Collection.prototype = new Hash;    /**
+     * Url
+     * 
+     * @constructor
+     * @param {String} url
+     */
+    function URI(url) {
+        var args = arguments, args_callee = args.callee,
+            parsed_uri, scheme, host, port, path, query, anchor,
+            parser = /^([^:\/?#]+?:\/\/)*([^\/:?#]*)?(:[^\/?#]*)*([^?#]*)(\?[^#]*)?(#(.*))*/
+            uri = this;
+     
+        if (!(this instanceof args_callee)) {
+            return new args_callee(url);
+        }
+         
+        uri.scheme = '';
+        uri.host = '';
+        uri.port = '';
+        uri.path = '';
+        uri.query = new QueryString();
+        uri.anchor = '';
+         
+        if (url !== null) {
+            parsed_uri = url.match(parser);
+             
+            scheme = parsed_uri[1];
+            host = parsed_uri[2];
+            port = parsed_uri[3];
+            path = parsed_uri[4];
+            query = parsed_uri[5];
+            anchor = parsed_uri[6];
+             
+            scheme = (scheme !== undefined) ? scheme.replace('://', '').toLowerCase() : 'http';
+            port = (port ? port.replace(':', '') : (scheme === 'https' ? '443' : '80'));
+            // correct the scheme based on port number
+            scheme = (scheme == 'http' && port === '443' ? 'https' : scheme);
+            query = query ? query.replace('?', '') : '';
+            anchor = anchor ? anchor.replace('#', '') : '';
+             
+             
+            // Fix the host name to include port if non-standard ports were given
+            if ((scheme === 'https' && port !== '443') || (scheme === 'http' && port !== '80')) {
+                host = host + ':' + port;
+            }
+             
+            uri.scheme = scheme;
+            uri.host = host;
+            uri.port = port;
+            uri.path = path || '/';
+            uri.query.setQueryParams(query);
+            uri.anchor = anchor || '';
+        }
+    }
+    
+    URI.prototype = {
+        scheme: '',
+        host: '',
+        port: '',
+        path: '',
+        query: '',
+        anchor: '',
+        toString: function () {
+            var self = this, query = self.query + '';
+            return self.scheme + '://' + self.host + self.path + (query != '' ? '?' + query : '') + (self.anchor !== '' ? '#' + self.anchor : '');
+        }
+    };
+     
+    /**
+     * Create and manage a query string
+     * 
+     * @param {Object} obj
+     */
+    function QueryString(obj){
+        var args = arguments, args_callee = args.callee, args_length = args.length,
+            i, querystring = this;
+           
+        if (!(this instanceof args_callee)) {
+            return new args_callee(obj);
+        }
+         
+        if (obj != undefined) {
+            for (i in obj) {
+                if (obj.hasOwnProperty(i)) {
+                    querystring[i] = obj[i];
+                }
+            }
+        }
+         
+        return querystring;
+    }
+    // QueryString is a type of collection So inherit
+    QueryString.prototype = new Collection();
+     
+    QueryString.prototype.toString = function () {
+        var i, self = this, q_arr = [], ret = '', 
+        val = '', encode = OAuth.urlEncode;
+        self.ksort(); // lexicographical byte value ordering of the keys
+         
+        for (i in self) {
+            if (self.hasOwnProperty(i)) {
+                if (i != undefined && self[i] != undefined) {
+                    val = encode(i) + '=' + encode(self[i]);
+                }
+                q_arr.push(val);
+            }
+        }
+     
+        if (q_arr.length > 0) {
+            ret = q_arr.join('&');
+        }
+     
+        return ret;
+    };
+     
+    /**
+     * 
+     * @param {Object} query
+     */
+    QueryString.prototype.setQueryParams = function (query) {
+        var args = arguments, args_length = args.length, i, query_array, 
+            query_array_length, querystring = this, key_value;
+             
+        if (args_length == 1) {
+            if (typeof query === 'object') {
+                // iterate
+                for (i in query) {
+                    if (query.hasOwnProperty(i)) {
+                        querystring[i] = query[i];
+                    }
+                }
+            } else if (typeof query === 'string') {
+                // split string on '&'
+                query_array = query.split('&');
+                // iterate over each of the array items
+                for (i = 0, query_array_length = query_array.length; i < query_array_length; i++) {
+                    // split on '=' to get key, value
+                    key_value = query_array[i].split('=');
+                    querystring[key_value[0]] = key_value[1];
+                }
+            }
+        } else {
+            for (i = 0; i < arg_length; i += 2) {
+                // treat each arg as key, then value
+                querystring[args[i]] = args[i+1];
+            }
+        }
+    };    /** @const */ var OAUTH_VERSION_1_0 = '1.0';
     /** @const */ /*var OAUTH_VERSION_2_0 = '2.0';*/
 
     /**
@@ -267,13 +258,14 @@ exports.OAuth = (function (global) {
             var empty = '';
             var oauth = {
                 enablePrivilege: options.enablePrivilege || false,
+                
+                callbackUrl: options.callbackUrl || 'oob',
 
                 consumerKey: options.consumerKey,
                 consumerSecret: options.consumerSecret,
                 accessTokenKey: options.accessTokenKey || empty,
                 accessTokenSecret: options.accessTokenSecret || empty,
                 verifier: '',
-                callback: options.callback || empty,
 
                 signatureMethod: options.signatureMethod || 'HMAC-SHA1'
             };
@@ -316,7 +308,7 @@ exports.OAuth = (function (global) {
             this.request = function (options) {
                 var method, url, data, headers, success, failure, xhr, i,
                     headerParams, signatureMethod, signatureString, signature,
-                    query = [], appendQueryString, signatureData = {}, params;
+                    query = [], appendQueryString, signatureData = {}, params, withFile;
 
                 method = options.method || 'GET';
                 url = URI(options.url);
@@ -324,6 +316,19 @@ exports.OAuth = (function (global) {
                 headers = options.headers || {};
                 success = options.success || function (data) {};
                 failure = options.failure || function () {};
+
+                // According to the spec
+                withFile = (function(){
+                  var hasFile = false;
+                  for(var name in data) {
+                    // Thanks to the FileAPI any file entry
+                    // has a fileName property
+                    if(typeof data[name].fileName != 'undefined') hasFile = true;
+                  }
+
+                  return hasFile;
+                })();
+
                 appendQueryString = options.appendQueryString ? options.appendQueryString : false;
 
                 if (oauth.enablePrivilege) {
@@ -365,7 +370,7 @@ exports.OAuth = (function (global) {
                 };
 
                 headerParams = {
-                    'oauth_callback': oauth.callback,
+                    'oauth_callback': oauth.callbackUrl,
                     'oauth_consumer_key': oauth.consumerKey,
                     'oauth_token': oauth.accessTokenKey,
                     'oauth_signature_method': oauth.signatureMethod,
@@ -379,28 +384,53 @@ exports.OAuth = (function (global) {
 
                 params = url.query.toObject();
                 for (i in params) {
-                	signatureData[i] = params[i];
+                    signatureData[i] = params[i];
                 }
 
-                for (i in data) {
-                	signatureData[i] = data[i];
+                // According to the OAuth spec
+                // if data is transfered using
+                // multipart the POST data doesn't
+                // have to be signed:
+                // http://www.mail-archive.com/oauth@googlegroups.com/msg01556.html
+                if((!('Content-Type' in headers) || headers['Content-Type'] == 'application/x-www-form-urlencoded') && !withFile) {
+                  for (i in data) {
+                    signatureData[i] = data[i];
+                  }
                 }
 
-				urlString = url.scheme + '://' + url.host + url.path;
+                urlString = url.scheme + '://' + url.host + url.path;
                 signatureString = toSignatureBaseString(method, urlString, headerParams, signatureData);
                 signature = OAuth.signatureMethod[signatureMethod](oauth.consumerSecret, oauth.accessTokenSecret, signatureString);
 
                 headerParams.oauth_signature = signature;
 
                 if(appendQueryString || method == 'GET') {
-	                url.query.setQueryParams(data);
+                    url.query.setQueryParams(data);
                     query = null;
-                } else {
-                	for(i in data) {
-                	    query.push(OAuth.urlEncode(i) + '=' + OAuth.urlEncode(data[i] + ''));
-                	}
-                	query = query.sort().join('&');
-                    headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                } else if(!withFile){
+                    if (typeof data == 'string') {
+                        query = data;
+                        if (!('Content-Type' in headers)) {
+                            headers['Content-Type'] = 'text/plain';
+                        }
+                    } else {
+                        for(i in data) {
+                            query.push(OAuth.urlEncode(i) + '=' + OAuth.urlEncode(data[i] + ''));
+                        }
+                        query = query.sort().join('&');
+                        if (!('Content-Type' in headers)) {
+                            headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                        }
+                    }
+                    
+                } else if(withFile) {
+                  // When using FormData multipart content type
+                  // is used by default and required header
+                  // is set to multipart/form-data etc
+                  query = new FormData();
+                  for(i in data) {
+                    query.append(i, data[i]);
+                  }
                 }
 
                 xhr.open(method, url+'', true);
@@ -456,33 +486,33 @@ exports.OAuth = (function (global) {
         },
 
         parseTokenRequest: function (tokenRequestString) {
-        	var i = 0, arr = tokenRequestString.split('&'), len = arr.length, obj = {};
-        	for (; i < len; ++i) {
-        		var pair = arr[i].split('=');
-        		obj[pair[0]] = pair[1];
-        	}
+            var i = 0, arr = tokenRequestString.split('&'), len = arr.length, obj = {};
+            for (; i < len; ++i) {
+                var pair = arr[i].split('=');
+                obj[pair[0]] = pair[1];
+            }
 
-        	return obj;
+            return obj;
         },
-        
+
         fetchRequestToken: function (success, failure) {
-        	var url = this.authorizationUrl;
-        	var oauth = this;
-        	this.get(this.requestTokenUrl, function (data) {
-        		var token = oauth.parseTokenRequest(data.text);
-        		oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
-        		success(url + '?' + data.text);
-        	}, failure);
+            var url = this.authorizationUrl;
+            var oauth = this;
+            this.get(this.requestTokenUrl, function (data) {
+                var token = oauth.parseTokenRequest(data.text);
+                oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+                success(url + '?' + data.text);
+            }, failure);
         },
-        
+
         fetchAccessToken: function (success, failure) {
-        	var oauth = this;
-        	this.get(this.accessTokenUrl, function (data) {
-        		var token = oauth.parseTokenRequest(data.text);
-        		oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
-        		
-        		success(data);
-        	}, failure);
+            var oauth = this;
+            this.get(this.accessTokenUrl, function (data) {
+                var token = oauth.parseTokenRequest(data.text);
+                oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+
+                success(data);
+            }, failure);
         }
     };
 
@@ -610,31 +640,35 @@ exports.OAuth = (function (global) {
      * @param {String} string
      */
     OAuth.urlEncode = function (string) {
-    	function hex(code) {
-    		return '%' + code.toString(16).toUpperCase();
-    	}
+        function hex(code) {
+            var hex = code.toString(16).toUpperCase();
+            if (hex.length < 2) {
+                hex = 0 + hex;
+            }
+            return '%' + hex;
+        }
 
         if (!string) {
             return '';
         }
 
         string = string + '';
-        var reserved_chars = /[ !*"'();:@&=+$,\/?%#\[\]<>{}|`^\\\u0080-\uffff]/,
+        var reserved_chars = /[ \r\n!*"'();:@&=+$,\/?%#\[\]<>{}|`^\\\u0080-\uffff]/,
             str_len = string.length, i, string_arr = string.split(''), c;
 
         for (i = 0; i < str_len; i++) {
             if (c = string_arr[i].match(reserved_chars)) {
-            	c = c[0].charCodeAt(0);
+                c = c[0].charCodeAt(0);
 
-	            if (c < 128) {
-	            	string_arr[i] = hex(c);
-	            } else if (c < 2048) {
-	            	string_arr[i] = hex(192+(c>>6)) + hex(128+(c&63));
-	            } else if (c < 65536) {
-	            	string_arr[i] = hex(224+(c>>12)) + hex(128+((c>>6)&63)) + hex(128+(c&63));
-	            } else if (c < 2097152) {
-	            	string_arr[i] = hex(240+(c>>18)) + hex(128+((c>>12)&63)) + hex(128+((c>>6)&63)) + hex(128+(c&63));
-	            }
+                if (c < 128) {
+                    string_arr[i] = hex(c);
+                } else if (c < 2048) {
+                    string_arr[i] = hex(192+(c>>6)) + hex(128+(c&63));
+                } else if (c < 65536) {
+                    string_arr[i] = hex(224+(c>>12)) + hex(128+((c>>6)&63)) + hex(128+(c&63));
+                } else if (c < 2097152) {
+                    string_arr[i] = hex(240+(c>>18)) + hex(128+((c>>12)&63)) + hex(128+((c>>6)&63)) + hex(128+(c&63));
+                }
             }
         }
 
@@ -655,25 +689,79 @@ exports.OAuth = (function (global) {
             return String.fromCharCode(parseInt(match.replace('%', ''), 16));
         });
     };
-	/**
-	 * Factory object for XMLHttpRequest
-	 */
-	function Request() {
-		var XHR;
+    /**
+     * Factory object for XMLHttpRequest
+     */
+    function Request() {
+        var XHR;
 
 
-		if (typeof global.Titanium !== 'undefined' && typeof global.Titanium.Network.createHTTPClient != 'undefined') {
-			XHR = global.Titanium.Network.createHTTPClient();
-		} else if (typeof require !== 'undefined') {
-			// CommonJS require
-			XHR = new require("xhr").XMLHttpRequest();
-		} else {
-			// W3C
-			XHR = new global.XMLHttpRequest();
-		}
+        if (typeof global.Titanium !== 'undefined' && typeof global.Titanium.Network.createHTTPClient != 'undefined') {
+            XHR = global.Titanium.Network.createHTTPClient();
+        } else if (typeof require !== 'undefined') {
+            // CommonJS require
+            XHR = new require("xhr").XMLHttpRequest();
+        } else {
+            // W3C
+            XHR = new global.XMLHttpRequest();
+        }
 
-		return XHR;
-	}
+        return XHR;
+    }
+    function zeroPad(length) {
+        var arr = new Array(++length);
+        return arr.join(0).split('');
+    }
+
+    function stringToByteArray(str) {
+        var bytes = [], code, i;
+        
+        for(i = 0; i < str.length; i++) {
+            code = str.charCodeAt(i);
+            
+            if (code < 128) {
+                bytes.push(code);
+            } else if (code < 2048) {
+                bytes.push(192+(code>>6), 128+(code&63));
+            } else if (code < 65536) {
+                bytes.push(224+(code>>12), 128+((code>>6)&63), 128+(code&63));
+            } else if (code < 2097152) {
+                bytes.push(240+(code>>18), 128+((code>>12)&63), 128+((code>>6)&63), 128+(code&63));
+            }
+        }
+        
+        return bytes;
+    }
+
+    function wordsToByteArray(words) {
+        var bytes = [], i;
+        for (i = 0; i < words.length * 32; i += 8) {
+            bytes.push((words[i >>> 5] >>> (24 - i % 32)) & 255);
+        }
+        return bytes;
+    }
+
+    function byteArrayToHex(byteArray) {
+        var hex = [], l = byteArray.length, i;
+        for (i = 0; i < l; i++) {
+            hex.push((byteArray[i] >>> 4).toString(16));
+            hex.push((byteArray[i] & 0xF).toString(16));
+        }
+        return hex.join('');
+    }
+
+    function byteArrayToString(byteArray) {
+        var string = '', l = byteArray.length, i;
+        for (i = 0; i < l; i++) {
+            string += String.fromCharCode(byteArray[i]);
+        }
+        return string;
+    }
+
+    function leftrotate(value, shift) {
+        return (value << shift) | (value >>> (32 - shift));
+    }
+
     function SHA1(message) {
         if (message !== undefined) {
             var m = message, crypto, digest;
@@ -815,62 +903,8 @@ exports.OAuth = (function (global) {
         return byteArrayToString(byteArray);
     }
 
-    function zeroPad(length) {
-        var arr = new Array(++length);
-        return arr.join(0).split('');
-    }
-
-    function stringToByteArray(str) {
-        var bytes = [], code;
-        
-        for(i = 0; i < str.length; i++) {
-            code = str.charCodeAt(i);
-            
-            if (code < 128) {
-            	bytes.push(code);
-            } else if (code < 2048) {
-            	bytes.push(192+(code>>6), 128+(code&63));
-            } else if (code < 65536) {
-            	bytes.push(224+(code>>12), 128+((code>>6)&63), 128+(code&63));
-            } else if (code < 2097152) {
-            	bytes.push(240+(code>>18), 128+((code>>12)&63), 128+((code>>6)&63), 128+(code&63));
-            }
-        }
-        
-        return bytes;
-    }
-
-    function wordsToByteArray(words) {
-        var bytes = [], i;
-        for (i = 0; i < words.length * 32; i += 8) {
-            bytes.push((words[i >>> 5] >>> (24 - i % 32)) & 255);
-        }
-        return bytes;
-    }
-
-    function byteArrayToHex(byteArray) {
-        var hex = [], l = byteArray.length, i;
-        for (i = 0; i < l; i++) {
-            hex.push((byteArray[i] >>> 4).toString(16));
-            hex.push((byteArray[i] & 0xF).toString(16));
-        }
-        return hex.join('');
-    }
-
-    function byteArrayToString(byteArray) {
-        var string = '', l = byteArray.length, i;
-        for (i = 0; i < l; i++) {
-            string += String.fromCharCode(byteArray[i]);
-        }
-        return string;
-    }
-
-    function leftrotate(value, shift) {
-        return (value << shift) | (value >>> (32 - shift));
-    }
     return OAuth;
 })(this);
-
 (function (global) {
     var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -902,7 +936,7 @@ exports.OAuth = (function (global) {
                 index[3] = 64;
             }
 
-            output += b64[index[0]] + b64[index[1]] + b64[index[2]] +b64[index[3]];
+            output += b64.charAt(index[0]) + b64.charAt(index[1]) + b64.charAt(index[2]) + b64.charAt(index[3]);
         }
 
         return output;

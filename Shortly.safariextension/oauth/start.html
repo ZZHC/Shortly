@@ -2,17 +2,20 @@
 <html>
     <head>
         <title>goo.gl OAuth</title>
-        <script src="jsOAuth-mod.js"></script>
+        <script src="jsOAuth-1.2.js"></script>
     </head>
     <body>
         <script>
           var options = {
               consumerKey: 'anonymous',
               consumerSecret: 'anonymous',
-              callback: safari.extension.baseURI + 'oauth/finish.html'
+              callbackUrl: safari.extension.baseURI + 'oauth/finish.html',
+              requestTokenUrl: 'https://www.google.com/accounts/OAuthGetRequestToken',
+              authorizationUrl: 'https://www.google.com/accounts/OAuthAuthorizeToken',
+              accessTokenUrl: 'https://www.google.com/accounts/OAuthGetAccessToken'
           };
           
-          var params = {
+          var paramsForGoogle = {
             'xoauth_displayname': 'Shortly Extension',
             'scope': 'https://www.googleapis.com/auth/urlshortener'
           };
@@ -26,15 +29,23 @@
 
           /* @@ Ask for Request Token @@ */
 
-          oauth.post('https://www.google.com/accounts/OAuthGetRequestToken', params, function (data) {
-              var token_secret = decodeURIComponent(data.text.match(/oauth_token_secret=([^\&]+)/)[1]);
+          oauth.request({
+            method: 'POST',
+            url: options.requestTokenUrl,
+            data: paramsForGoogle,
+            success: function(data) {
+              var requestToken = oauth.parseTokenRequest(data.text);
+              localStorage.setItem('googl_oauth_token_secret', requestToken.oauth_token_secret);
               
-              localStorage.setItem('googl_oauth_token_secret', token_secret);
-
               /* @@ Navigate to auth page @@ */
-
-              location.href = 'https://www.google.com/accounts/OAuthAuthorizeToken?oauth_token=' + data.text.match(/oauth_token=([^\&]+)/)[1];
+              
+              location.href = options.authorizationUrl + '?oauth_token=' + requestToken.oauth_token
+            },
+            failure: function(data) {
+              console.log(data)
+            }
           });
+
         </script>
     </body>
 </html>
