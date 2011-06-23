@@ -443,8 +443,7 @@ function startOAuthDanceWithGoogle() {
     safari.extension.secureSettings.removeItem('googl_oauth_token');
     safari.extension.secureSettings.removeItem('googl_oauth_token_secret');
     safari.extension.secureSettings.removeItem('googl_oauth_date');
-    
-    safari.extension.addContentScriptFromURL(safari.extension.baseURI + 'oauth/inject.js');
+
     safari.application.activeBrowserWindow.openTab().url = safari.extension.baseURI + 'oauth/start.html';
   }
 }
@@ -455,15 +454,13 @@ function saveOauthTokensToSettings(tokenMsg) {
   
     if (!tokenMsg) throw "Receive bad token message.";
     
-    if(tokenMsg.token !== null && tokenMsg.token_secret !== null) {
-      safari.extension.secureSettings.setItem('googl_oauth_token', tokenMsg.token);
-      safari.extension.secureSettings.setItem('googl_oauth_token_secret', tokenMsg.token_secret);
+    if(tokenMsg.oauth_token !== null && tokenMsg.oauth_token_secret !== null) {
+      safari.extension.secureSettings.setItem('googl_oauth_token', tokenMsg.oauth_token);
+      safari.extension.secureSettings.setItem('googl_oauth_token_secret', tokenMsg.oauth_token_secret);
       safari.extension.secureSettings.setItem('googl_oauth_date', (new Date()).getTime());
     } else {
       throw "Token infos missing in message.";
     }
-
-    safari.extension.removeContentScript(safari.extension.baseURI + 'oauth/inject.js');
   
   } catch(e) {
     console.log(e);

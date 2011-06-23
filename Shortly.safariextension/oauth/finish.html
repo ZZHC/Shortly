@@ -41,17 +41,11 @@
           oauthExchanger.fetchAccessToken(function(data) {
             var finalTokens = oauthExchanger.parseTokenRequest(decodeURIComponent(data.text));
             
-            /* @@ Create an event to inform injected script @@ */
+            /* @@ Send tokens to global page as message @@ */
             
-            var ocevt = document.createEvent('Event');
-            ocevt.initEvent('oauthComplete', false, true);
+            safari.self.tab.dispatchMessage('oauthComplete', finalTokens);
+            localStorage.clear();
 
-            localStorage.setItem('googl_oauth_token', finalTokens.oauth_token);
-            localStorage.setItem('googl_oauth_token_secret', finalTokens.oauth_token_secret);
-
-            /* @@ Tell injected script to save tokens @@ */
-
-            document.dispatchEvent(ocevt);
             
           }, function(data) {
             alert('OAuth Fail: Unable to exchange Access Token');
