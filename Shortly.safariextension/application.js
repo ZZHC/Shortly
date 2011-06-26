@@ -34,11 +34,6 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 /* Functions */
 
 function performCommand(event) {
-  
-  if (event.command === "startOauth") {
-    runOauthTest();
-  }
-  
   if (event.command === "shortenURL") {
     var onlineFlag = navigator.onLine;
     
@@ -470,10 +465,6 @@ function shortenWithTinyURL(url) {
 }
 
 /* OAuth experimental support */
-
-function runOauthTest() {
-  startOAuthDanceWithGoogle();
-}
 
 function startOAuthDanceWithGoogle() {
   var google_token_complete = true;
