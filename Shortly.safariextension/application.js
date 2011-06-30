@@ -44,6 +44,7 @@ function performCommand(event) {
     
     initializeShortening(event.target);
   }
+
 }
 
 function validateCommand(event) {
@@ -67,6 +68,14 @@ function settingsChanged(event) {
   }
   if (event.key === "googleAuth") {
     if(event.newValue) enableGoogleAuthShortening();
+  }
+  if (event.key === "clearOAuth") {
+    if (event.newValue) {
+      safari.extension.secureSettings.clear();
+      alert('Reset successfully.\n\nPlease reopen your preference window to reflect changes.');
+      safari.extension.settings.googleAuth = false;
+      safari.extension.settings.clearOAuth = false;
+    }
   }
 }
 

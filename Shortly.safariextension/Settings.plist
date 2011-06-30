@@ -49,6 +49,16 @@
 		<string>CheckBox</string>
 	</dict>
 	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>clearOAuth</string>
+		<key>Title</key>
+		<string>Reset stored login info</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
 		<key>Title</key>
 		<string>Using your own bit.ly account:</string>
 		<key>Type</key>
