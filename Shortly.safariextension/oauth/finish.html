@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>goo.gl OAuth Finish!</title>
+        <script src="jsOAuth-1.2.js"></script>
+    </head>
+    <body>
+      <h1>Congratulations!</h1>
+      <p>You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account. Please visit <a href="http://code.google.com/apis/urlshortener/">Google URL Shortener API</a> for more information.</p>
+      
+      <script>
+        var url = location.href;
+
+        /* @@ Restoring Token Secret @@ */
+        var oauth_token_secret = localStorage.getItem('googl_oauth_token_secret');
+        
+        if(oauth_token_secret == null) {
+          alert('OAuth Fail: lost token secret');
+        }
+        
+        /* @@ Setting up for exchanging Access Token @@ */
+        
+         var options = {
+            consumerKey: 'anonymous',
+            consumerSecret: 'anonymous',
+            accessTokenUrl: 'https://www.google.com/accounts/OAuthGetAccessToken'
+          };
+
+          var oauthExchanger = OAuth(options);
+
+          /* @@ Set tokens and verifier @@ */
+
+          var token = oauthExchanger.parseTokenRequest(decodeURIComponent(url.split('?')[1]));
+          oauth_token_secret = decodeURIComponent(oauth_token_secret);
+          
+          oauthExchanger.setAccessToken([token.oauth_token, oauth_token_secret]);
+          oauthExchanger.setVerifier(token.oauth_verifier);
+
+          /* @@ Ask to exchange Access Token @@ */
+          
+          oauthExchanger.fetchAccessToken(function(data) {
+            var finalTokens = oauthExchanger.parseTokenRequest(decodeURIComponent(data.text));
+            
+            /* @@ Send tokens to global page as message @@ */
+            
+            safari.self.tab.dispatchMessage('oauthComplete', finalTokens);
+            localStorage.clear();
+
+            
+          }, function(data) {
+            alert('OAuth Fail: Unable to exchange Access Token');
+            console.log(data);
+          });
+        
+      </script>
+    </body>
+</html>
+

@@ -24,6 +24,7 @@ if(typeof locale[runtimeSettings.langFlag] === 'undefined') {
 }
 
 toggleToolbarMode(safari.extension.settings.getItem("toolbarMode"));
+if(safari.extension.settings.googleAuth) confirmOauthLibAvailability();
 
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
@@ -33,7 +34,6 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 /* Functions */
 
 function performCommand(event) {
-  
   if (event.command === "shortenURL") {
     var onlineFlag = navigator.onLine;
     
@@ -65,6 +65,9 @@ function settingsChanged(event) {
   if (event.key === "toolbarMode") {
     toggleToolbarMode(event.newValue);
   }
+  if (event.key === "googleAuth") {
+    if(event.newValue) enableGoogleAuthShortening();
+  }
 }
 
 function toggleToolbarMode(flag) {
@@ -84,6 +87,11 @@ function toggleToolbarMode(flag) {
     safari.extension.removeContentScript(url.js);
     safari.extension.removeContentStyleSheet(url.css);
   }
+}
+
+function enableGoogleAuthShortening() {
+  confirmOauthLibAvailability();
+  startOAuthDanceWithGoogle();
 }
 
 function initializeShortening(sender) {
@@ -255,6 +263,9 @@ function respondToMessage(messageEvent) {
   if(messageEvent.name === "toolbarReady") {
     confirmedInjectedToolbarReady();
   }
+  if(messageEvent.name === "oauthComplete") {
+    saveOauthTokensToSettings(messageEvent.message);
+  }
 }
 
 function receiveFlickrShortlink(message) {
@@ -311,28 +322,64 @@ function shortenWithGoogle(url) {
 }
 
 function shortenWithGoogleShortenerAPI(url) {
-  var queryAPI = "https://www.googleapis.com/urlshortener/v1/url?key=" + apiKeyChain.google;
+  var queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
   
-  $.ajax({
-    url: queryAPI,
-    type: 'POST',
-    data: '{ longUrl: "' + url + '" }',
-    dataType: 'json',
-    contentType: 'application/json',
-    success: function(data, status, xmlHttp) {
-      if(data === null && xmlHttp.status === 0) {
-        generalAjaxErrorHandler(xmlHttp, 'offline', null);
-        return;
+  var googleResultHandler = function(data, status, xmlHttp) {
+    if(data === null && xmlHttp.status === 0) {
+      generalAjaxErrorHandler(xmlHttp, 'offline', null);
+      return;
+    }
+    try {
+      finalizeShortening(data['id'], null);
+    } catch(e) {
+      generalAjaxErrorHandler(xmlHttp, 'error', 'undefined');
+    }
+  };
+  
+  if (safari.extension.settings.googleAuth) {
+    var googl_tokens = {
+      token: safari.extension.secureSettings.getItem('googl_oauth_token'),
+      token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret'),
+    };
+    var options = {
+      consumerKey: 'anonymous',
+      consumerSecret: 'anonymous',
+      accessTokenKey: googl_tokens.token,
+      accessTokenSecret: googl_tokens.token_secret
+    };
+    
+    var oauth = new OAuth(options);
+    
+    oauth.request({
+      method: 'POST',
+      url: queryAPI,
+      data: '{ longUrl: "' + url + '" }',
+      headers: { 'Content-Type': 'application/json' },
+      success: function(data) {
+        googleResultHandler(JSON.parse(data.text), 'sucess', null);
+      },
+      failure: function(data) {
+        var errorMsg = JSON.parse(data.text).error;
+        if(errorMsg.code == 401) {
+          var msg = "Bad authentication, please reset your login info then try again.";
+          generalAjaxErrorHandler(null, errorMsg.code.toString(), msg);
+        } else {
+          generalAjaxErrorHandler(null, errorMsg.codetoString(), errorMsg.message);
+        }
       }
-      try {
-        finalizeShortening(data['id'], null);
-      } catch(e) {
-        generalAjaxErrorHandler(xmlHttp, 'error', 'undefined');
-      }
-    },
-    error: generalAjaxErrorHandler
-  });
-
+    });
+  
+  } else {
+    $.ajax({
+      url: queryAPI,
+      type: 'POST',
+      data: '{ longUrl: "' + url + '" }',
+      dataType: 'json',
+      contentType: 'application/json',
+      success: googleResultHandler,
+      error: generalAjaxErrorHandler
+    });
+  }
 }
 
 /* Bit.ly Shorten API */
@@ -415,4 +462,61 @@ function shortenWithTinyURL(url) {
   
   proceedJSONWithApiAndIndex(queryAPI, "tinyurl");
 
+}
+
+/* OAuth experimental support */
+
+function startOAuthDanceWithGoogle() {
+  var google_token_complete = true;
+
+  /* Check OAuth tokens */
+  var googl_tokens = {
+    token: safari.extension.secureSettings.getItem('googl_oauth_token'),
+    token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret'),
+    date: safari.extension.secureSettings.getItem('googl_oauth_date')
+  };
+
+  for (var i in googl_tokens) {
+    if (googl_tokens[i] === null) google_token_complete = false;
+  }
+
+  if (google_token_complete == true) {
+    alert((new Date(oauth.date)).toLocaleDateString());
+  } else {
+    safari.extension.secureSettings.removeItem('googl_oauth_token');
+    safari.extension.secureSettings.removeItem('googl_oauth_token_secret');
+    safari.extension.secureSettings.removeItem('googl_oauth_date');
+
+    safari.application.openBrowserWindow().activeTab.url = safari.extension.baseURI + 'oauth/start.html';
+  }
+}
+
+
+function saveOauthTokensToSettings(tokenMsg) {
+  try {
+  
+    if (!tokenMsg) throw "Receive bad token message.";
+    
+    if(tokenMsg.oauth_token !== null && tokenMsg.oauth_token_secret !== null) {
+      safari.extension.secureSettings.setItem('googl_oauth_token', tokenMsg.oauth_token);
+      safari.extension.secureSettings.setItem('googl_oauth_token_secret', tokenMsg.oauth_token_secret);
+      safari.extension.secureSettings.setItem('googl_oauth_date', (new Date()).getTime());
+    } else {
+      throw "Token infos missing in message.";
+    }
+  
+  } catch(e) {
+    console.log(e);
+    alert('OAuth failed. Please try again.');
+  }
+}
+
+function confirmOauthLibAvailability() {
+  if (typeof OAuth === 'undefined') {
+    $(document).ready(function() {
+      var oauthJsLibElement = document.createElement('script');
+        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
+        document.querySelector('body').appendChild(oauthJsLibElement);
+    });
+  }
 }
