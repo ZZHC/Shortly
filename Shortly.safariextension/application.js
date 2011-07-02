@@ -31,18 +31,14 @@ Shortly.prototype = {
   /* Methods */
   checkNativeShortlinkAvailability: function() {},
   receiveNativeShortlink: function() {},
-  checkNetworkAvailability: function() {
-    /* TODO: return false if navigator.onLine == false;
-      send AJAX test if navigator.onLine == true
-    */
-  },
+  getShortlinkToCurrentPage: function() {},
   getShortlinkToAddress: function(longUrl) {},
   getShortlinkWithGoogle: function(longUrl) {},
   getShortlinkWithBitly: function(longUrl) {},
   getShortlinkWithTinyUrl: function(longUrl) {},
   getShortlinkWithCustomEndpoint: function(longUrl) {},
   foundShortlink: function() {},
-  reportGeneralErrorMessage: function() {},
+  reportErrorMessage: function(errorType, message) {},
   displayShortlink: function() {},
   displayMessageWithToolbar: function() {},
   displayMessageWithAlert: function() {},
@@ -62,7 +58,20 @@ Shortly.runtimeLocale = 'default';
 
 /* Public utility methods */
 Shortly.confirmOAuthLibAvailability = function() {};
-Shortly.toogleToolbarMode = function() {};
+Shortly.checkNetworkAvailability = function() {
+  if (navigator.onLine == false) {
+    return false;
+  } else {
+    var xmlHttp = $.ajax({
+      url: 'http://www.google.com/blank.html',
+      dataType: 'html',
+      async: false
+    })
+    
+    return (xmlHttp.statusText === 'error') ? false : true;
+  }
+};
+Shortly.toogleToolbarMode = function(flag) {};
 Shortly.localeLib = shortlyLocaleLib;
 Shortly.getLocaleString = function(query) {
   var userLocale = navigator.language.toLowerCase(),
@@ -79,10 +88,10 @@ Shortly.getLocaleString = function(query) {
   }
 };
 
-/* Initialize */
 
-toggleToolbarMode(safari.extension.settings.getItem("toolbarMode"));
-if(safari.extension.settings.googleAuth) confirmOauthLibAvailability();
+/* Initialize */
+Shortly.toogleToolbarMode(safari.extension.settings.toolbarMode);
+if(safari.extension.settings.googleAuth) Shortly.confirmOAuthLibAvailability();
 
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
@@ -93,14 +102,16 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 
 function performCommand(event) {
   if (event.command === "shortenURL") {
-    var onlineFlag = navigator.onLine;
-    
-    if(!onlineFlag) {
-      finalizeShortening(null, locale[lang].errorMessage.offline);
-      return;
+    if (!navigator.onLine) {
+      reportErrorMessage('offline');
+      return false;
     }
     
-    initializeShortening(event.target);
+    if (!(event.target.shortlyInstance instanceof Shortly)) {
+      event.target.shortlyInstance = new Shortly(event.target);
+    }
+    
+    event.target.shortlyInstance.getShortlinkToCurrentPage();
   }
 }
 
