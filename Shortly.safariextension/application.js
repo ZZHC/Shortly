@@ -1,27 +1,77 @@
-var runtimeSettings = {
-  currentToolbarItem: null,
-  currentNativeShortlink: null,
-  injectedToolbarReady: false,
-  langFlag: navigator.language.toLowerCase()
+/*
+ * Shortly Safari Extension
+ * Version 2.0
+ * By Zhusee, ZZHC Studio
+ *
+ * Visit: http://zzhc.org/shortly
+ * GitHub: http://github.com/ZZHC/Shortly
+ *
+ */
+
+function Shortly(triggeringToolbarItem) {
+  var shortly = this;
+  
+  if (typeof triggeringToolbarItem === 'object' && triggeringToolbarItem.browserWindow !== undefined) {
+    shortly.toolbarItem = triggeringToolbarItem;
+    shortly.activeTab = triggeringToolbarItem.browserWindow.activeTab;
+  }
+  
+  shortly.flagToolbarReady = false;
+  
+  return shortly;
 }
 
-/*
+Shortly.prototype = {
+  constructor: Shortly,
+  
+  /* Runtime variables */
+  flagToolbarReady: false,
+  oauthTokens: undefined,
+  
+  /* Methods */
+  checkNativeShortlinkAvailability: function() {},
+  receiveNativeShortlink: function() {},
+  checkNetworkAvailability: function() {
+    /* TODO: return false if navigator.onLine == false;
+      send AJAX test if navigator.onLine == true
+    */
+  },
+  getShortlinkToAddress: function(longUrl) {},
+  getShortlinkWithGoogle: function(longUrl) {},
+  getShortlinkWithBitly: function(longUrl) {},
+  getShortlinkWithTinyUrl: function(longUrl) {},
+  getShortlinkWithCustomEndpoint: function(longUrl) {},
+  foundShortlink: function() {},
+  reportGeneralErrorMessage: function() {},
+  displayShortlink: function() {},
+  displayMessageWithToolbar: function() {},
+  displayMessageWithAlert: function() {},
+  displayMessageWithPopover: function() {},
+  
+  /* OAuth methods */
+  getStoredOAuthTokensForSerive: function(service) {},
+  getShortlinkWithGoogleAuth: function(longUrl) {},
+  
+  /* Manipulating Safari UI */
+  toolbarItem: undefined,
+  activeTab: undefined,
+};
 
-Shortly Safari Extension
-Version 1.1.5
-By Zhusee, ZZHC Studio
+/* Global variables */
+Shortly.runtimeLocale = 'default';
 
-Visit: http://zzhc.org/shortly
-
-Youtube Regular Expression: http://rubular.com/r/aL3O5wo734
-
-*/
+/* Public utility methods */
+Shortly.confirmOAuthLibAvailability = function() {};
+Shortly.toogleToolbarMode = function() {};
+Shortly.setLocale = function() {
+  var userLocale = navigator.language.toLowerCase();
+  
+  if (Shortly.locale[userLocale] != undefined) {
+    Shortly.runtimeLocale = userLocale;
+  }
+}
 
 /* Initialize */
-
-if(typeof locale[runtimeSettings.langFlag] === 'undefined') {
-  runtimeSettings.langFlag = 'default';
-}
 
 toggleToolbarMode(safari.extension.settings.getItem("toolbarMode"));
 if(safari.extension.settings.googleAuth) confirmOauthLibAvailability();
