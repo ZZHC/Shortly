@@ -63,13 +63,21 @@ Shortly.runtimeLocale = 'default';
 /* Public utility methods */
 Shortly.confirmOAuthLibAvailability = function() {};
 Shortly.toogleToolbarMode = function() {};
-Shortly.setLocale = function() {
-  var userLocale = navigator.language.toLowerCase();
-  
-  if (Shortly.locale[userLocale] != undefined) {
-    Shortly.runtimeLocale = userLocale;
+Shortly.localeLib = shortlyLocaleLib;
+Shortly.getLocaleString = function(query) {
+  var userLocale = navigator.language.toLowerCase(),
+      queryArray = query.split('.'),
+      pointer = Shortly.localeLib;
+  try {
+    for (var i in queryArray) {
+      pointer = pointer[queryArray[i]];
+    }
+    return (typeof pointer[userLocale] === 'string') ? pointer[userLocale] : pointer['default']
+  } catch(e) {
+    console.log(e);
+    return false;
   }
-}
+};
 
 /* Initialize */
 
@@ -98,16 +106,11 @@ function performCommand(event) {
 
 function validateCommand(event) {
   if (event.command === "shortenURL") {
-    var lang = runtimeSettings.langFlag;
     
-    event.target.label = locale[lang].btnShorten.label;
-    event.target.toolTip = locale[lang].btnShorten.toolTip;
+    event.target.label = Shortly.getLocaleString('btnShorten.label');
+    event.target.toolTip = Shortly.getLocaleString('btnShorten.toolTip');
     event.target.disabled = !event.target.browserWindow.activeTab.url;
-    /*
-    if(runtimeSettings.currentToolbarItem) {
-      event.target.disabled = true;
-    }
-    */
+
   }
 }
 
