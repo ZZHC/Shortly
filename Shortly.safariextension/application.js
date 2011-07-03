@@ -45,6 +45,10 @@ Shortly.prototype = {
       shortly.getShortlinkToAddress(longUrl, 'skip');
     }
   },
+  
+  confirmedInjectedToolbarReady: function() {
+    this.flagToolbarReady = true;
+  },
 
   getShortlinkToCurrentPage: function() {
     var shortly = this, longUrl = shortly.activeTab.url;
@@ -52,10 +56,10 @@ Shortly.prototype = {
     shortly.getShortlinkToAddress(longUrl);
   },
 
-  getShortlinkToAddress: function(longUrl, skipNative) {
-    var shortly = this,
-        service = safari.extension.settings.shortenService;
-        
+  getShortlinkToAddress: function(longUrl, skipNative, service) {
+    var shortly = this;
+    
+    service = service || safari.extension.settings.shortenService;
     skipNative = (skipNative === 'skip') || safari.extension.settings.ignoreNative || false;
     
     if (!skipNative) {
@@ -159,14 +163,80 @@ Shortly.prototype = {
   getShortlinkWithBitly: function(longUrl) {},
   getShortlinkWithTinyUrl: function(longUrl) {},
   getShortlinkWithCustomEndpoint: function(longUrl) {},
-  foundShortlink: function(shortlink) { console.log(shortlink) },
-  reportErrorMessage: function(errorType, message) {
-    console.log(errorType, message);
+  foundShortlink: function(shortlink) {
+    var shortly = this;
+    
+    shortly.displayMessage(shortlink, 'shortlink');
+    shortly.markActiveTabAsWorkingState('Ready');
   },
-  displayShortlink: function() {},
-  displayMessageWithToolbar: function() {},
-  displayMessageWithAlert: function() {},
-  displayMessageWithPopover: function() {},
+  reportErrorMessage: function(errorType, message) {
+    var shortly = this;
+    
+    console.log(errorType, message);
+    shortly.markActiveTabAsWorkingState('Failed');
+  },
+
+  displayMessage: function(message, type) {
+    var shortly = this,
+        displayMethod = (safari.extension.settings.toolbarMode) ? 'toolbar' : 'alert',
+        toolbarReady = shortly.flagToolbarReady;
+    type = type || 'text';
+    
+    if (safari.extension.settings.toolbarMode) {
+      var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
+      
+      setTimeout(function() {
+        if(toolbarReady) {
+          shortly.displayMessageWithToolbar(message, type);
+        } else {
+          shortly.displayMessageWithAlert(message, type);
+        }
+      }, waitTimeForToolbar);
+      
+      /* Reset shortly.flagToolbarReady to false for next request */
+      shortly.flagToolbarReady = false;
+    } else {
+      shortly.displayMessageWithAlert(message, type);
+    }
+    
+
+  },
+
+  displayMessageWithToolbar: function(message, type) {
+    var shortly = this, messageToToolbar = {};
+    type = type || 'text';
+    
+    messageToToolbar = {
+      message: message,
+      type: type
+    }
+    
+    shortly.activeTab.page.dispatchMessage("displayToolbar", messageToToolbar);
+  },
+
+  displayMessageWithAlert: function(message, type) {
+    var shortly = this; type = type || 'text';
+    
+    switch (type) {
+      case 'shortlink':
+        if(navigator.platform.match(/Win/)) {
+          prompt(shortly.activeTab.title, message);
+        } else {
+          alert(message + '\n\n' + shortly.activeTab.title);
+        }
+        break;
+      case 'error':
+        message = 'Error: ' + message;
+      case 'text':
+      default:
+        alert(message);
+        break;
+    }
+  },
+
+  displayMessageWithPopover: function(message, type) {
+    /* Not yet implemented. */
+  },
   
   /* OAuth methods */
   getStoredOAuthTokensForSerive: function(service) {},
@@ -290,6 +360,16 @@ function performCommand(event) {
     
     shortly.markActiveTabAsWorkingState('Shortening');
     shortly.getShortlinkToCurrentPage();
+    
+    /* Ask if injected toolbar ready.
+     * When receive confrimation, confirmedInjectedToolbarReady() will mark
+     * instance.flagToolbarReady as true.
+     *
+     * flagToolbarReady should be reset to false again after display.
+     */
+    if (safari.extension.settings.toolbarMode) {
+      shortly.activeTab.page.dispatchMessage("reportToolbarReady");
+    }
   }
 }
 
@@ -335,7 +415,7 @@ function validateCommand(event) {
 
 function settingsChanged(event) {
   if (event.key === "toolbarMode") {
-    toggleToolbarMode(event.newValue);
+    Shortly.toggleToolbarMode(event.newValue);
     if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
   }
   if (event.key === "googleAuth") {
@@ -350,427 +430,9 @@ function respondToMessage(messageEvent) {
     messageEvent.target.shortlyInstance.receiveNativeRelShortlink(messageEvent.message);
   }
   if(messageEvent.name === "toolbarReady") {
-    confirmedInjectedToolbarReady();
+    messageEvent.target.shortlyInstance.confirmedInjectedToolbarReady();
   }
   if(messageEvent.name === "oauthComplete") {
     saveOauthTokensToSettings(messageEvent.message);
-  }
-}
-
-
-function enableGoogleAuthShortening() {
-  confirmOauthLibAvailability();
-  startOAuthDanceWithGoogle();
-}
-
-function initializeShortening(sender) {
-  var url = sender.browserWindow.activeTab.url;
-  var toolbarMode = safari.extension.settings.getItem("toolbarMode");
-  var urlFilter = {
-    youtube: /^http\:\/\/\w*\.*youtube\.com\/watch\?.*v\=(.{0,15})(?:\&|$)/,
-    flickr: /^http\:\/\/\w*\.*flickr\.com\/photos\/\w*\@?\w*\/\d*\/?$/
-  };
-  var urlFlag = {
-    youtube: url.match(urlFilter.youtube),
-    flickr: url.match(urlFilter.flickr)
-  };
-  
-  sender.badge = 1;
-  sender.disabled = true;
-  runtimeSettings.currentToolbarItem = sender;
-  
-  if(urlFlag.flickr) {
-    getFlickrShortLink(sender.browserWindow.activeTab);
-  } else {
-    checkNativeShortlinkAvailability(sender);
-  }
-  
-  if(toolbarMode) checkInjectedToolbarReady();
-  
-  if(urlFlag.youtube) {
-    shortenYoutube(urlFlag.youtube[1]);
-  } else {
-    shortenWithExternalService(sender);
-  }
-};
-
-function shortenWithExternalService(sender) {
-  var url = sender.browserWindow.activeTab.url;
-  var defaultService = "goo.gl";
-  var serviceFlag = safari.extension.settings.getItem("shortenService") || defaultService;
-  
-  if(serviceFlag === "goo.gl") { shortenWithGoogleShortenerAPI(url); }
-  if(serviceFlag === "bit.ly") {
-    var bitlyUsername = safari.extension.secureSettings.getItem("bitlyUsername") || "";
-    var bitlyAPIKey = safari.extension.secureSettings.getItem("bitlyAPIKey") || "";
-    
-    if(bitlyUsername === "" || bitlyAPIKey.length === "") {
-      shortenWithBitly(url);
-    } else {
-      shortenWithBitlyWithAPI(url, bitlyUsername, bitlyAPIKey);
-    }
-  }
-  if(serviceFlag === "tinyurl") { shortenWithTinyURL(url); }
-}
-
-
-function finalizeShortening(shortUrl, errorMsg) {
-  var activeTab = runtimeSettings.currentToolbarItem.browserWindow.activeTab;
-  var toolbarReady = runtimeSettings.injectedToolbarReady;
-  var toolbarMode = safari.extension.settings.getItem("toolbarMode");
-  var finalUrl = '';
-  var waitMessageTime = 0;
-  
-  var displayViaToolbar = function() {
-    var message = {
-      url: activeTab.url,
-      shortUrl: finalUrl,
-      error: errorMsg
-    };
-    
-    if(finalUrl !== null) { message.error = null; }
-    
-    activeTab.page.dispatchMessage("displayToolbar", message);
-  };
-  
-  var displayViaAlert = function() {
-    if(errorMsg && finalUrl === null) {
-      alert(errorMsg);
-    } else {
-     if(navigator.platform.match(/Win/)) {
-        prompt(activeTab.title, (finalUrl || errorMsg));
-      } else {
-        alert(activeTab.title + '\n' + (finalUrl || errorMsg));
-      }
-    }
-  };
-  
-  if((runtimeSettings.currentNativeShortlink === null) || !toolbarReady) {
-    waitMessageTime = 500;
-  }
-  
-  setTimeout(function() {
-    if(runtimeSettings.currentNativeShortlink !== null) {
-      finalUrl = runtimeSettings.currentNativeShortlink;
-    } else {
-      finalUrl = shortUrl;
-    }
-    toolbarReady = runtimeSettings.injectedToolbarReady;
-    
-    if(toolbarMode && toolbarReady) {
-      displayViaToolbar();
-    } else {
-      displayViaAlert();
-    }
-    
-    runtimeSettings.currentToolbarItem.badge = 0;
-    runtimeSettings.currentToolbarItem.disabled = false;
-    
-    /* Reset runtime settings */
-    runtimeSettings.currentToolbarItem = null;
-    runtimeSettings.currentNativeShortlink = null;
-    runtimeSettings.injectedToolbarReady = false;
-  }, waitMessageTime);
-}
-
-function proceedJSONWithApiAndIndex(queryAPI, targetIndex, method) {
-  var lang = runtimeSettings.langFlag;
-  method = method || 'get';
-
-  $.ajax({
-    url: queryAPI,
-    type: method,
-    dataType: 'json',
-    success: function(data, status, xmlHttp) {
-      if(data === null && xmlHttp.status === 0) {
-        generalAjaxErrorHandler(xmlHttp, 'offline', null);
-        return;
-      }
-      try {
-        finalizeShortening(data[targetIndex], null);
-      } catch(e) {
-        generalAjaxErrorHandler(xmlHttp, 'error', 'undefined');
-      }
-    },
-    error: generalAjaxErrorHandler
-  });
-};
-
-function generalAjaxErrorHandler(xmlHttp, status, errorMsg) {
-  var lang = runtimeSettings.langFlag;
-  
-  if(typeof errorMsg === 'undefined') {
-    var errorJson = {};
-    
-    try {
-      errorJson = jQuery.parseJSON(xmlHttp.responseText);
-    } catch(e) {
-      var errorJson = {};
-    }
-    
-    errorMsg = ((typeof errorJson.error_message) ? errorJson.error_message : null) || xmlHttp.statusText || status;
-  }
-  
-  if(status.match(/parseerror/i)) {
-    finalizeShortening(null, locale[lang].errorMessage.invalidJSON);
-  } else if(status.match(/offline/i)) {
-    finalizeShortening(null, locale[lang].errorMessage.offline);
-  } else {
-    finalizeShortening(null, locale[lang].errorMessage.generalError + errorMsg);
-  }
-}
-
-
-
-function receiveFlickrShortlink(message) {
-  if(message) {
-    runtimeSettings.currentNativeShortlink = message;
-  } else {
-    var currentToolbarItem = runtimeSettings.currentToolbarItem;
-    checkNativeShortlinkAvailability(currentToolbarItem);
-  }
-}
-
-function receiveNativeShortlinkAvailability(message) {
-  if(message) {
-    runtimeSettings.currentNativeShortlink = message;
-  } /* else {
-    var currentToolbarItem = runtimeSettings.currentToolbarItem;
-    shortenWithExternalService(currentToolbarItem);
-  } */
-}
-
-function checkInjectedToolbarReady() {
-  var activeTab = runtimeSettings.currentToolbarItem.browserWindow.activeTab;
-  var message = { url: activeTab.url }
-  
-  activeTab.page.dispatchMessage("checkToolbarReady", message);
-}
-
-function confirmedInjectedToolbarReady() {
-  runtimeSettings.injectedToolbarReady = true;
-}
-
-/* Get native shortlinks */
-
-function shortenYoutube(video) {
-  finalizeShortening('http://youtu.be/' + video, null);
-}
-
-function getFlickrShortLink(activeTab) {
-  activeTab.page.dispatchMessage("getFlickr", activeTab.url);
-}
-
-function checkNativeShortlinkAvailability(currentToolbarItem) {
-  var activeTab = currentToolbarItem.browserWindow.activeTab;
-  activeTab.page.dispatchMessage("findRelLink", activeTab.url);
-}
-
-
-/* goo.gl Shorten API */
-
-function shortenWithGoogle(url) {
-  var queryAPI = "http://ggl-shortener.appspot.com/?url=" + encodeURIComponent(url);
-  
-  proceedJSONWithApiAndIndex(queryAPI, "short_url");
-}
-
-function shortenWithGoogleShortenerAPI(url) {
-  var queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
-  
-  var googleResultHandler = function(data, status, xmlHttp) {
-    if(data === null && xmlHttp.status === 0) {
-      generalAjaxErrorHandler(xmlHttp, 'offline', null);
-      return;
-    }
-    try {
-      finalizeShortening(data['id'], null);
-    } catch(e) {
-      generalAjaxErrorHandler(xmlHttp, 'error', 'undefined');
-    }
-  };
-  
-  if (safari.extension.settings.googleAuth) {
-    var googl_tokens = {
-      token: safari.extension.secureSettings.getItem('googl_oauth_token'),
-      token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret'),
-    };
-    var options = {
-      consumerKey: 'anonymous',
-      consumerSecret: 'anonymous',
-      accessTokenKey: googl_tokens.token,
-      accessTokenSecret: googl_tokens.token_secret
-    };
-    
-    var oauth = new OAuth(options);
-    
-    oauth.request({
-      method: 'POST',
-      url: queryAPI,
-      data: '{ longUrl: "' + url + '" }',
-      headers: { 'Content-Type': 'application/json' },
-      success: function(data) {
-        googleResultHandler(JSON.parse(data.text), 'sucess', null);
-      },
-      failure: function(data) {
-        var errorMsg = JSON.parse(data.text).error;
-        if(errorMsg.code == 401) {
-          var msg = "Bad authentication, please reset your login info then try again.";
-          generalAjaxErrorHandler(null, errorMsg.code.toString(), msg);
-        } else {
-          generalAjaxErrorHandler(null, errorMsg.codetoString(), errorMsg.message);
-        }
-      }
-    });
-  
-  } else {
-    $.ajax({
-      url: queryAPI,
-      type: 'POST',
-      data: '{ longUrl: "' + url + '" }',
-      dataType: 'json',
-      contentType: 'application/json',
-      success: googleResultHandler,
-      error: generalAjaxErrorHandler
-    });
-  }
-}
-
-/* Bit.ly Shorten API */
-
-function shortenWithBitly(url) {
-  var defaultUser = "zzhc";
-  var defaultAPIKey = apiKeyChain.bitly;
-  
-  shortenWithBitlyWithAPI(url, defaultUser, defaultAPIKey);
-}
-
-function shortenWithBitlyWithAPI(url, username, APIKey) {
-  var lang = runtimeSettings.langFlag;
-  var bitlyAPI = "http://bit.ly/javascript-api.js?version=latest&login=" + username + "&apiKey=" + APIKey;
-  
-  /* I know this is ugly, but it's the only way I could think of to solve the Safari navigator.onLine bug. */
-  
-  $.ajax({
-    url: "http://goo.gl",
-    dataType: "html",
-    cache: false,
-    success: function(data, status, xmlHttp) {
-      if(data === "" && xmlHttp.status === 0) {
-        generalAjaxErrorHandler(xmlHttp, 'offline', null);
-        return;
-      }
-      try {
-        doTheShortenThing();
-      } catch(e) {
-        generalAjaxErrorHandler(xmlHttp, 'error', 'undefined');
-      }
-    },
-    error: generalAjaxErrorHandler
-  });
-  
-  var doBitlyAPI = function(longUrl) {
-
-    BitlyCB.shortenResponse = function(data) {
-      var s = '';
-      var first_result;
-      // Results are keyed by longUrl, so we need to grab the first one.
-      try {
-        for (var r in data.results) {
-          first_result = data.results[r]; break;
-        }
-        for (var key in first_result) {
-          s += key + ":" + first_result[key].toString() + "\n";
-        }
-      
-        finalizeShortening(first_result.shortUrl, null);
-      } catch(e) {
-        if(data.statusCode === "INVALID_APIKEY") {
-          generalAjaxErrorHandler(null, 'authFail', 'bit.ly auth fail. Please check you have your API key (not password) entered, restart Safari and try again.');
-        } else if(data.statusCode === "MISSING_ARG_APIKEY" || data.statusCode === "INVALID_LOGIN") {
-          generalAjaxErrorHandler(null, 'authFail', 'bit.ly auth fail. Please check your login information, restart Safari and try again.');
-        } else if(data.statusCode !== "OK") {
-          generalAjaxErrorHandler(null, 'error', 'bit.ly error: ' + data.statusCode);
-        }
-      }
-    }
-    
-    BitlyClient.shorten(url, 'BitlyCB.shortenResponse');
-  };
-  
-  var doTheShortenThing = function() {
-  
-    if(typeof BitlyCB === "undefined" || typeof BitlyClient === "undefined") {
-      $.getScript(bitlyAPI, function() { doBitlyAPI(url); });
-    } else {
-      doBitlyAPI(url);
-    }
-    
-  };
-}
-
-/* TinyURL API */
-
-function shortenWithTinyURL(url) {
-  var queryAPI = "http://json-tinyurl.appspot.com/?url=" + encodeURIComponent(url);
-  
-  proceedJSONWithApiAndIndex(queryAPI, "tinyurl");
-
-}
-
-/* OAuth experimental support */
-
-function startOAuthDanceWithGoogle() {
-  var google_token_complete = true;
-
-  /* Check OAuth tokens */
-  var googl_tokens = {
-    token: safari.extension.secureSettings.getItem('googl_oauth_token'),
-    token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret'),
-    date: safari.extension.secureSettings.getItem('googl_oauth_date')
-  };
-
-  for (var i in googl_tokens) {
-    if (googl_tokens[i] === null) google_token_complete = false;
-  }
-
-  if (google_token_complete == true) {
-    alert((new Date(oauth.date)).toLocaleDateString());
-  } else {
-    safari.extension.secureSettings.removeItem('googl_oauth_token');
-    safari.extension.secureSettings.removeItem('googl_oauth_token_secret');
-    safari.extension.secureSettings.removeItem('googl_oauth_date');
-
-    safari.application.openBrowserWindow().activeTab.url = safari.extension.baseURI + 'oauth/start.html';
-  }
-}
-
-
-function saveOauthTokensToSettings(tokenMsg) {
-  try {
-  
-    if (!tokenMsg) throw "Receive bad token message.";
-    
-    if(tokenMsg.oauth_token !== null && tokenMsg.oauth_token_secret !== null) {
-      safari.extension.secureSettings.setItem('googl_oauth_token', tokenMsg.oauth_token);
-      safari.extension.secureSettings.setItem('googl_oauth_token_secret', tokenMsg.oauth_token_secret);
-      safari.extension.secureSettings.setItem('googl_oauth_date', (new Date()).getTime());
-    } else {
-      throw "Token infos missing in message.";
-    }
-  
-  } catch(e) {
-    console.log(e);
-    alert('OAuth failed. Please try again.');
-  }
-}
-
-function confirmOauthLibAvailability() {
-  if (typeof OAuth === 'undefined') {
-    $(document).ready(function() {
-      var oauthJsLibElement = document.createElement('script');
-        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
-        document.querySelector('body').appendChild(oauthJsLibElement);
-    });
   }
 }
