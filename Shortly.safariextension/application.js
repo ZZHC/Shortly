@@ -62,13 +62,107 @@ Shortly.prototype = {
       shortly.checkNativeShortlinkAvailability();
       return;
     }
+
+    switch (service) {
+      case 'bit.ly':
+        shortly.getShortlinkWithBitly(longUrl);
+        break;
+      case 'tinyurl':
+        shortly.getShortlinkWithTinyURL(longUrl);
+        break;
+      case 'endpoint':
+        shortly.getShortlinkWithCustomEndpoint(longUrl);
+        break;
+      case 'goo.gl':
+      default:
+        shortly.getShortlinkWithGoogle(longUrl);
+        break;
+    }
+
   },
-  getShortlinkWithGoogle: function(longUrl) {},
+  getShortlinkWithGoogle: function(longUrl) {
+    var shortly = this,
+        queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
+        
+    /* Private methods for shortening */
+    function successHandler(data, textStatus, jqXHR) {
+      if (data.id) {
+          shortly.foundShortlink(data.id)
+        } else {
+          shortly.reportErrorMessage('unknown', 'Expected shortlink not exists in Google response');
+        }
+    }
+    
+    function sendNormalShortenRequest(url) {
+      $.ajax({ url: queryAPI, type: 'POST', dataType: 'json',
+        data: '{ longUrl: "' + url + '" }',
+        contentType: 'application/json',
+        success: successHandler,
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (jqXHR.responseText === '' && textStatus == 'error') {
+            shortly.reportErrorMessage('offline');
+          } else {
+            var response = JSON.parse(jqXHR.responseText).error;
+            
+            shortly.reportErrorMessage(response.errors[0].reason, response.message);
+          }
+        }
+      });
+    };
+    
+    function sendOAuthShortenRequest(url) {
+      var googl_tokens = {
+        token: safari.extension.secureSettings.getItem('googl_oauth_token'),
+        token_secret: safari.extension.secureSettings.getItem('googl_oauth_token_secret'),
+      };
+      var options = {
+        consumerKey: 'anonymous',
+        consumerSecret: 'anonymous',
+        accessTokenKey: googl_tokens.token,
+        accessTokenSecret: googl_tokens.token_secret
+      };
+      
+      var oauth = new OAuth(options);
+      
+      oauth.request({
+        method: 'POST',
+        url: queryAPI,
+        data: '{ longUrl: "' + url + '" }',
+        headers: { 'Content-Type': 'application/json' },
+        success: function(data) {
+          if (data.text === '' && !Shortly.isNetworkAvailable()) {
+            shortly.reportErrorMessage('offline');
+          } else {
+            successHandler(JSON.parse(data.text), 'success', null);
+          }
+        },
+        failure: function(data) {
+          var errorMsg = JSON.parse(data.text).error;
+          
+          if(errorMsg.code == 401) {
+            shortly.reportErrorMessage('authFail', errorMsg.message);
+          } else {
+            shortly.reportErrorMessage(errorMsg.errors[0].reason, errorMsg.errors.message);
+          }
+        }
+      });
+    }
+    
+    /* Calling the shortening code */
+    if (safari.extension.settings.googleAuth) {
+      sendOAuthShortenRequest(longUrl);
+    } else {
+      sendNormalShortenRequest(longUrl);
+    }
+
+  },
   getShortlinkWithBitly: function(longUrl) {},
   getShortlinkWithTinyUrl: function(longUrl) {},
   getShortlinkWithCustomEndpoint: function(longUrl) {},
-  foundShortlink: function() {},
-  reportErrorMessage: function(errorType, message) {},
+  foundShortlink: function(shortlink) { console.log(shortlink) },
+  reportErrorMessage: function(errorType, message) {
+    console.log(errorType, message);
+  },
   displayShortlink: function() {},
   displayMessageWithToolbar: function() {},
   displayMessageWithAlert: function() {},
@@ -97,8 +191,16 @@ Shortly.localeLib = shortlyLocaleLib;
 Shortly.knownBitlyNativeList = {};
 
 /* Public utility methods */
-Shortly.confirmOAuthLibAvailability = function() {};
-Shortly.checkNetworkAvailability = function() {
+Shortly.confirmOAuthLibAvailability = function() {
+  if (typeof OAuth === 'undefined') {
+    $(document).ready(function() {
+      var oauthJsLibElement = document.createElement('script');
+        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
+        document.querySelector('body').appendChild(oauthJsLibElement);
+    });
+  }
+};
+Shortly.isNetworkAvailable = function() {
   if (navigator.onLine == false) {
     return false;
   } else {
@@ -208,7 +310,7 @@ function validateCommand(event) {
             
         if ((currentTime - sinceTime) > 60000) {
           activeTab.shortlyInstance.reportErrorMessage('timeout');
-          state = 'Failed';
+          activeTab.shortlyWorkingState = state = 'Failed';
         }
       }
       
