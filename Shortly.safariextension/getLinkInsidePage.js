@@ -1,31 +1,27 @@
-function getFlickrShortLink() {
-  if(document.querySelector('link[rev=canonical]')) {
-    var flickrShortlink = document.querySelector('link[rev=canonical]').href;
-    safari.self.tab.dispatchMessage("foundFlickrLink",flickrShortlink);
-  } else {
-    safari.self.tab.dispatchMessage("foundFlickrLink",false);
-  }
-}
-
 function findRelShortlink() {
-  if(document.querySelector('link[rel=shortlink]')) {
+  var flickrPattern = /^http\:\/\/\w*\.*flickr\.com\/photos\/\w*\@?\w*\/\d*\/?$/;
+  
+  if (location.href.match(flickrPattern) && document.querySelector('link[rev=canonical]')) {
+    var flickrShortlink = document.querySelector('link[rev=canonical]').href;
+    safari.self.tab.dispatchMessage("foundRelShortlink", flickrShortlink);
+
+  } else if (document.querySelector('link[rel=shortlink]')) {
     var relShortlink = document.querySelector('link[rel=shortlink]').href;
-    safari.self.tab.dispatchMessage("didFindRelLink",relShortlink);
-  } else if(document.querySelector('link[rel=shorturl]')) {
+    safari.self.tab.dispatchMessage("foundRelShortlink", relShortlink);
+
+  } else if (document.querySelector('link[rel=shorturl]')) {
     var relShortlink = document.querySelector('link[rel=shorturl]').href;
-    safari.self.tab.dispatchMessage("didFindRelLink",relShortlink);
+    safari.self.tab.dispatchMessage("foundRelShortlink", relShortlink);
+
   } else {
-    safari.self.tab.dispatchMessage("didFindRelLink",false);
+    safari.self.tab.dispatchMessage("foundRelShortlink", false);
   }
 }
 
 function responseToRequest(request) {
-  if((location.href === request.message) && (self ===  top)) {
+  if(self ===  top) {
     /* Prevent children from getting message */
-    
-    if(request.name === "getFlickr") {
-      getFlickrShortLink();
-    }
+
     if(request.name === "findRelLink") {
       findRelShortlink();
     }

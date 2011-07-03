@@ -29,10 +29,40 @@ Shortly.prototype = {
   oauthTokens: undefined,
   
   /* Methods */
-  checkNativeShortlinkAvailability: function() {},
-  receiveNativeShortlink: function() {},
-  getShortlinkToCurrentPage: function() {},
-  getShortlinkToAddress: function(longUrl) {},
+  checkNativeShortlinkAvailability: function() {
+    var shortly = this;
+    shortly.activeTab.page.dispatchMessage("findRelLink");
+  },
+
+  receiveNativeRelShortlink: function(shortlink) {
+    var shortly = this, longUrl = shortly.activeTab.url;
+    
+    if(shortlink !== false) {
+      shortly.foundShortlink(shortlink);
+    } else if (Shortly.isKnownBitlyNative(longUrl)) {
+      shortly.getShortlinkWithBitly(longUrl);
+    } else {
+      shortly.getShortlinkToAddress(longUrl, 'skip');
+    }
+  },
+
+  getShortlinkToCurrentPage: function() {
+    var shortly = this, longUrl = shortly.activeTab.url;
+    
+    shortly.getShortlinkToAddress(longUrl);
+  },
+
+  getShortlinkToAddress: function(longUrl, skipNative) {
+    var shortly = this,
+        service = safari.extension.settings.shortenService;
+        
+    skipNative = (skipNative === 'skip') || safari.extension.settings.ignoreNative || false;
+    
+    if (!skipNative) {
+      shortly.checkNativeShortlinkAvailability();
+      return;
+    }
+  },
   getShortlinkWithGoogle: function(longUrl) {},
   getShortlinkWithBitly: function(longUrl) {},
   getShortlinkWithTinyUrl: function(longUrl) {},
@@ -51,10 +81,35 @@ Shortly.prototype = {
   /* Manipulating Safari UI */
   toolbarItem: undefined,
   activeTab: undefined,
+  markCurrentTabAsWorking: function() {
+    this.markShortlyStateToTabWithToolbarItem('Shortening', this.toolbarItem);
+  },
+  markShortlyStateToTabWithToolbarItem: function(state, toolbarItem) {
+    var shortly = this,
+        activeTab = toolbarItem.browserWindow.activeTab;
+    
+    switch (state) {
+      case 'Shortening': 
+        activeTab.shortlyWorkingState = state;
+        toolbarItem.badge = 1;
+        toolbarItem.disabled = true;
+        break;
+      case 'Ready':
+        activeTab.shortlyWorkingState = state;
+        toolbarItem.badge = 0;
+        toolbarItem.disabled = false;
+      default:
+        break;
+    }
+    
+    toolbarItem.validate();
+  },
 };
 
 /* Global variables */
 Shortly.runtimeLocale = 'default';
+Shortly.localeLib = shortlyLocaleLib;
+Shortly.knownBitlyNativeList = {};
 
 /* Public utility methods */
 Shortly.confirmOAuthLibAvailability = function() {};
@@ -71,8 +126,41 @@ Shortly.checkNetworkAvailability = function() {
     return (xmlHttp.statusText === 'error') ? false : true;
   }
 };
-Shortly.toogleToolbarMode = function(flag) {};
-Shortly.localeLib = shortlyLocaleLib;
+
+Shortly.isKnownBitlyNative = function(longUrl) {
+  try {
+    var domain = longUrl.match(/:\/\/([^\/]+)/)[1],
+        list = Shortly.knownBitlyNativeList;
+    
+    for (var key in list) {
+      if (domain.match(list[key])) return true;
+    }
+    return false;
+
+  } catch(e) {
+    console.log(e);
+    return false;
+  }
+}
+
+Shortly.toogleToolbarMode = function(flag) {
+  var url = {
+    js: safari.extension.baseURI + 'toolbarMode.js',
+    css: safari.extension.baseURI + 'toolbarTemplate.css',
+    jQuery: safari.extension.baseURI + 'jquery-1.6.2.min.js'
+  };
+  
+  if(flag) {
+    safari.extension.addContentScriptFromURL(url.jQuery);
+    safari.extension.addContentScriptFromURL(url.js);
+    safari.extension.addContentStyleSheetFromURL(url.css);
+  } else {
+    safari.extension.removeContentScript(url.jQuery);
+    safari.extension.removeContentScript(url.js);
+    safari.extension.removeContentStyleSheet(url.css);
+  }
+};
+
 Shortly.getLocaleString = function(query) {
   var userLocale = navigator.language.toLowerCase(),
       queryArray = query.split('.'),
@@ -98,7 +186,7 @@ safari.application.addEventListener("validate", validateCommand, false);
 safari.application.addEventListener("message", respondToMessage, false);
 safari.extension.settings.addEventListener("change", settingsChanged, false);
 
-/* Functions */
+/* Event Listeners */
 
 function performCommand(event) {
   if (event.command === "shortenURL") {
@@ -107,11 +195,14 @@ function performCommand(event) {
       return false;
     }
     
-    if (!(event.target.shortlyInstance instanceof Shortly)) {
-      event.target.shortlyInstance = new Shortly(event.target);
+    var shortly = event.target.browserWindow.activeTab.shortlyInstance;
+    
+    if (!(shortly instanceof Shortly)) {
+      shortly = event.target.browserWindow.activeTab.shortlyInstance = new Shortly(event.target);
     }
     
-    event.target.shortlyInstance.getShortlinkToCurrentPage();
+    shortly.markCurrentTabAsWorking();
+    shortly.getShortlinkToCurrentPage();
   }
 }
 
@@ -128,30 +219,27 @@ function validateCommand(event) {
 function settingsChanged(event) {
   if (event.key === "toolbarMode") {
     toggleToolbarMode(event.newValue);
+    if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
   }
   if (event.key === "googleAuth") {
     if(event.newValue) enableGoogleAuthShortening();
   }
 }
 
-function toggleToolbarMode(flag) {
-  var url = {
-    js: safari.extension.baseURI + 'toolbarMode.js',
-    css: safari.extension.baseURI + 'toolbarTemplate.css',
-    jQuery: safari.extension.baseURI + 'jquery-1.4.2.min.js'
-  };
-  
-  if(flag) {
-    safari.extension.addContentScriptFromURL(url.jQuery);
-    safari.extension.addContentScriptFromURL(url.js);
-    safari.extension.addContentStyleSheetFromURL(url.css);
-    /*alert(locale[runtimeSettings.langFlag].notice.toolbarMode);*/
-  } else {
-    safari.extension.removeContentScript(url.jQuery);
-    safari.extension.removeContentScript(url.js);
-    safari.extension.removeContentStyleSheet(url.css);
+/* Communications with injected script */
+
+function respondToMessage(messageEvent) {
+  if(messageEvent.name === "foundRelShortlink") {
+    messageEvent.target.shortlyInstance.receiveNativeRelShortlink(messageEvent.message);
+  }
+  if(messageEvent.name === "toolbarReady") {
+    confirmedInjectedToolbarReady();
+  }
+  if(messageEvent.name === "oauthComplete") {
+    saveOauthTokensToSettings(messageEvent.message);
   }
 }
+
 
 function enableGoogleAuthShortening() {
   confirmOauthLibAvailability();
@@ -315,22 +403,7 @@ function generalAjaxErrorHandler(xmlHttp, status, errorMsg) {
   }
 }
 
-/* Communications with injected script */
 
-function respondToMessage(messageEvent) {
-  if(messageEvent.name === "didFindRelLink") {
-    receiveNativeShortlinkAvailability(messageEvent.message);
-  }
-  if(messageEvent.name === "foundFlickrLink") {
-    receiveFlickrShortlink(messageEvent.message);
-  }
-  if(messageEvent.name === "toolbarReady") {
-    confirmedInjectedToolbarReady();
-  }
-  if(messageEvent.name === "oauthComplete") {
-    saveOauthTokensToSettings(messageEvent.message);
-  }
-}
 
 function receiveFlickrShortlink(message) {
   if(message) {
