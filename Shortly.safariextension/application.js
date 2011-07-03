@@ -81,28 +81,13 @@ Shortly.prototype = {
   /* Manipulating Safari UI */
   toolbarItem: undefined,
   activeTab: undefined,
-  markCurrentTabAsWorking: function() {
-    this.markShortlyStateToTabWithToolbarItem('Shortening', this.toolbarItem);
-  },
-  markShortlyStateToTabWithToolbarItem: function(state, toolbarItem) {
-    var shortly = this,
-        activeTab = toolbarItem.browserWindow.activeTab;
+  markActiveTabAsWorkingState: function(state) {
+    var shortly = this;
     
-    switch (state) {
-      case 'Shortening': 
-        activeTab.shortlyWorkingState = state;
-        toolbarItem.badge = 1;
-        toolbarItem.disabled = true;
-        break;
-      case 'Ready':
-        activeTab.shortlyWorkingState = state;
-        toolbarItem.badge = 0;
-        toolbarItem.disabled = false;
-      default:
-        break;
-    }
+    if (state === 'Shortening') state += ':' + (new Date()).getTime();
     
-    toolbarItem.validate();
+    shortly.activeTab.shortlyWorkingState = state;
+    shortly.toolbarItem.validate();
   },
 };
 
@@ -201,18 +186,48 @@ function performCommand(event) {
       shortly = event.target.browserWindow.activeTab.shortlyInstance = new Shortly(event.target);
     }
     
-    shortly.markCurrentTabAsWorking();
+    shortly.markActiveTabAsWorkingState('Shortening');
     shortly.getShortlinkToCurrentPage();
   }
 }
 
 function validateCommand(event) {
   if (event.command === "shortenURL") {
+    var toolbarItem = event.target,
+        activeTab = toolbarItem.browserWindow.activeTab;
     
-    event.target.label = Shortly.getLocaleString('btnShorten.label');
-    event.target.toolTip = Shortly.getLocaleString('btnShorten.toolTip');
-    event.target.disabled = !event.target.browserWindow.activeTab.url;
-
+    toolbarItem.label = Shortly.getLocaleString('btnShorten.label');
+    toolbarItem.toolTip = Shortly.getLocaleString('btnShorten.toolTip');
+    
+    if (activeTab.shortlyInstance) {
+      var state = activeTab.shortlyWorkingState;
+      
+      if (state.match(/Shortening:(\d+)$/)) {
+        var sinceTime = state.split(':')[1],
+            currentTime = (new Date()).getTime();
+            
+        if ((currentTime - sinceTime) > 60000) {
+          activeTab.shortlyInstance.reportErrorMessage('timeout');
+          state = 'Failed';
+        }
+      }
+      
+      switch (state.split(':')[0]) {
+        case 'Shortening': 
+          toolbarItem.badge = 1;
+          toolbarItem.disabled = true;
+          break;
+        case 'Ready':
+        default:
+          toolbarItem.badge = 0;
+          toolbarItem.disabled = false;
+          break;
+      }
+      if(!activeTab.url) toolbarItem.disabled = true;
+    } else {
+      toolbarItem.badge = 0;
+      toolbarItem.disabled = !activeTab.url;
+    }
   }
 }
 
