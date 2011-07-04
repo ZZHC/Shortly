@@ -76,7 +76,7 @@ Shortly.prototype = {
         shortly.getShortlinkWithBitly(longUrl);
         break;
       case 'tinyurl':
-        shortly.getShortlinkWithTinyURL(longUrl);
+        shortly.getShortlinkWithTinyUrl(longUrl);
         break;
       case 'endpoint':
         shortly.getShortlinkWithCustomEndpoint(longUrl);
@@ -108,7 +108,7 @@ Shortly.prototype = {
         contentType: 'application/json',
         success: successHandler,
         error: function(jqXHR, textStatus, errorThrown) {
-          if (jqXHR.responseText === '' && textStatus == 'error') {
+          if (jqXHR.status === 0 && textStatus == 'error') {
             shortly.reportErrorMessage('offline');
           } else {
             var response = JSON.parse(jqXHR.responseText).error;
@@ -139,8 +139,8 @@ Shortly.prototype = {
         data: '{ longUrl: "' + url + '" }',
         headers: { 'Content-Type': 'application/json' },
         success: function(data) {
-          if (data.text === '' && !Shortly.isNetworkAvailable()) {
-            shortly.reportErrorMessage('offline');
+          if (data.text === '') {
+            if (!Shortly.isNetworkAvailable()) shortly.reportErrorMessage('offline');
           } else {
             successHandler(JSON.parse(data.text), 'success', null);
           }
@@ -166,10 +166,76 @@ Shortly.prototype = {
 
   },
   getShortlinkWithBitly: function(longUrl) {
+    var shortly = this,
+        defaultLogin = 'zzhc', defaultAPIKey = apiKeyChain.bitly,
+        userLogin = safari.extension.secureSettings.bitlyUsername || '',
+        userAPIKey = safari.extension.secureSettings.bitlyAPIKey || '',
+        queryAPI = 'http://api.bitly.com/v3/shorten?';
+
     if (this.flagAbort) return 'Aborted';
+    
+    function errorMessageHandler(code, message) {
+      switch (message) {
+        case 'INVALID_LOGIN':
+        case 'INVALID_APIKEY':
+        case 'MISSING_ARG_LOGIN':
+        case 'MISSING_ARG_APIKEY':
+          shortly.reportErrorMessage('authFail', message);
+          break;
+        case 'RATE_LIMIT_EXCEEDED':
+          shortly.reportErrorMessage('limit', message);
+          break;
+        default:
+          shortly.reportErrorMessage('unknown', 'bit.ly returning error ' + code + ': ' + message);
+          break;
+      }
+    }
+    
+    if (userLogin == '' && userAPIKey == '') {
+      userLogin = defaultLogin; userAPIKey = defaultAPIKey;
+    }
+    queryAPI += 'login=' + userLogin + '&apiKey=' + userAPIKey + '&longUrl=' + encodeURIComponent(longUrl);
+    
+    $.ajax({ url: queryAPI, dataType: 'json',
+        success: function(data, textStatus, jqXHR) {
+          if (data.status_code == 200) {
+            shortly.foundShortlink(data.data.url);
+          } else {
+            errorMessageHandler(data.status_code, data.status_txt);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 0 && textStatus == 'error') {
+            shortly.reportErrorMessage('offline');
+          } else {
+            shortly.reportErrorMessage('unknown', 'Error on fetching bit.ly JSON query.');
+          }
+        }
+      });
+    
   },
   getShortlinkWithTinyUrl: function(longUrl) {
+    var shortly = this,
+        queryAPI = "http://tinyurl.com/api-create.php?url=" + encodeURIComponent(longUrl);
+    
     if (this.flagAbort) return 'Aborted';
+    
+    $.ajax({ url: queryAPI, dataType: 'text',
+        success: function(data, textStatus, jqXHR) {
+          if (data.match(/^http:\/\/\w*\.?tinyurl\.com\//)) {
+            shortly.foundShortlink(data);
+          } else {
+            shortly.reportErrorMessage('unknown', 'TinyURL responding ' + data);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 0 && textStatus == 'error') {
+            shortly.reportErrorMessage('offline');
+          } else {
+            shortly.reportErrorMessage('unknown', 'Error on fetching TinyURL query.');
+          }
+        }
+      });
   },
   getShortlinkWithCustomEndpoint: function(longUrl) {
     if (this.flagAbort) return 'Aborted';
@@ -178,19 +244,35 @@ Shortly.prototype = {
     var shortly = this;
     if (this.flagAbort) return 'Aborted';
     
+    console.log('Success: ' + shortlink + ' for ' + this.activeTab.url);
     shortly.displayMessage(shortlink, 'shortlink');
     shortly.markActiveTabAsWorkingState('Ready');
   },
   reportErrorMessage: function(errorType, message) {
     var shortly = this;
+    /* Expecting error: offline, timeout, authFail, limit, unknown */
     
-    if (errorType === 'timeout') {
-      var errMsg = Shortly.getLocaleString('errorMessage.generalError') + Shortly.getLocaleString('errorMessage.timeout');
-      shortly.displayMessage(errMsg, 'error');
-      
-    } else if (errorType === 'offline') {
-      shortly.displayMessage(Shortly.getLocaleString('errorMessage.offline'), 'error');
+    switch (errorType) {
+      case 'timeout':
+        var errMsg = Shortly.getLocaleString('errorMessage.generalError') + Shortly.getLocaleString('errorMessage.timeout');
+        shortly.displayMessage(errMsg, 'error');
+        break;
+
+      case 'offline':
+        shortly.displayMessage(Shortly.getLocaleString('errorMessage.offline'), 'error');
+        break;
+
+      case 'authFail':
+        shortly.displayMessage(Shortly.getLocaleString('errorMessage.authFail') + ' (' + message + ')', 'error');
+        break;
+
+      case 'limit':
+      case 'unknown':
+      default:
+        shortly.displayMessage(Shortly.getLocaleString('errorMessage.generalError') + message, 'error');
+        break;
     }
+  
     console.log(errorType, message, shortly.activeTab.url, (new Date()).toLocaleString());
     shortly.markActiveTabAsWorkingState('Failed');
   },
@@ -334,7 +416,7 @@ Shortly.isKnownBitlyNative = function(longUrl) {
   }
 }
 
-Shortly.toogleToolbarMode = function(flag) {
+Shortly.toggleToolbarMode = function(flag) {
   var url = {
     js: safari.extension.baseURI + 'toolbarMode.js',
     css: safari.extension.baseURI + 'toolbarTemplate.css',
@@ -369,7 +451,7 @@ Shortly.getLocaleString = function(query) {
 
 
 /* Initialize */
-Shortly.toogleToolbarMode(safari.extension.settings.toolbarMode);
+Shortly.toggleToolbarMode(safari.extension.settings.toolbarMode);
 if(safari.extension.settings.googleAuth) Shortly.confirmOAuthLibAvailability();
 
 safari.application.addEventListener("command", performCommand, false);

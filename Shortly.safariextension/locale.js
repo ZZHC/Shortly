@@ -63,8 +63,11 @@ var shortlyLocaleLib = {
     timeout: {
       default: 'Shortly has failed to response. Please check your Internet settings or try again later.'
     },
+    authFail: {
+      default: 'Unable to login your account. Please check your login info and try again.'
+    },
     unknown: {
       default: 'Unknow error.'
-    }
+    },
   }
 }
