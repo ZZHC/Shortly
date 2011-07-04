@@ -172,7 +172,14 @@ Shortly.prototype = {
   reportErrorMessage: function(errorType, message) {
     var shortly = this;
     
-    console.log(errorType, message);
+    if (errorType === 'timeout') {
+      var errMsg = Shortly.getLocaleString('errorMessage.generalError') + Shortly.getLocaleString('errorMessage.timeout');
+      shortly.displayMessage(errMsg, 'error');
+      
+    } else if (errorType === 'offline') {
+      shortly.displayMessage(Shortly.getLocaleString('errorMessage.offline'), 'error');
+    }
+    console.log(errorType, message, shortly.activeTab.url, (new Date()).toLocaleString());
     shortly.markActiveTabAsWorkingState('Failed');
   },
 
@@ -180,7 +187,7 @@ Shortly.prototype = {
     var shortly = this,
         displayMethod = (safari.extension.settings.toolbarMode) ? 'toolbar' : 'alert',
         toolbarReady = shortly.flagToolbarReady;
-    type = type || 'text';
+    type = type || 'text'; /* Expected: shortlink, error, or text */
     
     if (safari.extension.settings.toolbarMode) {
       var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
@@ -226,7 +233,6 @@ Shortly.prototype = {
         }
         break;
       case 'error':
-        message = 'Error: ' + message;
       case 'text':
       default:
         alert(message);
@@ -388,8 +394,12 @@ function validateCommand(event) {
         var sinceTime = state.split(':')[1],
             currentTime = (new Date()).getTime();
             
-        if ((currentTime - sinceTime) > 60000) {
-          activeTab.shortlyInstance.reportErrorMessage('timeout');
+        if ((currentTime - sinceTime) > 6000) {
+          if (Shortly.isNetworkAvailable()) {
+            activeTab.shortlyInstance.reportErrorMessage('timeout');
+          } else {
+            activeTab.shortlyInstance.reportErrorMessage('offline');
+          }
           activeTab.shortlyWorkingState = state = 'Failed';
         }
       }
