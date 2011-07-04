@@ -26,6 +26,7 @@ Shortly.prototype = {
   
   /* Runtime variables */
   flagToolbarReady: false,
+  flagAbort: false,
   oauthTokens: undefined,
   
   /* Methods */
@@ -36,6 +37,7 @@ Shortly.prototype = {
 
   receiveNativeRelShortlink: function(shortlink) {
     var shortly = this, longUrl = shortly.activeTab.url;
+    if (this.flagAbort) return 'Aborted';
     
     if(shortlink !== false) {
       shortly.foundShortlink(shortlink);
@@ -52,12 +54,14 @@ Shortly.prototype = {
 
   getShortlinkToCurrentPage: function() {
     var shortly = this, longUrl = shortly.activeTab.url;
-    
+    if (this.flagAbort) return 'Aborted';
+
     shortly.getShortlinkToAddress(longUrl);
   },
 
   getShortlinkToAddress: function(longUrl, skipNative, service) {
     var shortly = this;
+    if (this.flagAbort) return 'Aborted';
     
     service = service || safari.extension.settings.shortenService;
     skipNative = (skipNative === 'skip') || safari.extension.settings.ignoreNative || false;
@@ -87,7 +91,8 @@ Shortly.prototype = {
   getShortlinkWithGoogle: function(longUrl) {
     var shortly = this,
         queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
-        
+    if (this.flagAbort) return 'Aborted';
+    
     /* Private methods for shortening */
     function successHandler(data, textStatus, jqXHR) {
       if (data.id) {
@@ -160,11 +165,18 @@ Shortly.prototype = {
     }
 
   },
-  getShortlinkWithBitly: function(longUrl) {},
-  getShortlinkWithTinyUrl: function(longUrl) {},
-  getShortlinkWithCustomEndpoint: function(longUrl) {},
+  getShortlinkWithBitly: function(longUrl) {
+    if (this.flagAbort) return 'Aborted';
+  },
+  getShortlinkWithTinyUrl: function(longUrl) {
+    if (this.flagAbort) return 'Aborted';
+  },
+  getShortlinkWithCustomEndpoint: function(longUrl) {
+    if (this.flagAbort) return 'Aborted';
+  },
   foundShortlink: function(shortlink) {
     var shortly = this;
+    if (this.flagAbort) return 'Aborted';
     
     shortly.displayMessage(shortlink, 'shortlink');
     shortly.markActiveTabAsWorkingState('Ready');
@@ -244,6 +256,21 @@ Shortly.prototype = {
     /* Not yet implemented. */
   },
   
+  /* Abortion methods */
+  callAbort: function(message, flagPublic) {
+    this.flagAbort = true;
+    console.log('Called abort.', message, (new Date()).toLocaleString());
+
+    if (this.activeTab.shortlyWorkingState.match(/Shortening:(\d+)$/)) {
+      this.markActiveTabAsWorkingState('Aborted');
+    }
+    
+    if (flagPublic) this.displayMessage(message, 'error');
+  },
+  backToWork: function() {
+    this.flagAbort = false;
+  },
+  
   /* OAuth methods */
   getStoredOAuthTokensForSerive: function(service) {},
   getShortlinkWithGoogleAuth: function(longUrl) {},
@@ -255,7 +282,8 @@ Shortly.prototype = {
     var shortly = this;
     
     if (state === 'Shortening') state += ':' + (new Date()).getTime();
-    
+
+    console.log('State change:', state, shortly.activeTab);
     shortly.activeTab.shortlyWorkingState = state;
     shortly.toolbarItem.validate();
   },
@@ -364,8 +392,21 @@ function performCommand(event) {
       shortly = event.target.browserWindow.activeTab.shortlyInstance = new Shortly(event.target);
     }
     
+    if (shortly.flagAbort) shortly.backToWork();
     shortly.markActiveTabAsWorkingState('Shortening');
     shortly.getShortlinkToCurrentPage();
+    
+    /* Abort Shortly and report failure
+     * if shortening not finished within 60secs. */
+    setTimeout(function() {
+      var state = shortly.activeTab.shortlyWorkingState;
+      
+      if (state.match(/Shortening:(\d+)$/)) {
+        var errType = (Shortly.isNetworkAvailable()) ? 'timeout' : 'offline';
+        shortly.callAbort();
+        shortly.reportErrorMessage(errType);
+      }
+    }, 60000);
     
     /* Ask if injected toolbar ready.
      * When receive confrimation, confirmedInjectedToolbarReady() will mark
@@ -389,21 +430,7 @@ function validateCommand(event) {
     
     if (activeTab.shortlyInstance) {
       var state = activeTab.shortlyWorkingState;
-      
-      if (state.match(/Shortening:(\d+)$/)) {
-        var sinceTime = state.split(':')[1],
-            currentTime = (new Date()).getTime();
-            
-        if ((currentTime - sinceTime) > 6000) {
-          if (Shortly.isNetworkAvailable()) {
-            activeTab.shortlyInstance.reportErrorMessage('timeout');
-          } else {
-            activeTab.shortlyInstance.reportErrorMessage('offline');
-          }
-          activeTab.shortlyWorkingState = state = 'Failed';
-        }
-      }
-      
+
       switch (state.split(':')[0]) {
         case 'Shortening': 
           toolbarItem.badge = 1;
