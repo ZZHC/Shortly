@@ -30,7 +30,17 @@
 		<key>Key</key>
 		<string>toolbarMode</string>
 		<key>Title</key>
-		<string>Toolbar mode (enabled after reloading opened page)</string>
+		<string>Use Toolbar mode to display message</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>ignoreNative</string>
+		<key>Title</key>
+		<string>Ignore native shortlinks (like youtu.be)</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
@@ -44,13 +54,13 @@
 		<key>Key</key>
 		<string>googleAuth</string>
 		<key>Title</key>
-		<string>Shorten goo.gl links with your Google Account</string>
+		<string>Shorten goo.gl links with my Google account</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>Title</key>
-		<string>Using your own bit.ly account:</string>
+		<string>Shorten bit.ly links with my own account</string>
 		<key>Type</key>
 		<string>Group</string>
 	</dict>
