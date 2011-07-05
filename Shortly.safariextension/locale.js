@@ -6,7 +6,7 @@ var shortlyLocaleLib = {
       'ja-jp': '短縮アドレス',
       'it-it': 'Accorcia',
       'fr-fr': 'Raccourcir',
-      default: 'Shorten'
+      'default': 'Shorten'
     },
     paletteLabel: {
       'zh-tw': '縮短網址',
@@ -14,7 +14,7 @@ var shortlyLocaleLib = {
       'ja-jp': '短縮アドレス',
       'it-it': 'Accorcia',
       'fr-fr': 'Raccourcir',
-      default: 'Shorten'
+      'default': 'Shorten'
     },
     toolTip: {
       'zh-tw': '縮短目前網頁的網址',
@@ -22,7 +22,7 @@ var shortlyLocaleLib = {
       'ja-jp': '現在のページのアドレスを短縮する',
       'it-it': 'Ottieni un indirizzo breve della pagina corrente',
       'fr-fr': "Obtenir l'adresse raccourcie de la page active",
-      default: 'Get shortened address of the current page'
+      'default': 'Get shortened address of the current page'
     }
   },
   notice: {
@@ -32,7 +32,7 @@ var shortlyLocaleLib = {
       'ja-jp': 'You need to reload opened pages to enable the toolbar.',
       'it-it': 'Devi ricaricare le pagine aperte per far funzionare il pannello.',
       'fr-fr': "Vous devez recharger les pages actives afin que la barre d'outil fonctionne.",
-      default: 'You have to reload opened pages to enable the toolbar.'
+      'default': 'You have to reload opened pages to enable the toolbar.'
     }
   },
   errorMessage: {
@@ -42,7 +42,7 @@ var shortlyLocaleLib = {
       'ja-jp': 'お使いのコンピュータはインターネットに接続していません。',
       'it-it': 'Servizio non disponibile, oppure il tuo computer non è connesso a Internet.',
       'fr-fr': "Service indisponible, ou votre ordinateur n'est pas connecté à Internet.",
-      default: 'Service unavaiable, or your computer isn’t connected to the Internet.'
+      'default': 'Service unavaiable, or your computer isn’t connected to the Internet.'
     },
     invalidJSON: {
       'zh-tw': '縮址時發生錯誤：收到不正確的回應。',
@@ -50,7 +50,7 @@ var shortlyLocaleLib = {
       'ja-jp': 'Error while shortening: Invalid server response.',
       'it-it': "Errore nell'accorciare l'indirizzo: risposta del server invalida.",
       'fr-fr': "Erreur lors du raccourcissement: Réponse invalide du serveur.",
-      default: 'Error while shortening: Invalid server response.'
+      'default': 'Error while shortening: Invalid server response.'
     },
     generalError: {
       'zh-tw': '服務暫時無法使用：',
@@ -58,27 +58,27 @@ var shortlyLocaleLib = {
       'ja-jp': 'Service unavailable: ',
       'it-it': 'Servizio non disponibile: ',
       'fr-fr': 'Erreur lors du raccourcissement: ',
-      default: 'Service unavailable: '
+      'default': 'Service unavailable: '
     },
     timeout: {
-      default: 'Shortly has failed to response. Please check your Internet settings or try again later.'
+      'default': 'Shortly has failed to response. Please check your Internet settings or try again later.'
     },
     authFail: {
-      default: 'Unable to login your account. Please check your login info and try again.'
+      'default': 'Unable to login your account. Please check your login info and try again.'
     },
     unknown: {
-      default: 'Unknow error.'
+      'default': 'Unknow error.'
     },
   },
   oauth: {
     tokenLost: {
-      default: 'OAuth tokens lost when saving to settings.'
+      'default': 'OAuth tokens lost when saving to settings.'
     },
     offline: {
-      default: 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
+      'default': 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
     },
     reset: {
-      default: 'Reset successfully.\n\nPlease reopen your preference window to reflect changes.'
+      'default': 'Reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
   }
 }
