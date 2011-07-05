@@ -69,5 +69,13 @@ var shortlyLocaleLib = {
     unknown: {
       default: 'Unknow error.'
     },
+  },
+  oauth: {
+    tokenLost: {
+      default: 'OAuth tokens lost when saving to settings.'
+    },
+    offline: {
+      default: 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
+    }
   }
 }

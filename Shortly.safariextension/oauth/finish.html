@@ -3,10 +3,60 @@
     <head>
         <title>goo.gl OAuth Finish!</title>
         <script src="jsOAuth-1.2.js"></script>
+        <script src="../jquery-1.6.2.min.js"></script>
+        <script src="../locale.js"></script>
+        <script>
+          $(document).ready(function() {
+            $('div').hide();
+            $('processing').show();
+          });
+          
+          function reportErrorMessage(message, dispatch) {
+            dispatch = dispatch || true;
+            
+            if (dispatch) safari.self.tab.dispatchMessage('oauthFail', message);
+            
+            $('div').hide();
+            if (message !== null || message != '') {
+              $('div.knownError p').text(message);
+            }
+            $('div.failure, div.knownError').show();
+          }
+          
+          function messageHandler(event) {
+            if (event.name === 'oauthSaveComplete') {
+              $('div').hide(); $('div.success').show();
+            }
+            
+            if (event.name === 'oauthSaveFail') {
+              reportErrorMessage(event.message, false);
+            }
+          }
+          
+          safari.self.addEventListener("message", messageHandler, false);
+        </script>
     </head>
     <body>
-      <h1>Congratulations!</h1>
-      <p>You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account. Please visit <a href="http://code.google.com/apis/urlshortener/">Google URL Shortener API</a> for more information.</p>
+      <div class="processing">
+        <p>Shorly is processing your OAuth login info, please hold on and relax...</p>
+      </div>
+      <div class="success">
+        <h1>Congratulations!</h1>
+        <p>You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account.</p>
+        <p>For more information, please visit:</p>
+        <ul>
+          <li><a href="http://code.google.com/apis/urlshortener/">Google URL Shortener API</a></li>
+          <li><a href="http://github.com/ZZHC/Shortly">Shortly project on GitHub</a></li>
+          <li><a href="http://zzhc.org/shortly">Shortly Website</a></li>
+      </div>
+      <div class="failure">
+        <h1>OAuth configuration failed</h1>
+        <p>Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.</p>
+        <div class="knownError">
+          <h3>Error:</h3>
+          <p>Unknown error.</p>
+        </div>
+      </div>
       
       <script>
         var url = location.href;
@@ -15,7 +65,7 @@
         var oauth_token_secret = localStorage.getItem('googl_oauth_token_secret');
         
         if(oauth_token_secret == null) {
-          alert('OAuth Fail: lost token secret');
+          reportErrorMessage('Lost token secret');
         }
         
         /* @@ Setting up for exchanging Access Token @@ */
@@ -42,14 +92,16 @@
             var finalTokens = oauthExchanger.parseTokenRequest(decodeURIComponent(data.text));
             
             /* @@ Send tokens to global page as message @@ */
-            
-            safari.self.tab.dispatchMessage('oauthComplete', finalTokens);
+            var messageToPass = {
+              service: 'goo.gl',
+              tokens: finalTokens
+            };
+            safari.self.tab.dispatchMessage('oauthComplete', messageToPass);
             localStorage.clear();
 
             
           }, function(data) {
-            alert('OAuth Fail: Unable to exchange Access Token');
-            console.log(data);
+            reportErrorMessage('Unable to exchange Access Token');
           });
         
       </script>

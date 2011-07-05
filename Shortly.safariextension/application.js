@@ -353,10 +353,6 @@ Shortly.prototype = {
     this.flagAbort = false;
   },
   
-  /* OAuth methods */
-  getStoredOAuthTokensForSerive: function(service) {},
-  getShortlinkWithGoogleAuth: function(longUrl) {},
-  
   /* Manipulating Safari UI */
   toolbarItem: undefined,
   activeTab: undefined,
@@ -377,15 +373,6 @@ Shortly.localeLib = shortlyLocaleLib;
 Shortly.knownBitlyNativeList = {};
 
 /* Public utility methods */
-Shortly.confirmOAuthLibAvailability = function() {
-  if (typeof OAuth === 'undefined') {
-    $(document).ready(function() {
-      var oauthJsLibElement = document.createElement('script');
-        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
-        document.querySelector('body').appendChild(oauthJsLibElement);
-    });
-  }
-};
 Shortly.isNetworkAvailable = function() {
   if (navigator.onLine == false) {
     return false;
@@ -449,10 +436,98 @@ Shortly.getLocaleString = function(query) {
   }
 };
 
+/* OAuth methods */
+Shortly.confirmOAuthLibAvailability = function() {
+  if (typeof OAuth === 'undefined') {
+    $(document).ready(function() {
+      var oauthJsLibElement = document.createElement('script');
+        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
+        document.querySelector('body').appendChild(oauthJsLibElement);
+    });
+  }
+};
+Shortly.getOAuthFieldNamesForService = function(service) {
+  if (service === 'goo.gl') {
+    return {
+      token: 'googl_oauth_token',
+      token_secret: 'googl_oauth_token_secret',
+      date: 'googl_oauth_date'
+    };
+  }
+};
+Shortly.getStoredOAuthTokensForService = function(service) {
+  if (service === 'goo.gl') {
+    var token_complete = true,
+        token_fields = Shortly.getOAuthFieldNamesForService('goo.gl'),
+        tokens = {};
+    for (var i in token_fields) {
+      tokens[i] = safari.extension.secureSettings.getItem(token_fields[i]) || '';
+      if (tokens[i] === '') token_complete = false;
+    }
+    
+    return (token_complete) ? tokens : false;
+  }
+};
+Shortly.removeStoredOAuthTokensForService = function(service) {
+  if (service === 'goo.gl') {
+    var token_fields = Shortly.getOAuthFieldNamesForService('goo.gl');
+    
+    for (var i in token_fields) {
+      safari.extension.secureSettings.removeItem(token_fields[i]);
+    }
+  }
+  console.log('OAuth tokens for ' + service + ' has been removed.', (new Date()).toLocaleString());
+};
+Shortly.setupOAuthForService = function(service) {
+  if (service === 'goo.gl') {
+    var tokens = Shortly.getStoredOAuthTokensForService(service);
+
+    Shortly.confirmOAuthLibAvailability();
+
+    /* Check if tokens completed stored; otherwise reset them */
+    if (tokens === false) {
+      console.log('Stored goo.gl token broken or not exist.', (new Date()).toLocaleString());
+      Shortly.removeStoredOAuthTokensForService(service);
+      safari.application.openBrowserWindow().activeTab.url = safari.extension.baseURI + 'oauth/start.html';
+    }
+  }
+  console.log('Starting to setup OAuth with ' + service, (new Date()).toLocaleString());
+};
+Shortly.saveOAuthTokensToSettings = function(tokenMsg, targetTab) {
+  var service = tokenMsg.service, tokens = tokenMsg.tokens;
+
+  if (service === 'goo.gl') {
+    var reportTokenLost = function() {
+      targetTab.page.dispatchMessage('oauthSaveFail', Shortly.getLocaleString('oauth.tokenLost'));
+      console.log('OAuth fail:', Shortly.getLocaleString('oauth.tokenLost'), (new Date()).toLocaleString());
+    };
+
+    if (!tokenMsg || !tokens) {
+      reportTokenLost();
+    } else {
+      if(tokens.oauth_token !== null && tokens.oauth_token_secret !== null) {
+        safari.extension.secureSettings.setItem('googl_oauth_token', tokens.oauth_token);
+        safari.extension.secureSettings.setItem('googl_oauth_token_secret', tokens.oauth_token_secret);
+        safari.extension.secureSettings.setItem('googl_oauth_date', (new Date()).getTime());
+        
+        targetTab.page.dispatchMessage('oauthSaveComplete');
+        console.log('OAuth tokens for goo.gl has been saved.', (new Date()).toLocaleString());
+      } else {
+        reportTokenLost();
+      }
+    }
+  }
+};
 
 /* Initialize */
 Shortly.toggleToolbarMode(safari.extension.settings.toolbarMode);
-if(safari.extension.settings.googleAuth) Shortly.confirmOAuthLibAvailability();
+if (safari.extension.settings.googleAuth) {
+  if (Shortly.getStoredOAuthTokensForService('goo.gl') === false) {
+    safari.extension.settings.googleAuth = false;
+  } else {
+    Shortly.confirmOAuthLibAvailability();
+  }
+}
 
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
@@ -538,7 +613,10 @@ function settingsChanged(event) {
     if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
   }
   if (event.key === "googleAuth") {
-    if(event.newValue) enableGoogleAuthShortening();
+    if (event.newValue && !Shortly.getStoredOAuthTokensForService('goo.gl')) {
+      console.log(event.newValue, safari.extension.settings.googleAuth);
+        Shortly.setupOAuthForService('goo.gl');
+    }
   }
 }
 
@@ -551,7 +629,10 @@ function respondToMessage(messageEvent) {
   if(messageEvent.name === "toolbarReady") {
     messageEvent.target.shortlyInstance.confirmedInjectedToolbarReady();
   }
-  if(messageEvent.name === "oauthComplete") {
-    saveOauthTokensToSettings(messageEvent.message);
+  if (messageEvent.name === "oauthComplete") {
+    Shortly.saveOAuthTokensToSettings(messageEvent.message, messageEvent.target);
+  }
+  if (messageEvent.name === "oauthFail") {
+    console.log('OAuth fail', messageEvent.message, (new Date()).toLocaleString());
   }
 }
