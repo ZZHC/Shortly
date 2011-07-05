@@ -39,7 +39,7 @@ Shortly.prototype = {
     var shortly = this, longUrl = shortly.activeTab.url;
     if (this.flagAbort) return 'Aborted';
     
-    if(shortlink !== false) {
+    if (shortlink !== false) {
       shortly.foundShortlink(shortlink);
     } else if (Shortly.isKnownBitlyNative(longUrl)) {
       shortly.getShortlinkWithBitly(longUrl);
@@ -148,7 +148,7 @@ Shortly.prototype = {
         failure: function(data) {
           var errorMsg = JSON.parse(data.text).error;
           
-          if(errorMsg.code == 401) {
+          if (errorMsg.code == 401) {
             shortly.reportErrorMessage('authFail', errorMsg.message);
           } else {
             shortly.reportErrorMessage(errorMsg.errors[0].reason, errorMsg.errors.message);
@@ -287,7 +287,7 @@ Shortly.prototype = {
       var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
       
       setTimeout(function() {
-        if(toolbarReady) {
+        if (toolbarReady) {
           shortly.displayMessageWithToolbar(message, type);
         } else {
           shortly.displayMessageWithAlert(message, type);
@@ -320,7 +320,7 @@ Shortly.prototype = {
     
     switch (type) {
       case 'shortlink':
-        if(navigator.platform.match(/Win/)) {
+        if (navigator.platform.match(/Win/)) {
           prompt(shortly.activeTab.title, message);
         } else {
           alert(message + '\n\n' + shortly.activeTab.title);
@@ -410,7 +410,7 @@ Shortly.toggleToolbarMode = function(flag) {
     jQuery: safari.extension.baseURI + 'jquery-1.6.2.min.js'
   };
   
-  if(flag) {
+  if (flag) {
     safari.extension.addContentScriptFromURL(url.jQuery);
     safari.extension.addContentScriptFromURL(url.js);
     safari.extension.addContentStyleSheetFromURL(url.css);
@@ -599,7 +599,7 @@ function validateCommand(event) {
           toolbarItem.disabled = false;
           break;
       }
-      if(!activeTab.url) toolbarItem.disabled = true;
+      if (!activeTab.url) toolbarItem.disabled = true;
     } else {
       toolbarItem.badge = 0;
       toolbarItem.disabled = !activeTab.url;
@@ -623,10 +623,10 @@ function settingsChanged(event) {
 /* Communications with injected script */
 
 function respondToMessage(messageEvent) {
-  if(messageEvent.name === "foundRelShortlink") {
+  if (messageEvent.name === "foundRelShortlink") {
     messageEvent.target.shortlyInstance.receiveNativeRelShortlink(messageEvent.message);
   }
-  if(messageEvent.name === "toolbarReady") {
+  if (messageEvent.name === "toolbarReady") {
     messageEvent.target.shortlyInstance.confirmedInjectedToolbarReady();
   }
   if (messageEvent.name === "oauthComplete") {
