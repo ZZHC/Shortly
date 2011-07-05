@@ -620,10 +620,12 @@ function settingsChanged(event) {
   }
   if (event.key === "clearOAuth") {
     if (event.newValue) {
-      safari.extension.secureSettings.clear();
-      alert('Reset successfully.\n\nPlease reopen your preference window to reflect changes.');
+      Shortly.removeStoredOAuthTokensForService('goo.gl');
       safari.extension.settings.googleAuth = false;
       safari.extension.settings.clearOAuth = false;
+
+      console.log('User called to reset OAuth tokens', (new Date()).toLocaleString());
+      alert(Shortly.getLocaleString('oauth.reset'));
     }
   }
 }

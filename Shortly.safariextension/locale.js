@@ -76,6 +76,9 @@ var shortlyLocaleLib = {
     },
     offline: {
       default: 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
+    },
+    reset: {
+      default: 'Reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
   }
 }
