@@ -618,6 +618,14 @@ function settingsChanged(event) {
         Shortly.setupOAuthForService('goo.gl');
     }
   }
+  if (event.key === "clearOAuth") {
+    if (event.newValue) {
+      safari.extension.secureSettings.clear();
+      alert('Reset successfully.\n\nPlease reopen your preference window to reflect changes.');
+      safari.extension.settings.googleAuth = false;
+      safari.extension.settings.clearOAuth = false;
+    }
+  }
 }
 
 /* Communications with injected script */
