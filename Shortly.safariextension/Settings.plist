@@ -14,6 +14,7 @@
 			<string>goo.gl</string>
 			<string>bit.ly</string>
 			<string>TinyURL</string>
+      <string>Custom endpoint</string>
 		</array>
 		<key>Type</key>
 		<string>PopUpButton</string>
@@ -22,6 +23,7 @@
 			<string>goo.gl</string>
 			<string>bit.ly</string>
 			<string>tinyurl</string>
+      <string>endpoint</string>
 		</array>
 	</dict>
 	<dict>
@@ -83,6 +85,22 @@
 		<true/>
 		<key>Title</key>
 		<string>API Key</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+  <dict>
+		<key>Title</key>
+		<string>Use custom shortener endpoint</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>customEndpoint</string>
+		<key>Secure</key>
+		<false/>
+		<key>Title</key>
+		<string>Endpoint API</string>
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
