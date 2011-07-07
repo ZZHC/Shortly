@@ -238,7 +238,35 @@ Shortly.prototype = {
       });
   },
   getShortlinkWithCustomEndpoint: function(longUrl) {
+    var shortly = this,
+        queryAPI = safari.extension.settings.customEndpoint || '';
+
     if (this.flagAbort) return 'Aborted';
+
+    if (queryAPI === '') {
+      shortly.reportErrorMessage('error', Shortly.getLocaleString('errorMessage.badEndpoint'));
+    } else {
+      queryAPI = queryAPI.replace(/=%@/, '=' + encodeURIComponent(longUrl));
+
+      $.ajax({ url: queryAPI, dataType: 'json',
+          success: function(data, textStatus, jqXHR) {
+            if (data.status === 'success') {
+              shortly.foundShortlink(data.shortlink);
+            } else if (data.status === 'failure') {
+              shortly.reportErrorMessage(data.errorType, data.errorMessage);
+            } else {
+              shortly.reportErrorMessage('error', Shortly.getLocaleString('errorMessage.invalidResponse'));
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 0 && textStatus == 'error') {
+              shortly.reportErrorMessage('offline');
+            } else {
+              shortly.reportErrorMessage('unknown', 'Error on fetching  endpoint JSON response.');
+            }
+          }
+        });
+    }
   },
   foundShortlink: function(shortlink) {
     var shortly = this;
@@ -266,8 +294,11 @@ Shortly.prototype = {
         shortly.displayMessage(Shortly.getLocaleString('errorMessage.authFail') + ' (' + message + ')', 'error');
         break;
 
-      case 'limit':
       case 'unknown':
+        shortly.displayMessage(Shortly.getLocaleString('errorMessage.generalError') + Shortly.getLocaleString('errorMessage.unknown'), 'error');
+        break;
+      case 'limit':
+      case 'error':
       default:
         shortly.displayMessage(Shortly.getLocaleString('errorMessage.generalError') + message, 'error');
         break;

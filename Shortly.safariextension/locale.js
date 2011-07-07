@@ -44,7 +44,7 @@ var shortlyLocaleLib = {
       'fr-fr': "Service indisponible, ou votre ordinateur n'est pas connecté à Internet.",
       'default': 'Service unavaiable, or your computer isn’t connected to the Internet.'
     },
-    invalidJSON: {
+    invalidResponse: {
       'zh-tw': '縮址時發生錯誤：收到不正確的回應。',
       'zh-cn': '缩址时发生错误：收到不正确的回应。',
       'ja-jp': 'Error while shortening: Invalid server response.',
@@ -66,8 +66,11 @@ var shortlyLocaleLib = {
     authFail: {
       'default': 'Unable to login your account. Please check your login info and try again.'
     },
+    badEndpoint: {
+      'default': 'Invalid endpoint pattern. Please check your settings and try again.'
+    },
     unknown: {
-      'default': 'Unknow error.'
+      'default': 'Unknown error orccurs.'
     },
   },
   oauth: {
