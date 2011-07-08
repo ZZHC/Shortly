@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0α2a</string>
+	<string>2.0 beta1</string>
 	<key>CFBundleVersion</key>
-	<string>1.3.1</string>
+	<string>1.9.0</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -49,7 +49,7 @@
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>Shortly is a handy URL shortener with support to native shorteners from YouTube and Flickr.</string>
+	<string>Shortly is a handy URL shortener with support to native shortlinks and custom shorten service</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -63,8 +63,8 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://zzhc.org/shortly/update.plist</string>
+	<string>http://zzhc.org/shortly/beta/update.plist</string>
 	<key>Website</key>
-	<string>http://zzhc.org/shortly/</string>
+	<string>http://zzhc.org/shortly/beta/</string>
 </dict>
 </plist>
