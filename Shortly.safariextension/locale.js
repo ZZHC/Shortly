@@ -61,27 +61,34 @@ var shortlyLocaleLib = {
       'default': 'Service unavailable: '
     },
     timeout: {
+      'zh-tw': 'Shortly 失去回應。請檢查您的 Internet 設定，或是稍後再試一次。',
       'default': 'Shortly has failed to response. Please check your Internet settings or try again later.'
     },
     authFail: {
+      'zh-tw': '無法登入您的帳戶。請檢查您的登入資訊後再試一次。',
       'default': 'Unable to login your account. Please check your login info and try again.'
     },
     badEndpoint: {
-      'default': 'Invalid endpoint pattern. Please check your settings and try again.'
+      'zh-tw': '自定接點的網址格式錯誤。請檢查您的設定後再試一次。',
+      'default': 'Invalid endpoint URL pattern. Please check your settings and try again.'
     },
     unknown: {
+      'zh-tw': '發生不明的錯誤。',
       'default': 'Unknown error orccurs.'
     },
   },
   oauth: {
     tokenLost: {
+      'zh-tw': 'OAuth 資訊在儲存的過程中遺失了。',
       'default': 'OAuth tokens lost when saving to settings.'
     },
     offline: {
+      'zh-tw': 'Shorly 無法為您設定 Google 的 OAuth 登入。請檢查您的 Internet 設定並再試一次。',
       'default': 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
     },
     reset: {
-      'default': 'Reset successfully.\n\nPlease reopen your preference window to reflect changes.'
+      'zh-tw': 'OAuth 重設成功。\n\n請重新開啟您的「偏好設定」視窗，以正確反映變更。',
+      'default': 'OAuth reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
   }
 }
