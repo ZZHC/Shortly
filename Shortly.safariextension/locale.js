@@ -18,7 +18,7 @@ var shortlyLocaleLib = {
     },
     toolTip: {
       'zh-tw': '縮短目前網頁的網址',
-      'zh-cn': '缩短当前的网页地址',
+      'zh-cn': '缩短当前页面的地址',
       'ja-jp': '現在のページのアドレスを短縮する',
       'it-it': 'Ottieni un indirizzo breve della pagina corrente',
       'fr-fr': "Obtenir l'adresse raccourcie de la page active",
@@ -28,7 +28,7 @@ var shortlyLocaleLib = {
   notice: {
     toolbarMode: {
       'zh-tw': '您必須重新載入已開啟的網頁才能啟用工具列。',
-      'zh-cn': '您必须重新载入已开启的网页才能启用工具列。',
+      'zh-cn': '您必须重新载入已开启的页面才能启用工具列。',
       'ja-jp': 'You need to reload opened pages to enable the toolbar.',
       'it-it': 'Devi ricaricare le pagine aperte per far funzionare il pannello.',
       'fr-fr': "Vous devez recharger les pages actives afin que la barre d'outil fonctionne.",
@@ -46,7 +46,7 @@ var shortlyLocaleLib = {
     },
     invalidResponse: {
       'zh-tw': '縮址時發生錯誤：收到不正確的回應。',
-      'zh-cn': '缩址时发生错误：收到不正确的回应。',
+      'zh-cn': '缩短地址时发生错误：收到不正确的回应。',
       'ja-jp': 'Error while shortening: Invalid server response.',
       'it-it': "Errore nell'accorciare l'indirizzo: risposta del server invalida.",
       'fr-fr': "Erreur lors du raccourcissement: Réponse invalide du serveur.",
@@ -62,32 +62,39 @@ var shortlyLocaleLib = {
     },
     timeout: {
       'zh-tw': 'Shortly 失去回應。請檢查您的 Internet 設定，或是稍後再試一次。',
+      'zh-cn': 'Shortly 失去响应。请检查您的 Internet 设置，或是稍后再试一次。',
       'default': 'Shortly has failed to response. Please check your Internet settings or try again later.'
     },
     authFail: {
       'zh-tw': '無法登入您的帳戶。請檢查您的登入資訊後再試一次。',
+      'zh-cn': '无法登录您的账户。请检查您的登录信息后再试一次。',
       'default': 'Unable to login your account. Please check your login info and try again.'
     },
     badEndpoint: {
       'zh-tw': '自定接點的網址格式錯誤。請檢查您的設定後再試一次。',
+      'zh-cn': '自定接点的地址格式错误。请检查您的设置后再试一次。',
       'default': 'Invalid endpoint URL pattern. Please check your settings and try again.'
     },
     unknown: {
       'zh-tw': '發生不明的錯誤。',
+      'zh-cn': '发生未知的错误。',
       'default': 'Unknown error orccurs.'
     },
   },
   oauth: {
     tokenLost: {
       'zh-tw': 'OAuth 資訊在儲存的過程中遺失了。',
+      'zh-cn': 'OAuth 信息在存储的过程中丢失。',
       'default': 'OAuth tokens lost when saving to settings.'
     },
     offline: {
       'zh-tw': 'Shorly 無法為您設定 Google 的 OAuth 登入。請檢查您的 Internet 設定並再試一次。',
+      'zh-cn': 'Shorly 无法为您设定 Google 的 OAuth 登录。请检查您的 Internet 设置并再试一次。',
       'default': 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
     },
     reset: {
       'zh-tw': 'OAuth 重設成功。\n\n請重新開啟您的「偏好設定」視窗，以正確反映變更。',
+      'zh-cn': 'OAuth 重置成功。\n\n请重新打开您的「偏好设置」窗口，以正确显示更改。',
       'default': 'OAuth reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
   }
