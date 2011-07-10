@@ -63,38 +63,45 @@ var shortlyLocaleLib = {
     timeout: {
       'zh-tw': 'Shortly 失去回應。請檢查您的 Internet 設定，或是稍後再試一次。',
       'zh-cn': 'Shortly 失去响应。请检查您的 Internet 设置，或是稍后再试一次。',
+      'it-it': 'Shortly non risponde. Per favore controlla le tue impostazioni di Internet oppure prova ancora più tardi.',
       'default': 'Shortly has failed to response. Please check your Internet settings or try again later.'
     },
     authFail: {
       'zh-tw': '無法登入您的帳戶。請檢查您的登入資訊後再試一次。',
       'zh-cn': '无法登录您的账户。请检查您的登录信息后再试一次。',
+      'it-it': 'Impossibile connettersi al tuo account. Per favore controlla le tue credenziali e prova di nuovo.',
       'default': 'Unable to login your account. Please check your login info and try again.'
     },
     badEndpoint: {
       'zh-tw': '自定接點的網址格式錯誤。請檢查您的設定後再試一次。',
       'zh-cn': '自定接点的地址格式错误。请检查您的设置后再试一次。',
+      'it-it': 'URL finale invalido. Per favore controlla le tue impostazioni e prova di nuovo.',
       'default': 'Invalid endpoint URL pattern. Please check your settings and try again.'
     },
     unknown: {
       'zh-tw': '發生不明的錯誤。',
       'zh-cn': '发生未知的错误。',
-      'default': 'Unknown error orccurs.'
+      'it-it': 'Errore non conosciuto.',
+      'default': 'Unknown error occurs.'
     },
   },
   oauth: {
     tokenLost: {
       'zh-tw': 'OAuth 資訊在儲存的過程中遺失了。',
       'zh-cn': 'OAuth 信息在存储的过程中丢失。',
+      'it-it': 'Il token di OAuth si è perso mentre veniva salvato nelle impostazioni.',
       'default': 'OAuth tokens lost when saving to settings.'
     },
     offline: {
       'zh-tw': 'Shorly 無法為您設定 Google 的 OAuth 登入。請檢查您的 Internet 設定並再試一次。',
       'zh-cn': 'Shorly 无法为您设定 Google 的 OAuth 登录。请检查您的 Internet 设置并再试一次。',
+      'it-it': 'Shortly ha fallito nel settare il login di Oauth con Google. Per favore controlla le tue impostazioni di Internet e prova ancora più tardi.',
       'default': 'Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.'
     },
     reset: {
       'zh-tw': 'OAuth 重設成功。\n\n請重新開啟您的「偏好設定」視窗，以正確反映變更。',
       'zh-cn': 'OAuth 重置成功。\n\n请重新打开您的「偏好设置」窗口，以正确显示更改。',
+      'it-it': 'Il reset di OAuth è andato a buon fine.\n\nPer favore riapri la finestra delle preferenze per visualizzare i cambiamenti.',
       'default': 'OAuth reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
   }
