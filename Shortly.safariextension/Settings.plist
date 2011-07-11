@@ -14,7 +14,7 @@
 			<string>goo.gl</string>
 			<string>bit.ly</string>
 			<string>TinyURL</string>
-      <string>Custom endpoint</string>
+			<string>Custom endpoint</string>
 		</array>
 		<key>Type</key>
 		<string>PopUpButton</string>
@@ -23,7 +23,7 @@
 			<string>goo.gl</string>
 			<string>bit.ly</string>
 			<string>tinyurl</string>
-      <string>endpoint</string>
+			<string>endpoint</string>
 		</array>
 	</dict>
 	<dict>
@@ -88,7 +88,7 @@
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
-  <dict>
+	<dict>
 		<key>Title</key>
 		<string>Use custom shortener endpoint</string>
 		<key>Type</key>
@@ -97,12 +97,20 @@
 	<dict>
 		<key>Key</key>
 		<string>customEndpoint</string>
-		<key>Secure</key>
-		<false/>
 		<key>Title</key>
 		<string>Endpoint API</string>
 		<key>Type</key>
 		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>clearOAuth</string>
+		<key>Title</key>
+		<string>Reset stored OAuth login info</string>
+		<key>Type</key>
+		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>Type</key>
@@ -112,9 +120,65 @@
 		<key>DefaultValue</key>
 		<false/>
 		<key>Key</key>
-		<string>clearOAuth</string>
+		<string>enableKbHotkey</string>
 		<key>Title</key>
-		<string>Reset stored OAuth login info</string>
+		<string>Enable keyboard hotkey for shoretening</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Hotkey combination</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>S</string>
+		<key>Key</key>
+		<string>kbHotkeyChar</string>
+		<key>Title</key>
+		<string>Hotkey (1 character only)</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>kbHotkeyMetaKey</string>
+		<key>Title</key>
+		<string>⌘ Command</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>kbHotkeyAltKey</string>
+		<key>Title</key>
+		<string>⌥ Option/Alt</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>kbHotkeyCtrlKey</string>
+		<key>Title</key>
+		<string>⌃ Control/Ctrl</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>kbHotkeyShiftKey</string>
+		<key>Title</key>
+		<string>⇧ Shift</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
