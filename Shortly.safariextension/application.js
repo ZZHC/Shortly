@@ -563,6 +563,7 @@ if (safari.extension.settings.googleAuth) {
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
 safari.application.addEventListener("message", respondToMessage, false);
+safari.application.addEventListener("menu", menuValidation, false);
 safari.extension.settings.addEventListener("change", settingsChanged, false);
 
 /* Event Listeners */
@@ -675,5 +676,42 @@ function respondToMessage(messageEvent) {
   }
   if (messageEvent.name === "oauthFail") {
     console.log('OAuth fail', messageEvent.message, (new Date()).toLocaleString());
+  }
+}
+
+function menuValidation(event) {
+  if (event.target.identifier === 'menuQuickOption') {
+    /* Validate quick option menu */
+    var menuItems = event.target.menuItems,
+        serviceMenuItemId = '';
+    
+    switch (safari.extension.settings.shortenService) {
+      case 'goo.gl':
+        serviceMenuItemId = 'menuItemGoogle';
+        break;
+      case 'bit.ly':
+        serviceMenuItemId = 'menuItemBitly';
+        break;
+      case 'tinyurl':
+        serviceMenuItemId = 'menuItemTinyurl';
+        break;
+      case 'endpoint':
+        serviceMenuItemId = 'menuItemEndpoint';
+        break;
+      default:
+        break;
+    }
+    
+    for (var i in menuItems) {
+      if (menuItems[i].identifier === serviceMenuItemId) {
+        menuItems[i].checkedState = menuItems[i].CHECKED;
+      } else {
+        menuItems[i].checkedState = menuItems[i].UNCHECKED;
+      }
+      
+      if (menuItems[i].identifier === 'menuItemIgnoreNative') {
+        menuItems[i].checkedState = safari.extension.settings.ignoreNative;
+      }
+    }
   }
 }
