@@ -20,6 +20,60 @@
 	<dict>
 		<key>Global Page</key>
 		<string>global.html</string>
+		<key>Menus</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>menuQuickOption</string>
+				<key>Menu Items</key>
+				<array>
+					<dict>
+						<key>Command</key>
+						<string>menuOption_selectGoogle</string>
+						<key>Identifier</key>
+						<string>menuItemGoogle</string>
+						<key>Title</key>
+						<string>goo.gl</string>
+					</dict>
+					<dict>
+						<key>Command</key>
+						<string>menuOption_selectBitly</string>
+						<key>Identifier</key>
+						<string>menuItemBitly</string>
+						<key>Title</key>
+						<string>bit.ly</string>
+					</dict>
+					<dict>
+						<key>Command</key>
+						<string>menuOption_selectTinyURL</string>
+						<key>Identifier</key>
+						<string>menuItemTinyurl</string>
+						<key>Title</key>
+						<string>TinyURL</string>
+					</dict>
+					<dict>
+						<key>Command</key>
+						<string>menuOption_selectEndpoint</string>
+						<key>Identifier</key>
+						<string>menuItemEndpoint</string>
+						<key>Title</key>
+						<string>Custom Endpoint</string>
+					</dict>
+					<dict>
+						<key>Separator</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>Command</key>
+						<string>menuOption_ignoreNative</string>
+						<key>Identifier</key>
+						<string>menuItemIgnoreNative</string>
+						<key>Title</key>
+						<string>Ignore Native</string>
+					</dict>
+				</array>
+			</dict>
+		</array>
 		<key>Toolbar Items</key>
 		<array>
 			<dict>
@@ -31,6 +85,8 @@
 				<string>link23.png</string>
 				<key>Label</key>
 				<string>Shorten</string>
+				<key>Menu</key>
+				<string>menuQuickOption</string>
 				<key>Palette Label</key>
 				<string>Shorten</string>
 				<key>Tool Tip</key>

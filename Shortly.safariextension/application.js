@@ -575,6 +575,7 @@ Shortly.toggleKbHotkey(safari.extension.settings.enableKbHotkey);
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
 safari.application.addEventListener("message", respondToMessage, false);
+safari.application.addEventListener("menu", menuValidation, false);
 safari.extension.settings.addEventListener("change", settingsChanged, false);
 
 /* Event Listeners */
@@ -617,6 +618,12 @@ function performCommand(event) {
     if (safari.extension.settings.toolbarMode) {
       shortly.activeTab.page.dispatchMessage("reportToolbarReady");
     }
+  }
+
+  if (event.command.match(/menuOption_/)) {
+    var menuCommand = event.command.split('_')[1];
+
+    performMenuCommand(menuCommand);
   }
 }
 
@@ -754,5 +761,71 @@ function respondToMessage(messageEvent) {
     }
     
     performCommand(commandTriggerer);
+  }
+}
+
+function menuValidation(event) {
+  if (event.target.identifier === 'menuQuickOption') {
+    /* Validate quick option menu */
+    var menuItems = event.target.menuItems,
+        serviceMenuItemId = '';
+    
+    switch (safari.extension.settings.shortenService) {
+      case 'goo.gl':
+        serviceMenuItemId = 'menuItemGoogle';
+        break;
+      case 'bit.ly':
+        serviceMenuItemId = 'menuItemBitly';
+        break;
+      case 'tinyurl':
+        serviceMenuItemId = 'menuItemTinyurl';
+        break;
+      case 'endpoint':
+        serviceMenuItemId = 'menuItemEndpoint';
+        break;
+      default:
+        break;
+    }
+    
+    for (var i in menuItems) {
+      /* Set localed lable */
+      if (menuItems[i].identifier != null) {
+        var localeQuery = menuItems[i].identifier.replace(/(^menuItem)(\w+$)/, '$1.$2');
+        menuItems[i].title = Shortly.getLocaleString(localeQuery);
+      }
+
+      /* Set correc checked state */
+      if (menuItems[i].identifier === serviceMenuItemId) {
+        menuItems[i].checkedState = menuItems[i].CHECKED;
+      } else {
+        menuItems[i].checkedState = menuItems[i].UNCHECKED;
+      }
+      
+      if (menuItems[i].identifier === 'menuItemIgnoreNative') {
+        menuItems[i].checkedState = safari.extension.settings.ignoreNative;
+      }
+    }
+  }
+}
+
+function performMenuCommand(menuCommand) {
+  switch (menuCommand) {
+    case 'selectGoogle':
+      safari.extension.settings.shortenService = 'goo.gl';
+      break;
+    case 'selectBitly':
+      safari.extension.settings.shortenService = 'bit.ly';
+      break;
+    case 'selectTinyurl':
+      safari.extension.settings.shortenService = 'tinyurl';
+      break;
+    case 'selectEndpoint':
+      safari.extension.settings.shortenService = 'endpoint';
+      break;
+    case 'ignoreNative':
+      safari.extension.settings.ignoreNative = !safari.extension.settings.ignoreNative;
+      break;
+    default:
+      break;
   }
 }
