@@ -607,6 +607,12 @@ function performCommand(event) {
       shortly.activeTab.page.dispatchMessage("reportToolbarReady");
     }
   }
+
+  if (event.command.match(/menuOption_/)) {
+    var menuCommand = event.command.split('_')[1];
+
+    performMenuCommand(menuCommand);
+  }
 }
 
 function validateCommand(event) {
@@ -713,5 +719,27 @@ function menuValidation(event) {
         menuItems[i].checkedState = safari.extension.settings.ignoreNative;
       }
     }
+  }
+}
+
+function performMenuCommand(menuCommand) {
+  switch (menuCommand) {
+    case 'selectGoogle':
+      safari.extension.settings.shortenService = 'goo.gl';
+      break;
+    case 'selectBitly':
+      safari.extension.settings.shortenService = 'bit.ly';
+      break;
+    case 'selectTinyurl':
+      safari.extension.settings.shortenService = 'tinyurl';
+      break;
+    case 'selectEndpoint':
+      safari.extension.settings.shortenService = 'endpoint';
+      break;
+    case 'ignoreNative':
+      safari.extension.settings.ignoreNative = !safari.extension.settings.ignoreNative;
+      break;
+    default:
+      break;
   }
 }
