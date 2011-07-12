@@ -33,6 +33,10 @@ var shortlyLocaleLib = {
       'it-it': 'Devi ricaricare le pagine aperte per far funzionare il pannello.',
       'fr-fr': "Vous devez recharger les pages actives afin que la barre d'outil fonctionne.",
       'default': 'You have to reload opened pages to enable the toolbar.'
+    },
+    hotkey: {
+      'zh-tw': '您必須重新載入已開啟的網頁才能啟用快捷鍵。',
+      'default': 'You have to reload opened pages to enable hotkey.'
     }
   },
   errorMessage: {

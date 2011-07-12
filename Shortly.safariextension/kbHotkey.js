@@ -25,7 +25,7 @@ function hotkeyMonitor(event) {
       event.altKey === kbHotkeySettings.altKey &&
       event.ctrlKey === kbHotkeySettings.ctrlKey &&
       event.shiftKey === kbHotkeySettings.shiftKey) {
-    console.log('Hotkey captured!');
+    safari.self.tab.dispatchMessage('hotkeyCaptured');
   }
 }
 

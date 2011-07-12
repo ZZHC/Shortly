@@ -451,6 +451,17 @@ Shortly.toggleToolbarMode = function(flag) {
     safari.extension.removeContentStyleSheet(url.css);
   }
 };
+Shortly.toggleKbHotkey = function(flag) {
+  var url = {
+    js: safari.extension.baseURI + 'kbHotkey.js'
+  };
+  
+  if (flag) {
+    safari.extension.addContentScriptFromURL(url.js);
+  } else {
+    safari.extension.removeContentScript(url.js);
+  }
+};
 
 Shortly.getLocaleString = function(query) {
   var userLocale = navigator.language.toLowerCase(),
@@ -559,6 +570,7 @@ if (safari.extension.settings.googleAuth) {
     Shortly.confirmOAuthLibAvailability();
   }
 }
+Shortly.toggleKbHotkey(safari.extension.settings.enableKbHotkey);
 
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
@@ -660,6 +672,11 @@ function settingsChanged(event) {
     }
   }
 
+  if (event.key === "enableKbHotkey") {
+    Shortly.toggleKbHotkey(event.newValue);
+    if (event.newValue) alert(Shortly.getLocaleString('notice.hotkey'));
+  }
+
   if (event.key.match(/^kbHotkey(\w+)$/)) {
     var newSetting = {
       key: event.key.match(/^kbHotkey(\w+)$/)[1],
@@ -719,5 +736,23 @@ function respondToMessage(messageEvent) {
     };
 
     messageEvent.target.page.dispatchMessage('hotkeySettings', hotkeySettings);
+  }
+  
+  if (messageEvent.name === 'hotkeyCaptured') {
+    /* Construct a fake SafariCommandEvent */
+    var commandTriggerer = {
+      command: 'shortenURL',
+      target: undefined
+    };
+    
+    for (var i in safari.extension.toolbarItems) {
+      var toolbarItem = safari.extension.toolbarItems[i];
+      
+      if (toolbarItem.browserWindow = messageEvent.target.browserWindow) {
+        commandTriggerer.target = toolbarItem;
+      }
+    }
+    
+    performCommand(commandTriggerer);
   }
 }
