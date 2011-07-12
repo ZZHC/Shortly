@@ -1,4 +1,4 @@
-var shortlyLocaleLib = {
+const shortlyLocaleLib = {
   btnShorten: {
     label: {
       'zh-tw': '縮短網址',
