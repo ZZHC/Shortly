@@ -663,9 +663,14 @@ function settingsChanged(event) {
     if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
   }
   if (event.key === "googleAuth") {
-    if (event.newValue && !Shortly.getStoredOAuthTokensForService('goo.gl')) {
-      console.log(event.newValue, safari.extension.settings.googleAuth);
+    if (event.newValue) {
+      if (!Shortly.getStoredOAuthTokensForService('goo.gl')) {
+        console.log(event.newValue, safari.extension.settings.googleAuth);
         Shortly.setupOAuthForService('goo.gl');
+      }
+      if (typeof OAuth !== 'object') {
+        Shortly.confirmOAuthLibAvailability();
+      }
     }
   }
   if (event.key === "clearOAuth") {
