@@ -709,6 +709,13 @@ function menuValidation(event) {
     }
     
     for (var i in menuItems) {
+      /* Set localed lable */
+      if (menuItems[i].identifier != null) {
+        var localeQuery = menuItems[i].identifier.replace(/(^menuItem)(\w+$)/, '$1.$2');
+        menuItems[i].title = Shortly.getLocaleString(localeQuery);
+      }
+
+      /* Set correc checked state */
       if (menuItems[i].identifier === serviceMenuItemId) {
         menuItems[i].checkedState = menuItems[i].CHECKED;
       } else {

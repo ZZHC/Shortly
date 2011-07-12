@@ -90,5 +90,24 @@ var shortlyLocaleLib = {
       'zh-tw': 'OAuth 重設成功。\n\n請重新開啟您的「偏好設定」視窗，以正確反映變更。',
       'default': 'OAuth reset successfully.\n\nPlease reopen your preference window to reflect changes.'
     }
+  },
+  menuItem: {
+    Google: {
+      'default': 'goo.gl'
+    },
+    Bitly: {
+      'default': 'bit.ly'
+    },
+    Tinyurl: {
+      'default': 'TinyURL'
+    },
+    Endpoint: {
+      'zh-tw': '自定服務接點',
+      'default': 'Custom Endpoint'
+    },
+    IgnoreNative: {
+      'zh-tw': '忽略官方縮址',
+      'default': 'Ignore Native'
+    }
   }
 }
