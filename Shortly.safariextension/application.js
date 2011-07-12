@@ -659,6 +659,25 @@ function settingsChanged(event) {
       alert(Shortly.getLocaleString('oauth.reset'));
     }
   }
+
+  if (event.key.match(/^kbHotkey(\w+)$/)) {
+    var newSetting = {
+      key: event.key.match(/^kbHotkey(\w+)$/)[1],
+      value: event.newValue
+    }
+    /* To decapitalize the key */
+    newSetting.key = newSetting.key.charAt(0).toLowerCase() + newSetting.key.slice(1);
+
+    for (var i in safari.application.browserWindows) {
+      var targetWindow = safari.application.browserWindows[i];
+      for (var j in targetWindow.tabs) {
+        targetWindow.tabs[j].page.dispatchMessage('updateHotkeySettings', newSetting);
+      }
+    }
+    
+    console.log('Shortly hotkey settings updated', newSetting.key, newSetting.value, (new Date()).toLocaleString());
+  }
+
 }
 
 /* Communications with injected script */
@@ -675,5 +694,17 @@ function respondToMessage(messageEvent) {
   }
   if (messageEvent.name === "oauthFail") {
     console.log('OAuth fail', messageEvent.message, (new Date()).toLocaleString());
+  }
+  
+  if (messageEvent.name === "readHotkeySettings") {
+    var hotkeySettings = {
+      char: safari.extension.settings.kbHotkeyChar,
+      metaKey: safari.extension.settings.kbHotkeyMetaKey,
+      altKey: safari.extension.settings.kbHotkeyAltKey,
+      ctrlKey: safari.extension.settings.kbHotkeyCtrlKey,
+      shiftKey: safari.extension.settings.kbHotkeyShiftKey,
+    };
+
+    messageEvent.target.page.dispatchMessage('hotkeySettings', hotkeySettings);
   }
 }
