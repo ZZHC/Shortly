@@ -122,7 +122,7 @@
 		<key>Key</key>
 		<string>enableKbHotkey</string>
 		<key>Title</key>
-		<string>Enable keyboard hotkey for shoretening</string>
+		<string>Enable keyboard hotkey for shortening</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
@@ -138,7 +138,7 @@
 		<key>Key</key>
 		<string>kbHotkeyChar</string>
 		<key>Title</key>
-		<string>Hotkey (1 character only)</string>
+		<string>Hotkey (0-9/A-Z)</string>
 		<key>Type</key>
 		<string>TextField</string>
 	</dict>
