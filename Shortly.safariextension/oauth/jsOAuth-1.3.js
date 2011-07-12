@@ -1,6 +1,6 @@
 /**
  *  @license
- *  jsOAuth version 1.2
+ *  jsOAuth version 1.3
  *  Copyright (c) 2010, 2011 Rob Griffiths (http://bytespider.eu)
  *  jsOAuth is freely distributable under the terms of an MIT-style license.
  */
@@ -87,7 +87,7 @@ exports.OAuth = (function (global) {
     };
     Collection.prototype = new Hash;    /**
      * Url
-     * 
+     *
      * @constructor
      * @param {String} url
      */
@@ -96,41 +96,41 @@ exports.OAuth = (function (global) {
             parsed_uri, scheme, host, port, path, query, anchor,
             parser = /^([^:\/?#]+?:\/\/)*([^\/:?#]*)?(:[^\/?#]*)*([^?#]*)(\?[^#]*)?(#(.*))*/
             uri = this;
-     
+
         if (!(this instanceof args_callee)) {
             return new args_callee(url);
         }
-         
+
         uri.scheme = '';
         uri.host = '';
         uri.port = '';
         uri.path = '';
         uri.query = new QueryString();
         uri.anchor = '';
-         
+
         if (url !== null) {
             parsed_uri = url.match(parser);
-             
+
             scheme = parsed_uri[1];
             host = parsed_uri[2];
             port = parsed_uri[3];
             path = parsed_uri[4];
             query = parsed_uri[5];
             anchor = parsed_uri[6];
-             
+
             scheme = (scheme !== undefined) ? scheme.replace('://', '').toLowerCase() : 'http';
             port = (port ? port.replace(':', '') : (scheme === 'https' ? '443' : '80'));
             // correct the scheme based on port number
             scheme = (scheme == 'http' && port === '443' ? 'https' : scheme);
             query = query ? query.replace('?', '') : '';
             anchor = anchor ? anchor.replace('#', '') : '';
-             
-             
+
+
             // Fix the host name to include port if non-standard ports were given
             if ((scheme === 'https' && port !== '443') || (scheme === 'http' && port !== '80')) {
                 host = host + ':' + port;
             }
-             
+
             uri.scheme = scheme;
             uri.host = host;
             uri.port = port;
@@ -139,7 +139,7 @@ exports.OAuth = (function (global) {
             uri.anchor = anchor || '';
         }
     }
-    
+
     URI.prototype = {
         scheme: '',
         host: '',
@@ -152,20 +152,20 @@ exports.OAuth = (function (global) {
             return self.scheme + '://' + self.host + self.path + (query != '' ? '?' + query : '') + (self.anchor !== '' ? '#' + self.anchor : '');
         }
     };
-     
+
     /**
      * Create and manage a query string
-     * 
+     *
      * @param {Object} obj
      */
     function QueryString(obj){
         var args = arguments, args_callee = args.callee, args_length = args.length,
             i, querystring = this;
-           
+
         if (!(this instanceof args_callee)) {
             return new args_callee(obj);
         }
-         
+
         if (obj != undefined) {
             for (i in obj) {
                 if (obj.hasOwnProperty(i)) {
@@ -173,41 +173,41 @@ exports.OAuth = (function (global) {
                 }
             }
         }
-         
+
         return querystring;
     }
     // QueryString is a type of collection So inherit
     QueryString.prototype = new Collection();
-     
+
     QueryString.prototype.toString = function () {
-        var i, self = this, q_arr = [], ret = '', 
+        var i, self = this, q_arr = [], ret = '',
         val = '', encode = OAuth.urlEncode;
         self.ksort(); // lexicographical byte value ordering of the keys
-         
+
         for (i in self) {
             if (self.hasOwnProperty(i)) {
                 if (i != undefined && self[i] != undefined) {
                     val = encode(i) + '=' + encode(self[i]);
+                    q_arr.push(val);
                 }
-                q_arr.push(val);
             }
         }
-     
+
         if (q_arr.length > 0) {
             ret = q_arr.join('&');
         }
-     
+
         return ret;
     };
-     
+
     /**
-     * 
+     *
      * @param {Object} query
      */
     QueryString.prototype.setQueryParams = function (query) {
-        var args = arguments, args_length = args.length, i, query_array, 
+        var args = arguments, args_length = args.length, i, query_array,
             query_array_length, querystring = this, key_value;
-             
+
         if (args_length == 1) {
             if (typeof query === 'object') {
                 // iterate
@@ -258,7 +258,7 @@ exports.OAuth = (function (global) {
             var empty = '';
             var oauth = {
                 enablePrivilege: options.enablePrivilege || false,
-                
+
                 callbackUrl: options.callbackUrl || 'oob',
 
                 consumerKey: options.consumerKey,
@@ -400,11 +400,24 @@ exports.OAuth = (function (global) {
 
                 urlString = url.scheme + '://' + url.host + url.path;
                 signatureString = toSignatureBaseString(method, urlString, headerParams, signatureData);
+
                 signature = OAuth.signatureMethod[signatureMethod](oauth.consumerSecret, oauth.accessTokenSecret, signatureString);
 
                 headerParams.oauth_signature = signature;
 
+                if (this.realm)
+                {
+                    headerParams['realm'] = this.realm;
+                }
+
                 if(appendQueryString || method == 'GET') {
+                    /*for (var i in headerParams)
+                    {
+                        if (headerParams[i] != undefined && headerParams[i] != '') {
+                            data[i] = headerParams[i];
+                        }
+                    }*/
+
                     url.query.setQueryParams(data);
                     query = null;
                 } else if(!withFile){
@@ -422,7 +435,7 @@ exports.OAuth = (function (global) {
                             headers['Content-Type'] = 'application/x-www-form-urlencoded';
                         }
                     }
-                    
+
                 } else if(withFile) {
                   // When using FormData multipart content type
                   // is used by default and required header

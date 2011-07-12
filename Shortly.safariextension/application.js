@@ -472,7 +472,7 @@ Shortly.confirmOAuthLibAvailability = function() {
   if (typeof OAuth === 'undefined') {
     $(document).ready(function() {
       var oauthJsLibElement = document.createElement('script');
-        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.2.js';
+        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.3.js';
         document.querySelector('body').appendChild(oauthJsLibElement);
     });
   }
