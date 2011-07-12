@@ -665,9 +665,23 @@ function settingsChanged(event) {
       key: event.key.match(/^kbHotkey(\w+)$/)[1],
       value: event.newValue
     }
+
+    /* Validate hotkey as a single capitalized character */
+    if (event.key === 'kbHotkeyChar') {
+      if (event.newValue.length > 1) {
+        safari.extension.settings.setItem(event.key, event.newValue.charAt(0).toUpperCase());
+        return false;
+      }
+      if (event.newValue !== event.newValue.toUpperCase()) {
+        safari.extension.settings.setItem(event.key, event.newValue.toUpperCase());
+        return false;
+      }
+    }
+
     /* To decapitalize the key */
     newSetting.key = newSetting.key.charAt(0).toLowerCase() + newSetting.key.slice(1);
 
+    /* Deliver hotkey change to every opened tab */
     for (var i in safari.application.browserWindows) {
       var targetWindow = safari.application.browserWindows[i];
       for (var j in targetWindow.tabs) {
@@ -677,7 +691,6 @@ function settingsChanged(event) {
     
     console.log('Shortly hotkey settings updated', newSetting.key, newSetting.value, (new Date()).toLocaleString());
   }
-
 }
 
 /* Communications with injected script */
