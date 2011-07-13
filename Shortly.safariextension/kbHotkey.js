@@ -1,6 +1,10 @@
 var kbHotkeySettings = null;
 
 function responseToRequest(event) {
+  if (window.innerHeight < 3 || window.innerWidth < 3 ) {
+    return false;
+  }
+
   if (event.name === 'hotkeySettings') {
     kbHotkeySettings = event.message;
     console.log('Shortly hotkey settings fetched', (new Date()).toLocaleString());
