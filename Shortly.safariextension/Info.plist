@@ -74,6 +74,15 @@
 				</array>
 			</dict>
 		</array>
+		<key>Popovers</key>
+		<array>
+			<dict>
+				<key>Filename</key>
+				<string>popover.html</string>
+				<key>Identifier</key>
+				<string>popoverResult</string>
+			</dict>
+		</array>
 		<key>Toolbar Items</key>
 		<array>
 			<dict>
