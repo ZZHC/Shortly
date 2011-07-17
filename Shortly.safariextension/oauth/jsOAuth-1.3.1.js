@@ -1,13 +1,15 @@
 /**
  *  @license
- *  jsOAuth version 1.3
+ *  jsOAuth version 1.3.1
  *  Copyright (c) 2010, 2011 Rob Griffiths (http://bytespider.eu)
  *  jsOAuth is freely distributable under the terms of an MIT-style license.
  */
 var exports = exports || this;
 exports.OAuth = (function (global) {
 
-    /** signed.applets.codebase_principal_support to enable support in Firefox **/    function Collection(obj) {
+    /** signed.applets.codebase_principal_support to enable support in Firefox **/
+
+    function Collection(obj) {
         var args = arguments, args_callee = args.callee, args_length = args.length,
             i, collection = this;
            
@@ -232,8 +234,8 @@ exports.OAuth = (function (global) {
                 querystring[args[i]] = args[i+1];
             }
         }
-    };    /** @const */ var OAUTH_VERSION_1_0 = '1.0';
-    /** @const */ /*var OAUTH_VERSION_2_0 = '2.0';*/
+    };
+    /** @const */ var OAUTH_VERSION_1_0 = '1.0';
 
     /**
      * OAuth
@@ -265,7 +267,7 @@ exports.OAuth = (function (global) {
                 consumerSecret: options.consumerSecret,
                 accessTokenKey: options.accessTokenKey || empty,
                 accessTokenSecret: options.accessTokenSecret || empty,
-                verifier: '',
+                verifier: empty,
 
                 signatureMethod: options.signatureMethod || 'HMAC-SHA1'
             };
@@ -279,7 +281,18 @@ exports.OAuth = (function (global) {
                 return [oauth.accessTokenKey, oauth.accessTokenSecret];
             };
 
-            this.setAccessToken = function (tokenArray) {
+            this.getAccessTokenKey = function () {
+                return oauth.accessTokenKey;
+            };
+
+            this.getAccessTokenSecret = function () {
+                return oauth.accessTokenSecret;
+            };
+
+            this.setAccessToken = function (tokenArray, tokenSecret) {
+                if (tokenSecret) {
+                    tokenArray = [tokenArray, tokenSecret];
+                }
                 oauth.accessTokenKey = tokenArray[0];
                 oauth.accessTokenSecret = tokenArray[1];
             };
@@ -290,6 +303,10 @@ exports.OAuth = (function (global) {
 
             this.setVerifier = function (verifier) {
                 oauth.verifier = verifier;
+            };
+
+            this.setCallbackUrl = function (url) {
+                oauth.callbackUrl = url;
             };
 
             /**
@@ -314,26 +331,26 @@ exports.OAuth = (function (global) {
                 url = URI(options.url);
                 data = options.data || {};
                 headers = options.headers || {};
-                success = options.success || function (data) {};
+                success = options.success || function () {};
                 failure = options.failure || function () {};
 
                 // According to the spec
                 withFile = (function(){
-                  var hasFile = false;
-                  for(var name in data) {
-                    // Thanks to the FileAPI any file entry
-                    // has a fileName property
-                    if(typeof data[name].fileName != 'undefined') hasFile = true;
-                  }
+                    var hasFile = false;
+                    for(var name in data) {
+                        // Thanks to the FileAPI any file entry
+                        // has a fileName property
+                        if(typeof data[name].fileName != 'undefined') hasFile = true;
+                    }
 
-                  return hasFile;
+                    return hasFile;
                 })();
 
                 appendQueryString = options.appendQueryString ? options.appendQueryString : false;
 
                 if (oauth.enablePrivilege) {
                     netscape.security.PrivilegeManager
-                        .enablePrivilege("UniversalBrowserRead UniversalBrowserWrite");
+                        .enablePrivilege('UniversalBrowserRead UniversalBrowserWrite');
                 }
 
                 xhr = Request();
@@ -359,8 +376,8 @@ exports.OAuth = (function (global) {
 
                         var responseObject = {text: xhr.responseText, requestHeaders: requestHeaders, responseHeaders: responseHeaders};
 
-                        // 200, 201 and 304 are valid responses
-                        if((xhr.status >= 200 && xhr.status < 400 )|| xhr.status === 0) {
+                        // we are powerless against 3xx redirects
+                        if((xhr.status >= 200 && xhr.status <= 226) || xhr.status == 304 || xhr.status === 0) {
                             success(responseObject);
                         // everything what is 400 and above is a failure code
                         } else if(xhr.status >= 400 && xhr.status !== 0) {
@@ -382,20 +399,19 @@ exports.OAuth = (function (global) {
 
                 signatureMethod = oauth.signatureMethod;
 
-                params = url.query.toObject();
-                for (i in params) {
-                    signatureData[i] = params[i];
-                }
-
                 // According to the OAuth spec
                 // if data is transfered using
                 // multipart the POST data doesn't
                 // have to be signed:
                 // http://www.mail-archive.com/oauth@googlegroups.com/msg01556.html
                 if((!('Content-Type' in headers) || headers['Content-Type'] == 'application/x-www-form-urlencoded') && !withFile) {
-                  for (i in data) {
-                    signatureData[i] = data[i];
-                  }
+                    params = url.query.toObject();
+                    for (i in params) {
+                        signatureData[i] = params[i];
+                    }
+                    for (i in data) {
+                        signatureData[i] = data[i];
+                    }
                 }
 
                 urlString = url.scheme + '://' + url.host + url.path;
@@ -411,13 +427,6 @@ exports.OAuth = (function (global) {
                 }
 
                 if(appendQueryString || method == 'GET') {
-                    /*for (var i in headerParams)
-                    {
-                        if (headerParams[i] != undefined && headerParams[i] != '') {
-                            data[i] = headerParams[i];
-                        }
-                    }*/
-
                     url.query.setQueryParams(data);
                     query = null;
                 } else if(!withFile){
@@ -437,13 +446,13 @@ exports.OAuth = (function (global) {
                     }
 
                 } else if(withFile) {
-                  // When using FormData multipart content type
-                  // is used by default and required header
-                  // is set to multipart/form-data etc
-                  query = new FormData();
-                  for(i in data) {
-                    query.append(i, data[i]);
-                  }
+                    // When using FormData multipart content type
+                    // is used by default and required header
+                    // is set to multipart/form-data etc
+                    query = new FormData();
+                    for(i in data) {
+                        query.append(i, data[i]);
+                    }
                 }
 
                 xhr.open(method, url+'', true);
@@ -495,6 +504,19 @@ exports.OAuth = (function (global) {
         getJSON: function (url, success, failure) {
             this.get(url, function (data) {
                 success(JSON.parse(data.text));
+            }, failure);
+        },
+
+        /**
+         * Wrapper to parse a JSON string and pass it to the callback
+         *
+         * @param url {string} vaild http(s) url
+         * @param success {function} callback for a successful request
+         * @param failure {function} callback for a failed request
+         */
+        postJSON: function (url, data, success, failure) {
+            this.post(url, JSON.stringify(data), function (data) {
+                success(JSON.parse(data.text));
             } , failure);
         },
 
@@ -502,15 +524,17 @@ exports.OAuth = (function (global) {
             var i = 0, arr = tokenRequestString.split('&'), len = arr.length, obj = {};
             for (; i < len; ++i) {
                 var pair = arr[i].split('=');
-                obj[pair[0]] = pair[1];
+                obj[OAuth.urlDecode(pair[0])] = OAuth.urlDecode(pair[1]);
             }
 
             return obj;
         },
 
         fetchRequestToken: function (success, failure) {
-            var url = this.authorizationUrl;
             var oauth = this;
+            oauth.setAccessToken('', '');
+
+            var url = oauth.authorizationUrl;
             this.get(this.requestTokenUrl, function (data) {
                 var token = oauth.parseTokenRequest(data.text);
                 oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
@@ -523,6 +547,9 @@ exports.OAuth = (function (global) {
             this.get(this.accessTokenUrl, function (data) {
                 var token = oauth.parseTokenRequest(data.text);
                 oauth.setAccessToken([token.oauth_token, token.oauth_token_secret]);
+
+                // clean up a few un-needed things
+                oauth.setVerifier('');
 
                 success(data);
             }, failure);
@@ -558,15 +585,24 @@ exports.OAuth = (function (global) {
      *                           for GET this will append a query string
      */
     function toHeaderString(params) {
-        var arr = [], i;
+        var arr = [], i, realm;
 
         for (i in params) {
             if (params[i] && params[i] !== undefined && params[i] !== '') {
-                arr.push(i + '="' + OAuth.urlEncode(params[i]+'') + '"');
+                if (i === 'realm') {
+                    realm = i + '="' + params[i] + '"';
+                } else {
+                    arr.push(i + '="' + OAuth.urlEncode(params[i]+'') + '"');
+                }
             }
         }
 
-        return arr.sort().join(', ');
+        arr.sort();
+        if (realm) {
+            arr.unshift(realm);
+        }
+
+        return arr.join(', ');
     }
 
     /**
