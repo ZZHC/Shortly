@@ -767,6 +767,14 @@ function respondToMessage(messageEvent) {
     
     performCommand(commandTriggerer);
   }
+
+  if (messageEvent.name === 'getLocaleString') {
+    var message = {
+      string: Shortly.getLocaleString(messageEvent.message.string),
+      target: messageEvent.message.target
+    };
+    messageEvent.target.page.dispatchMessage('setLocaleString', message);
+  }
 }
 
 function menuValidation(event) {

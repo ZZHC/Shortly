@@ -107,6 +107,41 @@ const shortlyLocaleLib = {
       'zh-cn': 'OAuth 重置成功。\n\n请重新打开您的「偏好设置」窗口，以正确显示更改。',
       'it-it': 'Il reset di OAuth è andato a buon fine.\n\nPer favore riapri la finestra delle preferenze per visualizzare i cambiamenti.',
       'default': 'OAuth reset successfully.\n\nPlease reopen your preference window to reflect changes.'
+    },
+    finishPage: {
+      processing: {
+        message: {
+          'default': 'Shorly is processing your OAuth login info, please hold on and relax...'
+        }
+      },
+      success: {
+        title: {
+          'default': 'Congratulations!'
+        },
+        message: {
+          'default': "You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account."
+        },
+        moreInfo: {
+          'default': 'For more information, please visit:'
+        },
+        linkAPI: {
+          'default': 'Google URL Shortener API'
+        },
+        linkRepo: {
+          'default': 'Shortly project on GitHub'
+        },
+        linkWebsite: {
+          'default': 'Shortly Website'
+        }
+      },
+      failure: {
+        title: {
+          'default': 'OAuth configuration failed'
+        },
+        errorTitle: {
+          'default': 'Error:'
+        }
+      }
     }
   },
   menuItem: {

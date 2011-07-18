@@ -6,11 +6,6 @@
         <script src="../jquery-1.6.2.min.js"></script>
         <script src="../locale.js"></script>
         <script>
-          $(document).ready(function() {
-            $('div').hide();
-            $('processing').show();
-          });
-          
           function reportErrorMessage(message, dispatch) {
             dispatch = dispatch || true;
             
@@ -31,6 +26,11 @@
             if (event.name === 'oauthSaveFail') {
               reportErrorMessage(event.message, false);
             }
+            
+            if (event.name === 'setLocaleString') {
+              $('[-data-locale="' + event.message.target + '"]').text(event.message.string);
+              console.log(event.message.target, '=', event.message.string);
+            }
           }
           
           safari.self.addEventListener("message", messageHandler, false);
@@ -38,27 +38,41 @@
     </head>
     <body>
       <div class="processing">
-        <p>Shorly is processing your OAuth login info, please hold on and relax...</p>
+        <p -data-locale="finishPage.processing.message">Shorly is processing your OAuth login info, please hold on and relax...</p>
       </div>
       <div class="success">
-        <h1>Congratulations!</h1>
-        <p>You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account.</p>
-        <p>For more information, please visit:</p>
+        <h1 -data-locale="finishPage.success.title">Congratulations!</h1>
+        <p -data-locale="finishPage.success.message">You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account.</p>
+        <p -data-locale="finishPage.success.moreInfo">For more information, please visit:</p>
         <ul>
-          <li><a href="http://code.google.com/apis/urlshortener/">Google URL Shortener API</a></li>
-          <li><a href="http://github.com/ZZHC/Shortly">Shortly project on GitHub</a></li>
-          <li><a href="http://zzhc.org/shortly">Shortly Website</a></li>
+          <li><a href="http://code.google.com/apis/urlshortener/" -data-locale="finishPage.success.linkAPI">Google URL Shortener API</a></li>
+          <li><a href="http://github.com/ZZHC/Shortly" -data-locale="finishPage.success.linkRepo">Shortly project on GitHub</a></li>
+          <li><a href="http://zzhc.org/shortly" -data-locale="finishPage.success.linkWebsite">Shortly Website</a></li>
       </div>
       <div class="failure">
-        <h1>OAuth configuration failed</h1>
-        <p>Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.</p>
+        <h1 -data-locale="finishPage.failure.title">OAuth configuration failed</h1>
+        <p -data-locale="offline">Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.</p>
         <div class="knownError">
-          <h3>Error:</h3>
-          <p>Unknown error.</p>
+          <h3 -data-locale="finishPage.failure.errorTitle">Error:</h3>
+          <p -data-locale="unknowErrorMessage">Unknown error.</p>
         </div>
       </div>
       
       <script>
+        /* Initialize with Locale */
+        $('div').hide().find('[-data-locale]').each(function(index) {
+          var queryString = '';
+
+          if ($(this).attr('-data-locale') === 'unknowErrorMessage') {
+            /* queryString = 'errorMessage.unknown'; */
+            return false;
+          } else {
+            queryString = 'oauth.' + $(this).attr('-data-locale');
+          }
+          safari.self.tab.dispatchMessage('getLocaleString', {string: queryString, target: $(this).attr('-data-locale')});
+        });
+        $('processing').show();
+      
         var url = location.href;
 
         /* @@ Restoring Token Secret @@ */
@@ -66,7 +80,7 @@
         
         if(oauth_token_secret == null) {
           reportErrorMessage('Lost token secret');
-        }
+        } else {
         
         /* @@ Setting up for exchanging Access Token @@ */
         
@@ -97,13 +111,12 @@
               tokens: finalTokens
             };
             safari.self.tab.dispatchMessage('oauthComplete', messageToPass);
-            localStorage.clear();
-
             
           }, function(data) {
             reportErrorMessage('Unable to exchange Access Token');
           });
-        
+        }
+        localStorage.clear();
       </script>
     </body>
 </html>
