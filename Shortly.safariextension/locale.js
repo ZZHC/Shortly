@@ -121,7 +121,7 @@ const shortlyLocaleLib = {
           'default': 'Congratulations!'
         },
         message: {
-          'zh-tw': '您已經成功的以 OAuth 登入 Google；Shortly 現在開始可以使用您的 Google 帳戶來縮短 goo.gl 網址了，並在您的帳戶中留下記錄。',
+          'zh-tw': '您已經成功的以 OAuth 登入 Google；Shortly 現在開始可以使用您的 Google 帳戶來縮短 goo.gl 網址，並在您的帳戶中留下記錄了。',
           'default': "You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account."
         },
         moreInfo: {
