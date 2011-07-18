@@ -366,7 +366,12 @@ Shortly.prototype = {
   },
 
   displayMessageWithPopover: function(message, type) {
-    /* Not yet implemented. */
+    var shortly = this; type = type || 'text',
+        popover = shortly.setupTemporaryPopover('popoverResult');
+
+    popover.contentWindow.document.querySelector('p').innerText = message;
+
+    shortly.toolbarItem.showPopover();
   },
   
   /* Abortion methods */
@@ -395,6 +400,42 @@ Shortly.prototype = {
     console.log('State change:', state, shortly.activeTab);
     shortly.activeTab.shortlyWorkingState = state;
     shortly.toolbarItem.validate();
+  },
+  setupTemporaryPopover: function(identifier) {
+    var shortly = this,
+        popover = undefined,
+        menu = shortly.toolbarItem.menu;
+
+    function popoverSelfBomb(event) {
+      /* Remove popover and hook back the menu
+       * after popover being closed */
+      if (event.srcElement === popover.contentWindow) {
+        shortly.toolbarItem.popover = null;
+        shortly.toolbarItem.menu = menu;
+        popover.contentWindow.removeEventListener('blur', popoverSelfBomb, false)
+        console.log('Popover removed:', identifier, (new Date()).toLocaleString())
+      }
+    }
+
+    /* Get the popover for displaying results */
+    for (var i in safari.extension.popovers) {
+      if (safari.extension.popovers[i].identifier === identifier) {
+        popover = safari.extension.popovers[i];
+      }
+    }
+
+    try {
+      shortly.toolbarItem.menu = null;
+      shortly.toolbarItem.popover = popover;
+      console.log('Temporary popover setup:', identifier, (new Date()).toLocaleString());
+    } catch(error) {
+      shortly.reportErrorMessage('unknown', 'Popover setup failed.');
+      return false;
+    }
+
+    popover.contentWindow.addEventListener('blur', popoverSelfBomb, false);
+
+    return popover;
   },
 };
 
