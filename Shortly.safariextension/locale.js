@@ -111,34 +111,44 @@ const shortlyLocaleLib = {
     finishPage: {
       processing: {
         message: {
+          'zh-tw': 'Shortly 正在處理您的 OAuth 登入資訊，請放輕鬆稍等片刻...',
           'default': 'Shorly is processing your OAuth login info, please hold on and relax...'
         }
       },
       success: {
         title: {
+          'zh-tw': '恭喜！',
           'default': 'Congratulations!'
         },
         message: {
+          'zh-tw': '您已經成功的以 OAuth 登入 Google；Shortly 現在開始可以使用您的 Google 帳戶來縮短 goo.gl 網址了，並在您的帳戶中留下記錄。',
           'default': "You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account."
         },
         moreInfo: {
+          'zh-tw': '欲了解更多資訊，請參考：',
           'default': 'For more information, please visit:'
         },
         linkAPI: {
           'default': 'Google URL Shortener API'
         },
         linkRepo: {
+          'zh-tw': 'GitHub 上的 Shortly 專案',
           'default': 'Shortly project on GitHub'
         },
         linkWebsite: {
+          'zh-tw': 'Shortly 網站',
           'default': 'Shortly Website'
         }
       },
       failure: {
         title: {
+          'zh-tw': 'OAuth 設定失敗',
           'default': 'OAuth configuration failed'
         },
         errorTitle: {
+          'zh-tw': '錯誤：',
+          'zh-cn': '错误:',
+          'it-it': 'Errore:',
           'default': 'Error:'
         }
       }
