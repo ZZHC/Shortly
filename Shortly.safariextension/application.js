@@ -396,6 +396,12 @@ Shortly.prototype = {
     shortly.activeTab.shortlyWorkingState = state;
     shortly.toolbarItem.validate();
   },
+  startAnimation: function() {
+    Shortly.startAnimationForTab(this.activeTab);
+  },
+  stopAnimation: function() {
+    Shortly.stopAnimationForTab(this.activeTab);
+  }
 };
 
 /* Global variables */
@@ -561,6 +567,23 @@ Shortly.saveOAuthTokensToSettings = function(tokenMsg, targetTab) {
   }
 };
 
+/* Spin animation helpers */
+Shortly.startAnimationForTab = function(targetTab) {
+  var toolbarItem = undefined;
+
+  for (var i in safari.extension.toolbarItems) {
+    if (safari.extension.toolbarItems[i].browserWindow === targetTab.browserWindow) {
+      toolbarItem = safari.extension.toolbarItems[i]
+    }
+  }
+
+  targetTab.shortlyEnableAnimation = true;
+  toolbarItem.validate();
+};
+Shortly.stopAnimationForTab = function(targetTab) {
+  targetTab.shortlyEnableAnimation = false;
+};
+
 /* Initialize */
 Shortly.toggleToolbarMode(safari.extension.settings.toolbarMode);
 if (safari.extension.settings.googleAuth) {
@@ -653,6 +676,35 @@ function validateCommand(event) {
     } else {
       toolbarItem.badge = 0;
       toolbarItem.disabled = !activeTab.url || activeTab.url.match(/^safari-extension:/);
+    }
+
+    /* Handling spinnig animation */
+    function animationHelper(phase) {
+      var monitorTab = safari.application.activeBrowserWindow.activeTab,
+          baseURI = safari.extension.baseURI,
+          spinSpeed = 85;
+      phase = phase || 1;
+
+      if (monitorTab.shortlyEnableAnimation) {
+        toolbarItem.image = baseURI + 'spin/' + phase + '.png';
+        toolbarItem.shortlyAnimationPlaying = true;
+
+        setTimeout(function() {
+          animationHelper((phase % 12) + 1);
+        }, spinSpeed);
+      } else {
+        toolbarItem.image = baseURI + 'link23.png';
+        toolbarItem.shortlyAnimationPlaying = false;
+
+        console.log('Animation stopped', (new Date()).toLocaleString());
+      }
+    }
+    if (activeTab.shortlyEnableAnimation &&
+        !toolbarItem.shortlyAnimationPlaying) {
+      animationHelper();
+      console.log('Animation started', (new Date()).toLocaleString());
+    } else if (!activeTab.shortlyEnableAnimation) {
+      Shortly.stopAnimationForTab(activeTab);
     }
   }
 }
