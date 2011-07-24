@@ -394,7 +394,13 @@ Shortly.prototype = {
 
     console.log('State change:', state, shortly.activeTab);
     shortly.activeTab.shortlyWorkingState = state;
-    shortly.toolbarItem.validate();
+
+    if (state.match(/^Shortening/)) {
+      shortly.startAnimation(); //Including validate request.
+    } else {
+      shortly.stopAnimation();
+      shortly.toolbarItem.validate();
+    }
   },
   startAnimation: function() {
     Shortly.startAnimationForTab(this.activeTab);
@@ -663,18 +669,15 @@ function validateCommand(event) {
 
       switch (state.split(':')[0]) {
         case 'Shortening': 
-          toolbarItem.badge = 1;
           toolbarItem.disabled = true;
           break;
         case 'Ready':
         default:
-          toolbarItem.badge = 0;
           toolbarItem.disabled = false;
           break;
       }
       if (!activeTab.url || activeTab.url.match(/^safari-extension:/)) toolbarItem.disabled = true;
     } else {
-      toolbarItem.badge = 0;
       toolbarItem.disabled = !activeTab.url || activeTab.url.match(/^safari-extension:/);
     }
 
