@@ -649,7 +649,7 @@ function validateCommand(event) {
           toolbarItem.disabled = false;
           break;
       }
-      if (!activeTab.url) toolbarItem.disabled = true;
+      if (!activeTab.url || activeTab.url.match(/^safari-extension:/)) toolbarItem.disabled = true;
     } else {
       toolbarItem.badge = 0;
       toolbarItem.disabled = !activeTab.url || activeTab.url.match(/^safari-extension:/);
