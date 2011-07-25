@@ -884,7 +884,7 @@ function performMenuCommand(menuCommand) {
     case 'selectBitly':
       safari.extension.settings.shortenService = 'bit.ly';
       break;
-    case 'selectTinyurl':
+    case 'selectTinyURL':
       safari.extension.settings.shortenService = 'tinyurl';
       break;
     case 'selectEndpoint':
