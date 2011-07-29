@@ -90,7 +90,7 @@ Shortly.prototype = {
   },
   getShortlinkWithGoogle: function(longUrl) {
     var shortly = this,
-        queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
+        queryAPI = 'https://www.googleapis.com/urlshortener/v1/url';
     if (this.flagAbort) return 'Aborted';
     
     /* Private methods for shortening */
@@ -103,7 +103,8 @@ Shortly.prototype = {
     }
     
     function sendNormalShortenRequest(url) {
-      $.ajax({ url: queryAPI, type: 'POST', dataType: 'json',
+      var queryAPIwithKey = queryAPI + '?key=' + apiKeyChain.google;
+      $.ajax({ url: queryAPIwithKey, type: 'POST', dataType: 'json',
         data: '{ longUrl: "' + url + '" }',
         contentType: 'application/json',
         success: successHandler,
