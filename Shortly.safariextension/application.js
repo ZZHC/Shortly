@@ -317,17 +317,17 @@ Shortly.prototype = {
     
     if (safari.extension.settings.toolbarMode) {
       var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
-      
+
       setTimeout(function() {
-        if (toolbarReady) {
+        if (shortly.flagToolbarReady) {
           shortly.displayMessageWithToolbar(message, type);
         } else {
+          console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
           shortly.displayMessageWithAlert(message, type);
         }
+        /* Reset shortly.flagToolbarReady to false for next request */
+        shortly.flagToolbarReady = false;
       }, waitTimeForToolbar);
-      
-      /* Reset shortly.flagToolbarReady to false for next request */
-      shortly.flagToolbarReady = false;
     } else {
       shortly.displayMessageWithAlert(message, type);
     }
