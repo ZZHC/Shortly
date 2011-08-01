@@ -815,7 +815,8 @@ function respondToMessage(messageEvent) {
     
     for (var i in safari.extension.toolbarItems) {
       var toolbarItem = safari.extension.toolbarItems[i];
-      
+
+      if (toolbarItem.disabled) return false;
       if (toolbarItem.browserWindow = messageEvent.target.browserWindow) {
         commandTriggerer.target = toolbarItem;
       }
