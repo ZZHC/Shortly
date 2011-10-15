@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="charset=UTF-8" />
+  <meta name="Author" content="ZZHC Studio" />
+  <title>Shortly - goo.gl OAuth</title>
+  <link rel="stylesheet" href="../stylesheets/normalize.css" type="text/css" />
+  <link rel="stylesheet" href="../stylesheets/assetPages.css" type="text/css" />
+  <script src="jsOAuth-1.3.1.js"></script>
+  <script src="../jquery-1.6.2.min.js"></script>
+  <script src="../locale.js"></script>
+  <script>
+    function reportErrorMessage(message, dispatch) {
+      dispatch = dispatch || true;
+      
+      if (dispatch) safari.self.tab.dispatchMessage('oauthFail', message);
+      
+      $('section').hide();
+      if (message !== null || message != '') {
+        $('div.knownError p').text(message);
+      }
+      $('section.failure, div.knownError').show();
+    }
+    
+    function messageHandler(event) {
+      if (event.name === 'oauthSaveComplete') {
+        $('section').hide(); $('section.success').show();
+      }
+      
+      if (event.name === 'oauthSaveFail') {
+        reportErrorMessage(event.message, false);
+      }
+      
+      if (event.name === 'setLocaleString') {
+        $('[-data-locale="' + event.message.target + '"]').text(event.message.string);
+        console.log(event.message.target, '=', event.message.string);
+      }
+    }
+    
+    safari.self.addEventListener("message", messageHandler, false);
+  </script>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Shortly.</h1>
+    </header>
+    <section class="processing">
+      <p -data-locale="finishPage.processing.message">Shorly is processing your OAuth login info, please hold on and relax...</p>
+    </section>
+    <section class="success">
+      <h3 -data-locale="finishPage.success.title">Congratulations!</h3>
+      <p -data-locale="finishPage.success.message">You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account.</p>
+      <p -data-locale="finishPage.success.moreInfo">For more information, please visit:</p>
+      <ul>
+        <li><a href="http://code.google.com/apis/urlshortener/" -data-locale="finishPage.success.linkAPI">Google URL Shortener API</a></li>
+        <li><a href="http://github.com/ZZHC/Shortly" -data-locale="finishPage.success.linkRepo">Shortly project on GitHub</a></li>
+        <li><a href="http://zzhc.org/shortly" -data-locale="finishPage.success.linkWebsite">Shortly Website</a></li>
+    </section>
+    <section class="failure">
+      <h3 -data-locale="finishPage.failure.title">OAuth configuration failed</h3>
+      <p -data-locale="offline">Shortly has failed to setup OAuth login with Google for you. Please check your Internet settings and try again later.</p>
+      <div class="knownError" style="display: none;">
+        <h3 -data-locale="finishPage.failure.errorTitle">Error:</h3>
+        <p -data-locale="unknowErrorMessage">Unknown error.</p>
+      </div>
+    </section>
+  </div>
+  <footer>
+    <p>This is an asset page built in extension Shortly.<br/>
+       Shortly is a <a href="http://zzhc.org/">ZZHC project</a>, and it's <a href="https://github.com/ZZHC/Shortly/">open-sourced on GitHub</a>. For more information please visit <a href="http://zzhc.org/shortly/">Shortly website</a>.</p>
+  </footer>
+
+  <script>
+    /* Initialize with Locale */
+    $('section').hide().find('[-data-locale]').each(function(index) {
+      var queryString = '';
+
+      if ($(this).attr('-data-locale') === 'unknowErrorMessage') {
+        /* queryString = 'errorMessage.unknown'; */
+        return false;
+      } else {
+        queryString = 'oauth.' + $(this).attr('-data-locale');
+      }
+      safari.self.tab.dispatchMessage('getLocaleString', {string: queryString, target: $(this).attr('-data-locale')});
+    });
+    $('section.processing').show();
+  
+    var url = location.href;
+
+    /* @@ Restoring Token Secret @@ */
+    var oauth_token_secret = localStorage.getItem('googl_oauth_token_secret');
+    
+    if(oauth_token_secret == null) {
+      reportErrorMessage('Lost token secret');
+    } else {
+    
+    /* @@ Setting up for exchanging Access Token @@ */
+    
+     var options = {
+        consumerKey: 'anonymous',
+        consumerSecret: 'anonymous',
+        accessTokenUrl: 'https://www.google.com/accounts/OAuthGetAccessToken'
+      };
+
+      var oauthExchanger = OAuth(options);
+
+      /* @@ Set tokens and verifier @@ */
+
+      var token = oauthExchanger.parseTokenRequest(decodeURIComponent(url.split('?')[1]));
+      oauth_token_secret = decodeURIComponent(oauth_token_secret);
+      
+      oauthExchanger.setAccessToken([token.oauth_token, oauth_token_secret]);
+      oauthExchanger.setVerifier(token.oauth_verifier);
+
+      /* @@ Ask to exchange Access Token @@ */
+      
+      oauthExchanger.fetchAccessToken(function(data) {
+        var finalTokens = oauthExchanger.parseTokenRequest(decodeURIComponent(data.text));
+        
+        /* @@ Send tokens to global page as message @@ */
+        var messageToPass = {
+          service: 'goo.gl',
+          tokens: finalTokens
+        };
+        safari.self.tab.dispatchMessage('oauthComplete', messageToPass);
+        
+      }, function(data) {
+        reportErrorMessage('Unable to exchange Access Token');
+      });
+    }
+    localStorage.clear();
+  </script>
+</body>
+</html>
+

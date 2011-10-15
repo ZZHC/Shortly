@@ -43,7 +43,7 @@ function initializeToolbar(message) {
   }
   
   $(toolbarTemplate)
-    .toggleClass('error', (message.error !== null))
+    .toggleClass('error', (message.type == 'error'))
     .appendTo('body');
   
   $('#-shortly-toolbar a.hideBar')
@@ -62,8 +62,8 @@ function initializeToolbar(message) {
     shortlink.execCommand("Copy");
   });
     
-  $('#-shortly-toolbar input#ipbShortUrl').attr('value', message.shortUrl);
-  $('#-shortly-toolbar p#txtPageTitle').text((message.error) ? message.error : document.title);
+  $('#-shortly-toolbar input#ipbShortUrl').attr('value', message.message);
+  $('#-shortly-toolbar p#txtPageTitle').text((message.type === 'error') ? message.message : (document.title || location.href));
   
   setTimeout(function() {
     $('#-shortly-toolbar input#ipbShortUrl')
@@ -80,19 +80,18 @@ function initializeToolbar(message) {
   }, 100);
 }
 
-function reportToolbarReady() {
-  safari.self.tab.dispatchMessage("toolbarReady");
-}
-
 function responseToRequest(request) {
-  if((location.href === request.message.url) && (self ===  top)) {
+  if(self === top) {
     /* Prevent children from getting message */
     
     if(request.name === "displayToolbar") {
       initializeToolbar(request.message);
     }
-    if(request.name === "checkToolbarReady") {
-      reportToolbarReady();
+    if(request.name === "reportToolbarReady") {
+      /* To see if DOM injection is possible */
+      if ($('<div>').appendTo('body').remove().length) {
+        safari.self.tab.dispatchMessage("toolbarReady");
+      }
     }
   }
 }
