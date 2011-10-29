@@ -90,7 +90,7 @@ Shortly.prototype = {
   },
   getShortlinkWithGoogle: function(longUrl) {
     var shortly = this,
-        queryAPI = 'https://www.googleapis.com/urlshortener/v1/url?key=' + apiKeyChain.google;
+        queryAPI = 'https://www.googleapis.com/urlshortener/v1/url';
     if (this.flagAbort) return 'Aborted';
     
     /* Private methods for shortening */
@@ -103,7 +103,8 @@ Shortly.prototype = {
     }
     
     function sendNormalShortenRequest(url) {
-      $.ajax({ url: queryAPI, type: 'POST', dataType: 'json',
+      var queryAPIwithKey = queryAPI + '?key=' + apiKeyChain.google;
+      $.ajax({ url: queryAPIwithKey, type: 'POST', dataType: 'json',
         data: '{ longUrl: "' + url + '" }',
         contentType: 'application/json',
         success: successHandler,
@@ -316,17 +317,17 @@ Shortly.prototype = {
     
     if (safari.extension.settings.toolbarMode) {
       var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
-      
+
       setTimeout(function() {
-        if (toolbarReady) {
+        if (shortly.flagToolbarReady) {
           shortly.displayMessageWithToolbar(message, type);
         } else {
+          console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
           shortly.displayMessageWithAlert(message, type);
         }
+        /* Reset shortly.flagToolbarReady to false for next request */
+        shortly.flagToolbarReady = false;
       }, waitTimeForToolbar);
-      
-      /* Reset shortly.flagToolbarReady to false for next request */
-      shortly.flagToolbarReady = false;
     } else {
       shortly.displayMessageWithAlert(message, type);
     }
@@ -399,7 +400,19 @@ Shortly.prototype = {
 
     console.log('State change:', state, shortly.activeTab);
     shortly.activeTab.shortlyWorkingState = state;
-    shortly.toolbarItem.validate();
+
+    if (state.match(/^Shortening/)) {
+      shortly.startAnimation(); //Including validate request.
+    } else {
+      shortly.stopAnimation();
+      shortly.toolbarItem.validate();
+    }
+  },
+  startAnimation: function() {
+    Shortly.startAnimationForTab(this.activeTab);
+  },
+  stopAnimation: function() {
+    Shortly.stopAnimationForTab(this.activeTab);
   },
   setupTemporaryPopover: function(identifier) {
     var shortly = this,
@@ -436,7 +449,7 @@ Shortly.prototype = {
     popover.contentWindow.addEventListener('blur', popoverSelfBomb, false);
 
     return popover;
-  },
+  }
 };
 
 /* Global variables */
@@ -524,7 +537,7 @@ Shortly.confirmOAuthLibAvailability = function() {
   if (typeof OAuth === 'undefined') {
     $(document).ready(function() {
       var oauthJsLibElement = document.createElement('script');
-        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.3.js';
+        oauthJsLibElement.src = safari.extension.baseURI + 'oauth/jsOAuth-1.3.1.js';
         document.querySelector('body').appendChild(oauthJsLibElement);
     });
   }
@@ -600,6 +613,23 @@ Shortly.saveOAuthTokensToSettings = function(tokenMsg, targetTab) {
       }
     }
   }
+};
+
+/* Spin animation helpers */
+Shortly.startAnimationForTab = function(targetTab) {
+  var toolbarItem = undefined;
+
+  for (var i in safari.extension.toolbarItems) {
+    if (safari.extension.toolbarItems[i].browserWindow === targetTab.browserWindow) {
+      toolbarItem = safari.extension.toolbarItems[i]
+    }
+  }
+
+  targetTab.shortlyEnableAnimation = true;
+  toolbarItem.validate();
+};
+Shortly.stopAnimationForTab = function(targetTab) {
+  targetTab.shortlyEnableAnimation = false;
 };
 
 /* Initialize */
@@ -681,19 +711,45 @@ function validateCommand(event) {
 
       switch (state.split(':')[0]) {
         case 'Shortening': 
-          toolbarItem.badge = 1;
           toolbarItem.disabled = true;
           break;
         case 'Ready':
         default:
-          toolbarItem.badge = 0;
           toolbarItem.disabled = false;
           break;
       }
-      if (!activeTab.url) toolbarItem.disabled = true;
+      if (!activeTab.url || activeTab.url.match(/^safari-extension:/)) toolbarItem.disabled = true;
     } else {
-      toolbarItem.badge = 0;
-      toolbarItem.disabled = !activeTab.url;
+      toolbarItem.disabled = !activeTab.url || activeTab.url.match(/^safari-extension:/);
+    }
+
+    /* Handling spinnig animation */
+    function animationHelper(phase) {
+      var monitorTab = safari.application.activeBrowserWindow.activeTab,
+          baseURI = safari.extension.baseURI,
+          spinSpeed = 85;
+      phase = phase || 1;
+
+      if (monitorTab.shortlyEnableAnimation) {
+        toolbarItem.image = baseURI + 'spin/' + phase + '.png';
+        toolbarItem.shortlyAnimationPlaying = true;
+
+        setTimeout(function() {
+          animationHelper((phase % 12) + 1);
+        }, spinSpeed);
+      } else {
+        toolbarItem.image = baseURI + 'link23.png';
+        toolbarItem.shortlyAnimationPlaying = false;
+
+        console.log('Animation stopped', (new Date()).toLocaleString());
+      }
+    }
+    if (activeTab.shortlyEnableAnimation &&
+        !toolbarItem.shortlyAnimationPlaying) {
+      animationHelper();
+      console.log('Animation started', (new Date()).toLocaleString());
+    } else if (!activeTab.shortlyEnableAnimation) {
+      Shortly.stopAnimationForTab(activeTab);
     }
   }
 }
@@ -800,13 +856,22 @@ function respondToMessage(messageEvent) {
     
     for (var i in safari.extension.toolbarItems) {
       var toolbarItem = safari.extension.toolbarItems[i];
-      
+
+      if (toolbarItem.disabled) return false;
       if (toolbarItem.browserWindow = messageEvent.target.browserWindow) {
         commandTriggerer.target = toolbarItem;
       }
     }
     
     performCommand(commandTriggerer);
+  }
+
+  if (messageEvent.name === 'getLocaleString') {
+    var message = {
+      string: Shortly.getLocaleString(messageEvent.message.string),
+      target: messageEvent.message.target
+    };
+    messageEvent.target.page.dispatchMessage('setLocaleString', message);
   }
 }
 
@@ -862,7 +927,7 @@ function performMenuCommand(menuCommand) {
     case 'selectBitly':
       safari.extension.settings.shortenService = 'bit.ly';
       break;
-    case 'selectTinyurl':
+    case 'selectTinyURL':
       safari.extension.settings.shortenService = 'tinyurl';
       break;
     case 'selectEndpoint':

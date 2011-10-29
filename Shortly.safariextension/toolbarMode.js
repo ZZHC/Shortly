@@ -88,7 +88,10 @@ function responseToRequest(request) {
       initializeToolbar(request.message);
     }
     if(request.name === "reportToolbarReady") {
-      safari.self.tab.dispatchMessage("toolbarReady");
+      /* To see if DOM injection is possible */
+      if ($('<div>').appendTo('body').remove().length) {
+        safari.self.tab.dispatchMessage("toolbarReady");
+      }
     }
   }
 }
