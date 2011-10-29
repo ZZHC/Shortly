@@ -311,25 +311,31 @@ Shortly.prototype = {
 
   displayMessage: function(message, type) {
     var shortly = this,
-        displayMethod = (safari.extension.settings.toolbarMode) ? 'toolbar' : 'alert',
+        displayMethod = (Shortly.displayMethod()) || 'toolbar',
         toolbarReady = shortly.flagToolbarReady;
     type = type || 'text'; /* Expected: shortlink, error, or text */
     
-    if (safari.extension.settings.toolbarMode) {
-      var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
+    switch (displayMethod) {
+      case 'toolbar':
+        var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
 
-      setTimeout(function() {
-        if (shortly.flagToolbarReady) {
-          shortly.displayMessageWithToolbar(message, type);
-        } else {
-          console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
-          shortly.displayMessageWithAlert(message, type);
-        }
-        /* Reset shortly.flagToolbarReady to false for next request */
-        shortly.flagToolbarReady = false;
-      }, waitTimeForToolbar);
-    } else {
-      shortly.displayMessageWithAlert(message, type);
+        setTimeout(function() {
+          if (shortly.flagToolbarReady) {
+            shortly.displayMessageWithToolbar(message, type);
+          } else {
+            console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
+            shortly.displayMessageWithAlert(message, type);
+          }
+          /* Reset shortly.flagToolbarReady to false for next request */
+          shortly.flagToolbarReady = false;
+        }, waitTimeForToolbar);
+        break;
+      case 'popover':
+        shortly.displayMessageWithPopover(message, type);
+        break;
+      case 'alert':
+      default:
+        shortly.displayMessageWithAlert(message, type);
     }
     
 
@@ -632,8 +638,13 @@ Shortly.stopAnimationForTab = function(targetTab) {
   targetTab.shortlyEnableAnimation = false;
 };
 
+/* Helpers for reading display method settings */
+Shortly.displayMethod = function() {
+  return safari.extension.settings.displayMethod;
+};
+
 /* Initialize */
-Shortly.toggleToolbarMode(safari.extension.settings.toolbarMode);
+Shortly.toggleToolbarMode(Shortly.displayMethod() === 'toolbar');
 if (safari.extension.settings.googleAuth) {
   if (Shortly.getStoredOAuthTokensForService('goo.gl') === false) {
     safari.extension.settings.googleAuth = false;
@@ -686,7 +697,7 @@ function performCommand(event) {
      *
      * flagToolbarReady should be reset to false again after display.
      */
-    if (safari.extension.settings.toolbarMode) {
+    if (Shortly.displayMethod() === 'toolbar') {
       shortly.activeTab.page.dispatchMessage("reportToolbarReady");
     }
   }
