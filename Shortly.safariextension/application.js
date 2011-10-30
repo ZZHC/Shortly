@@ -324,7 +324,11 @@ Shortly.prototype = {
             shortly.displayMessageWithToolbar(message, type);
           } else {
             console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
-            shortly.displayMessageWithAlert(message, type);
+            if (safari.extension.popovers) {
+              shortly.displayMessageWithPopover(message, type);
+            } else {
+              shortly.displayMessageWithAlert(message, type);
+            }
           }
           /* Reset shortly.flagToolbarReady to false for next request */
           shortly.flagToolbarReady = false;
