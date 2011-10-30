@@ -777,6 +777,9 @@ function settingsChanged(event) {
     } else {
       Shortly.toggleToolbarMode(false);
     }
+    if (event.newValue === 'popover') {
+      if (!safari.extension.popovers) alert(Shortly.getLocaleString('notice.popoverAvailability'));
+    }
   }
   if (event.key === "googleAuth") {
     if (event.newValue) {
