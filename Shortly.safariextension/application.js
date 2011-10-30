@@ -376,7 +376,7 @@ Shortly.prototype = {
     var shortly = this; type = type || 'text',
         popover = shortly.setupTemporaryPopover('popoverResult');
 
-    popover.contentWindow.document.querySelector('input#ipbShortUrl').value = message;
+    popover.contentWindow.displayMessage(message, type);
 
     shortly.toolbarItem.showPopover();
   },
@@ -431,7 +431,6 @@ Shortly.prototype = {
       if (event.srcElement === popover.contentWindow) {
         shortly.toolbarItem.popover = null;
         shortly.toolbarItem.menu = menu;
-        popover.contentWindow.document.querySelector('input#ipbShortUrl').value = '';
         popover.contentWindow.removeEventListener('blur', popoverSelfBomb, false)
         console.log('Popover removed:', identifier, (new Date()).toLocaleString())
       }
