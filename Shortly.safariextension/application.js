@@ -766,9 +766,13 @@ function validateCommand(event) {
 }
 
 function settingsChanged(event) {
-  if (event.key === "toolbarMode") {
-    Shortly.toggleToolbarMode(event.newValue);
-    if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
+  if (event.key === "displayMethod") {
+    if (event.newValue === 'toolbar') {
+      Shortly.toggleToolbarMode(true);
+      alert(Shortly.getLocaleString('notice.toolbarMode'));
+    } else {
+      Shortly.toggleToolbarMode(false);
+    }
   }
   if (event.key === "googleAuth") {
     if (event.newValue) {
