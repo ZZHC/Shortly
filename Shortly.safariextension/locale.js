@@ -37,6 +37,14 @@ const shortlyLocaleLib = {
     hotkey: {
       'zh-tw': '您必須重新載入已開啟的網頁才能啟用快捷鍵。',
       'default': 'You have to reload opened pages to enable hotkey.'
+    },
+    popoverAvailability: {
+      'zh-tw': '彈出式視窗 (Popover) 需要 Safari 5.1 以上版本才能使用。',
+      'default': 'Popover is only available in Safari 5.1 or higher version.'
+    },
+    popoverTips: {
+      'zh-tw': '請按 <kbd>&#8984;-C</kbd> 複製短網址。</small>',
+      'default': 'Press <kbd>&#8984;-C</kbd> to copy.</small>'
     }
   },
   errorMessage: {

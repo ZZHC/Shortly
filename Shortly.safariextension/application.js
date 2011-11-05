@@ -311,25 +311,35 @@ Shortly.prototype = {
 
   displayMessage: function(message, type) {
     var shortly = this,
-        displayMethod = (safari.extension.settings.toolbarMode) ? 'toolbar' : 'alert',
+        displayMethod = (Shortly.displayMethod()) || 'toolbar',
         toolbarReady = shortly.flagToolbarReady;
     type = type || 'text'; /* Expected: shortlink, error, or text */
     
-    if (safari.extension.settings.toolbarMode) {
-      var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
+    switch (displayMethod) {
+      case 'toolbar':
+        var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
 
-      setTimeout(function() {
-        if (shortly.flagToolbarReady) {
-          shortly.displayMessageWithToolbar(message, type);
-        } else {
-          console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
-          shortly.displayMessageWithAlert(message, type);
-        }
-        /* Reset shortly.flagToolbarReady to false for next request */
-        shortly.flagToolbarReady = false;
-      }, waitTimeForToolbar);
-    } else {
-      shortly.displayMessageWithAlert(message, type);
+        setTimeout(function() {
+          if (shortly.flagToolbarReady) {
+            shortly.displayMessageWithToolbar(message, type);
+          } else {
+            console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
+            if (safari.extension.popovers) {
+              shortly.displayMessageWithPopover(message, type);
+            } else {
+              shortly.displayMessageWithAlert(message, type);
+            }
+          }
+          /* Reset shortly.flagToolbarReady to false for next request */
+          shortly.flagToolbarReady = false;
+        }, waitTimeForToolbar);
+        break;
+      case 'popover':
+        shortly.displayMessageWithPopover(message, type);
+        break;
+      case 'alert':
+      default:
+        shortly.displayMessageWithAlert(message, type);
     }
     
 
@@ -367,7 +377,16 @@ Shortly.prototype = {
   },
 
   displayMessageWithPopover: function(message, type) {
-    /* Not yet implemented. */
+    var shortly = this; type = type || 'text',
+        popover = shortly.setupTemporaryPopover('popoverResult'),
+        localeLib = [];
+
+    localeLib.push({query: '#result small', string: Shortly.getLocaleString('notice.popoverTips')});
+    console.log(localeLib);
+    popover.contentWindow.setLocaleString(localeLib);
+    popover.contentWindow.displayMessage(message, type);
+
+    shortly.toolbarItem.showPopover();
   },
   
   /* Abortion methods */
@@ -408,6 +427,42 @@ Shortly.prototype = {
   },
   stopAnimation: function() {
     Shortly.stopAnimationForTab(this.activeTab);
+  },
+  setupTemporaryPopover: function(identifier) {
+    var shortly = this,
+        popover = undefined,
+        menu = shortly.toolbarItem.menu;
+
+    function popoverSelfBomb(event) {
+      /* Remove popover and hook back the menu
+       * after popover being closed */
+      if (event.srcElement === popover.contentWindow) {
+        shortly.toolbarItem.popover = null;
+        shortly.toolbarItem.menu = menu;
+        popover.contentWindow.removeEventListener('blur', popoverSelfBomb, false)
+        console.log('Popover removed:', identifier, (new Date()).toLocaleString())
+      }
+    }
+
+    /* Get the popover for displaying results */
+    for (var i in safari.extension.popovers) {
+      if (safari.extension.popovers[i].identifier === identifier) {
+        popover = safari.extension.popovers[i];
+      }
+    }
+
+    try {
+      shortly.toolbarItem.menu = null;
+      shortly.toolbarItem.popover = popover;
+      console.log('Temporary popover setup:', identifier, (new Date()).toLocaleString());
+    } catch(error) {
+      shortly.reportErrorMessage('unknown', 'Popover setup failed.');
+      return false;
+    }
+
+    popover.contentWindow.addEventListener('blur', popoverSelfBomb, false);
+
+    return popover;
   }
 };
 
@@ -591,8 +646,13 @@ Shortly.stopAnimationForTab = function(targetTab) {
   targetTab.shortlyEnableAnimation = false;
 };
 
+/* Helpers for reading display method settings */
+Shortly.displayMethod = function() {
+  return safari.extension.settings.displayMethod;
+};
+
 /* Initialize */
-Shortly.toggleToolbarMode(safari.extension.settings.toolbarMode);
+Shortly.toggleToolbarMode(Shortly.displayMethod() === 'toolbar');
 if (safari.extension.settings.googleAuth) {
   if (Shortly.getStoredOAuthTokensForService('goo.gl') === false) {
     safari.extension.settings.googleAuth = false;
@@ -645,7 +705,7 @@ function performCommand(event) {
      *
      * flagToolbarReady should be reset to false again after display.
      */
-    if (safari.extension.settings.toolbarMode) {
+    if (Shortly.displayMethod() === 'toolbar') {
       shortly.activeTab.page.dispatchMessage("reportToolbarReady");
     }
   }
@@ -714,9 +774,16 @@ function validateCommand(event) {
 }
 
 function settingsChanged(event) {
-  if (event.key === "toolbarMode") {
-    Shortly.toggleToolbarMode(event.newValue);
-    if (event.newValue) alert(Shortly.getLocaleString('notice.toolbarMode'));
+  if (event.key === "displayMethod") {
+    if (event.newValue === 'toolbar') {
+      Shortly.toggleToolbarMode(true);
+      alert(Shortly.getLocaleString('notice.toolbarMode'));
+    } else {
+      Shortly.toggleToolbarMode(false);
+    }
+    if (event.newValue === 'popover') {
+      if (!safari.extension.popovers) alert(Shortly.getLocaleString('notice.popoverAvailability'));
+    }
   }
   if (event.key === "googleAuth") {
     if (event.newValue) {

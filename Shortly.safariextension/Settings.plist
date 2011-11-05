@@ -26,15 +26,27 @@
 			<string>endpoint</string>
 		</array>
 	</dict>
-	<dict>
+  <dict>
 		<key>DefaultValue</key>
-		<true/>
+		<string>toolbar</string>
 		<key>Key</key>
-		<string>toolbarMode</string>
+		<string>displayMethod</string>
 		<key>Title</key>
-		<string>Use Toolbar mode to display message</string>
+		<string>Message display</string>
+		<key>Titles</key>
+		<array>
+			<string>Popover</string>
+			<string>Toolbar Mode</string>
+			<string>Alert Window</string>
+		</array>
 		<key>Type</key>
-		<string>CheckBox</string>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>popover</string>
+			<string>toolbar</string>
+			<string>alert</string>
+		</array>
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
