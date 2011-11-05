@@ -378,8 +378,12 @@ Shortly.prototype = {
 
   displayMessageWithPopover: function(message, type) {
     var shortly = this; type = type || 'text',
-        popover = shortly.setupTemporaryPopover('popoverResult');
+        popover = shortly.setupTemporaryPopover('popoverResult'),
+        localeLib = [];
 
+    localeLib.push({query: '#result small', string: Shortly.getLocaleString('notice.popoverTips')});
+    console.log(localeLib);
+    popover.contentWindow.setLocaleString(localeLib);
     popover.contentWindow.displayMessage(message, type);
 
     shortly.toolbarItem.showPopover();

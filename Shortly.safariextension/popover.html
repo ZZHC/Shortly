@@ -35,6 +35,12 @@
   }
 </style>
 <script>
+  function setLocaleString(localeLib) {
+    for (var i in localeLib) {
+      document.querySelector(localeLib[i].query).innerHTML = localeLib[i].string;
+    }
+  }
+
   function displayMessage(message, type) {
     function initialize() {
       var divs = document.querySelectorAll('body > div');
