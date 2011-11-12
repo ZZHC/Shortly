@@ -382,7 +382,6 @@ Shortly.prototype = {
         localeLib = [];
 
     localeLib.push({query: '#result small', string: Shortly.getLocaleString('notice.popoverTips')});
-    console.log(localeLib);
     popover.contentWindow.setLocaleString(localeLib);
     popover.contentWindow.displayMessage(message, type);
 
