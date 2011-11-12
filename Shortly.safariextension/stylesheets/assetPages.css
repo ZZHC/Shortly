@@ -6,6 +6,10 @@
   font-feature-settings: "cpct=1";
 }
 
+html {
+  overflow: inherit;
+}
+
 body { 
   font: 14px/1.5 "Lucida Grande", Helvetica, Arial, HiraginoSansGBTest, HiraKakuPro-W3, "Hiragino Kaku Gothic Pro", STHeitiTC-Light, "黑體-繁", "Droid Sans Fallback", 微軟正黑體, "Arial Unicode MS", SimHei, sans-serif;
 }
