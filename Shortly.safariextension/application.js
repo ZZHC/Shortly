@@ -30,9 +30,41 @@ Shortly.prototype = {
   oauthTokens: undefined,
   
   /* Methods */
-  checkNativeShortlinkAvailability: function() {
+  checkNativeShortlinkAvailability: function(longUrl) {
     var shortly = this;
-    shortly.activeTab.page.dispatchMessage("findRelLink");
+    
+    if (longUrl.match(/http(s)?:\/\/(gist\.)?github\.com/)) {
+
+      (function shortenWithGithubNativeShortener(longUrl) {
+        $.ajax({ url: 'http://git.io', data: {url: longUrl}, type: 'POST',
+            success: function(data, textStatus, jqXHR) {
+              var statusCode = jqXHR.status, statusText = jqXHR.getResponseHeader('Status'),
+                  shortlink = jqXHR.getResponseHeader('Location');
+
+              if (shortlink) {
+                shortly.foundShortlink(shortlink);
+              } else {
+                console.warn('Unknown error', jqXHR.getAllResponseHeaders());
+                shortly.getShortlinkToAddress(longUrl, 'skip');
+              }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              var statusCode = jqXHR.status, statusText = jqXHR.getResponseHeader('Status'),
+                  errorMsg = jqXHR.responseText;
+
+              if (jqXHR.status === 0 && textStatus == 'error') {
+                shortly.reportErrorMessage('offline');
+              } else {
+                console.error('Git.io Error:', statusText, errorMsg);
+                shortly.getShortlinkToAddress(longUrl, 'skip');
+              }
+            }
+          });
+      })(longUrl);
+
+    } else {
+      shortly.activeTab.page.dispatchMessage("findRelLink");
+    }
   },
 
   receiveNativeRelShortlink: function(shortlink) {
@@ -67,7 +99,7 @@ Shortly.prototype = {
     skipNative = (skipNative === 'skip') || safari.extension.settings.ignoreNative || false;
     
     if (!skipNative) {
-      shortly.checkNativeShortlinkAvailability();
+      shortly.checkNativeShortlinkAvailability(longUrl);
       return;
     }
 
@@ -305,7 +337,7 @@ Shortly.prototype = {
         break;
     }
   
-    console.log(errorType, message, shortly.activeTab.url, (new Date()).toLocaleString());
+    console.error(errorType, message, shortly.activeTab.url, (new Date()).toLocaleString());
     shortly.markActiveTabAsWorkingState('Failed');
   },
 
