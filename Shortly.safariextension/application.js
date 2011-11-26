@@ -345,6 +345,7 @@ Shortly.prototype = {
     var shortly = this,
         displayMethod = (Shortly.displayMethod()) || 'toolbar',
         toolbarReady = shortly.flagToolbarReady;
+
     type = type || 'text'; /* Expected: shortlink, error, or text */
     
     switch (displayMethod) {
@@ -390,7 +391,8 @@ Shortly.prototype = {
   },
 
   displayMessageWithAlert: function(message, type) {
-    var shortly = this; type = type || 'text';
+    var shortly = this;
+    type = type || 'text';
     
     switch (type) {
       case 'shortlink':
@@ -409,9 +411,11 @@ Shortly.prototype = {
   },
 
   displayMessageWithPopover: function(message, type) {
-    var shortly = this; type = type || 'text',
+    var shortly = this,
         popover = shortly.setupTemporaryPopover('popoverResult'),
         localeLib = [];
+        
+    type = type || 'text';
 
     localeLib.push({query: '#result small', string: Shortly.getLocaleString('notice.popoverTips')});
     popover.contentWindow.setLocaleString(localeLib);
