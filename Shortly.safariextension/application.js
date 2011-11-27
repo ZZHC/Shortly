@@ -506,7 +506,7 @@ Shortly.prototype = {
 /* Global variables */
 Shortly.runtimeLocale = 'default';
 Shortly.localeLib = shortlyLocaleLib;
-Shortly.knownBitlyNativeList = ['www.facebook.com'];
+Shortly.knownBitlyNativeList = JSON.parse(safari.extension.settings.getItem('knownBitlyNativeList'));
 
 /* Public utility methods */
 Shortly.isNetworkAvailable = function() {
@@ -536,6 +536,13 @@ Shortly.isKnownBitlyNative = function(longUrl) {
   } catch(e) {
     console.log(e);
     return false;
+  }
+}
+Shortly.updateKnownBitlyNativeListWithArray = function(listArray) {
+  if (safari.extension.settings.knownBitlyNativeList) {
+    safari.extension.settings.setItem('knownBitlyNativeList', JSON.stringify(listArray));
+  } else {
+    console.error('Property `knownBitlyNativeList` does not exist.');
   }
 }
 
@@ -704,6 +711,25 @@ safari.application.addEventListener("validate", validateCommand, false);
 safari.application.addEventListener("message", respondToMessage, false);
 safari.application.addEventListener("menu", menuValidation, false);
 safari.extension.settings.addEventListener("change", settingsChanged, false);
+
+/* Check if a newer list of known domain patter, once per day */
+
+(function checkKnownBitlyNativeListUpdate() {
+  var checkFrequency = 86400538, // 1 day
+      currentTime = (new Date()).getTime(),
+      lastCheckTime = safari.extension.settings.getItem('knownBitlyNativeListLastCheck'),
+      updateUrl = 'https://raw.github.com/ZZHC/Shortly/develop/knownBitlyNativeList.json';
+      
+  if (currentTime - lastCheckTime > checkFrequency) {
+    $.getJSON(updateUrl, function(data) {
+      if (data.lastUpdate > lastCheckTime) {
+        Shortly.updateKnownBitlyNativeListWithArray(data.list);
+        console.log('Known Bitly native pattern list updated.', data.list);
+      }
+      safari.extension.settings.knownBitlyNativeListLastCheck = currentTime;
+    });
+  }
+})();
 
 /* Event Listeners */
 

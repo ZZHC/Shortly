@@ -26,7 +26,7 @@
 			<string>endpoint</string>
 		</array>
 	</dict>
-  <dict>
+	<dict>
 		<key>DefaultValue</key>
 		<string>toolbar</string>
 		<key>Key</key>
@@ -193,6 +193,12 @@
 		<string>⇧ Shift</string>
 		<key>Type</key>
 		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>["www.facebook.com"]</string>
+		<key>Key</key>
+		<string>knownBitlyNativeList</string>
 	</dict>
 </array>
 </plist>
