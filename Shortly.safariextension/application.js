@@ -62,6 +62,8 @@ Shortly.prototype = {
           });
       })(longUrl);
 
+    } else if (Shortly.isKnownBitlyNative(longUrl)) {
+      shortly.getShortlinkWithBitly(longUrl);
     } else {
       shortly.activeTab.page.dispatchMessage("findRelLink");
     }
@@ -504,7 +506,7 @@ Shortly.prototype = {
 /* Global variables */
 Shortly.runtimeLocale = 'default';
 Shortly.localeLib = shortlyLocaleLib;
-Shortly.knownBitlyNativeList = {};
+Shortly.knownBitlyNativeList = ['www.facebook.com'];
 
 /* Public utility methods */
 Shortly.isNetworkAvailable = function() {
@@ -526,8 +528,8 @@ Shortly.isKnownBitlyNative = function(longUrl) {
     var domain = longUrl.match(/:\/\/([^\/]+)/)[1],
         list = Shortly.knownBitlyNativeList;
     
-    for (var key in list) {
-      if (domain.match(list[key])) return true;
+    for (var i=0; i<list.length; i++) {
+      if (domain.match(new RegExp(list[i]))) return true;
     }
     return false;
 
