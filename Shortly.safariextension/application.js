@@ -75,8 +75,6 @@ Shortly.prototype = {
     
     if (shortlink !== false) {
       shortly.foundShortlink(shortlink);
-    } else if (Shortly.isKnownBitlyNative(longUrl)) {
-      shortly.getShortlinkWithBitly(longUrl);
     } else {
       shortly.getShortlinkToAddress(longUrl, 'skip');
     }
