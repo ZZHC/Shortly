@@ -539,6 +539,7 @@ Shortly.isKnownBitlyNative = function(longUrl) {
 Shortly.updateKnownBitlyNativeListWithArray = function(listArray) {
   if (safari.extension.settings.knownBitlyNativeList) {
     safari.extension.settings.setItem('knownBitlyNativeList', JSON.stringify(listArray));
+    Shortly.knownBitlyNativeList = JSON.parse(safari.extension.settings.getItem('knownBitlyNativeList'));
   } else {
     console.error('Property `knownBitlyNativeList` does not exist.');
   }
@@ -718,7 +719,12 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
       lastCheckTime = safari.extension.settings.getItem('knownBitlyNativeListLastCheck'),
       updateUrl = 'https://raw.github.com/ZZHC/Shortly/develop/knownBitlyNativeList.json';
       
+  console.log('## Status of know bitly-native list');
+  console.log('- Current time:', (new Date(currentTime)).toString());
+  console.log('- Last check time:', (new Date(lastCheckTime)).toString());
+      
   if (currentTime - lastCheckTime > checkFrequency) {
+    console.log('Checking for bitly-native update…');
     $.getJSON(updateUrl, function(data) {
       if (data.lastUpdate > lastCheckTime) {
         Shortly.updateKnownBitlyNativeListWithArray(data.list);
