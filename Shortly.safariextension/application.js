@@ -751,11 +751,6 @@ safari.extension.settings.addEventListener("change", settingsChanged, false);
 
 function performCommand(event) {
   if (event.command === "shortenURL") {
-    if (!navigator.onLine) {
-      reportErrorMessage('offline');
-      return false;
-    }
-    
     var shortly = event.target.browserWindow.activeTab.shortlyInstance;
     
     if (!(shortly instanceof Shortly)) {
