@@ -283,16 +283,28 @@ Shortly.prototype = {
 
       $.ajax({ url: queryAPI, dataType: 'json',
           success: function(data, textStatus, jqXHR) {
-            if (data.status === 'success') {
-              shortly.foundShortlink(data.shortlink);
-            } else if (data.status === 'failure') {
-              shortly.reportErrorMessage(data.errorType, data.errorMessage);
+            var shortlink = data.shortlink || data.shorturl || data.link || data.url || data.result || '',
+                errorType = data.errorType || '',
+                errorMessage = data.errorMessage || data.errormessage || '';
+
+            if (data.status === 'success' || shortlink.match(/^https?:\/\//)) {
+              shortly.foundShortlink(shortlink);
+            } else if (data.status === 'failure' || errorType || errorMessage) {
+              shortly.reportErrorMessage(errorType, errorMessage);
             } else {
               shortly.reportErrorMessage('error', Shortly.getLocaleString('errorMessage.invalidResponse'));
             }
           },
           error: function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status === 0 && textStatus == 'error') {
+            if (textStatus === 'parsererror') {
+              if (jqXHR.responseText.match(/^https?:\/\//)) {
+                shortly.foundShortlink(jqXHR.responseText);
+              } else {
+                shortly.reportErrorMessage('error', jqXHR.responseText);
+              }
+            } else if (jqXHR.responseText !== '') {
+              shortly.reportErrorMessage('error', jqXHR.responseText);
+            } else if (jqXHR.status === 0 && textStatus == 'error') {
               shortly.reportErrorMessage('offline');
             } else {
               shortly.reportErrorMessage('unknown', 'Error on fetching  endpoint JSON response.');
