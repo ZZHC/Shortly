@@ -8,14 +8,19 @@
  *
  */
 
-function Shortly(triggeringToolbarItem) {
+function Shortly(mountPoint) {
   var shortly = this;
   
-  if (typeof triggeringToolbarItem === 'object' && triggeringToolbarItem.browserWindow !== undefined) {
-    shortly.toolbarItem = triggeringToolbarItem;
-    shortly.activeTab = triggeringToolbarItem.browserWindow.activeTab;
+  if (typeof mountPoint === 'object' && mountPoint.toolTip !== undefined) {
+    /* Check if SafariExtensionToolbarItem for Safari 4 */
+    shortly.toolbarItem = mountPoint;
+    shortly.activeTab = mountPoint.browserWindow.activeTab;
+  } else if (typeof mountPoint === 'object' && mountPoint.page !== undefined) {
+    /* Check if SafariBrowserTab for Safari 4 */
+    shortly.toolbarItem = null;
+    shortly.activeTab = mountPoint;
   }
-  
+
   shortly.flagToolbarReady = false;
   
   return shortly;
@@ -361,6 +366,11 @@ Shortly.prototype = {
     type = type || 'text'; /* Expected: shortlink, error, or text */
     
     switch (displayMethod) {
+      case 'popover':
+        if (shortly.toolbarItem) {
+          shortly.displayMessageWithPopover(message, type);
+          break;
+        }
       case 'toolbar':
         var waitTimeForToolbar = (toolbarReady) ? 0 : 600;
 
@@ -369,7 +379,7 @@ Shortly.prototype = {
             shortly.displayMessageWithToolbar(message, type);
           } else {
             console.warn('Toolbar not ready when displaying message', (new Date()).toLocaleString());
-            if (safari.extension.popovers) {
+            if (safari.extension.popovers && shortly.toolbarItem) {
               shortly.displayMessageWithPopover(message, type);
             } else {
               shortly.displayMessageWithAlert(message, type);
@@ -378,9 +388,6 @@ Shortly.prototype = {
           /* Reset shortly.flagToolbarReady to false for next request */
           shortly.flagToolbarReady = false;
         }, waitTimeForToolbar);
-        break;
-      case 'popover':
-        shortly.displayMessageWithPopover(message, type);
         break;
       case 'alert':
       default:
@@ -462,11 +469,13 @@ Shortly.prototype = {
     console.log('State change:', state, shortly.activeTab);
     shortly.activeTab.shortlyWorkingState = state;
 
-    if (state.match(/^Shortening/)) {
-      shortly.startAnimation(); //Including validate request.
-    } else {
-      shortly.stopAnimation();
-      shortly.toolbarItem.validate();
+    if (shortly.toolbarItem) {
+      if (state.match(/^Shortening/)) {
+        shortly.startAnimation(); //Including validate request.
+      } else {
+        shortly.stopAnimation();
+        shortly.toolbarItem.validate();
+      }
     }
   },
   startAnimation: function() {
@@ -568,6 +577,7 @@ Shortly.toggleToolbarMode = function(flag) {
     safari.extension.addContentScriptFromURL(url.jQuery);
     safari.extension.addContentScriptFromURL(url.js);
     safari.extension.addContentStyleSheetFromURL(url.css);
+    console.log('Toolbar mode: ON');
   } else {
     safari.extension.removeContentScript(url.jQuery);
     safari.extension.removeContentScript(url.js);
@@ -707,7 +717,7 @@ Shortly.displayMethod = function() {
 };
 
 /* Initialize */
-Shortly.toggleToolbarMode(Shortly.displayMethod() === 'toolbar');
+Shortly.toggleToolbarMode(Shortly.displayMethod() === 'toolbar' || safari.extension.toolbarItems.length === 0);
 if (safari.extension.settings.googleAuth) {
   if (Shortly.getStoredOAuthTokensForService('goo.gl') === false) {
     safari.extension.settings.googleAuth = false;
@@ -779,7 +789,7 @@ function performCommand(event) {
      *
      * flagToolbarReady should be reset to false again after display.
      */
-    if (Shortly.displayMethod() === 'toolbar') {
+    if (Shortly.displayMethod() === 'toolbar' || safari.extension.toolbarItems.length === 0) {
       shortly.activeTab.page.dispatchMessage("reportToolbarReady");
     }
   }
@@ -962,6 +972,9 @@ function respondToMessage(messageEvent) {
         commandTriggerer.target = toolbarItem;
       }
     }
+    
+    /* Pass the active SafariBrowserTab as target if there's no toolbar item. */
+    if (commandTriggerer.target === undefined) commandTriggerer.target = messageEvent.target;
     
     performCommand(commandTriggerer);
   }
