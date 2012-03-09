@@ -32,6 +32,7 @@ Shortly.prototype = {
   /* Runtime variables */
   flagToolbarReady: false,
   flagAbort: false,
+  flagWaitingMessageFromPage: false,
   oauthTokens: undefined,
   
   /* Methods */
@@ -71,13 +72,23 @@ Shortly.prototype = {
       shortly.getShortlinkWithBitly(longUrl);
     } else {
       shortly.activeTab.page.dispatchMessage("findRelLink");
+      shortly.flagWaitingMessageFromPage = true;
+      setTimeout(function() {
+        if (shortly.flagWaitingMessageFromPage) {
+          shortly.getShortlinkToAddress(longUrl, 'skip');
+          shortly.flagWaitingMessageFromPage = false;
+          console.warn('Not receiving resonse from injected script for native shortlinks. Shorten URL with external service instead.');
+        }
+      }, 2000);
     }
   },
 
   receiveNativeRelShortlink: function(shortlink) {
     var shortly = this, longUrl = shortly.activeTab.url;
     if (this.flagAbort) return 'Aborted';
-    
+
+    shortly.flagWaitingMessageFromPage = false;
+
     if (shortlink !== false) {
       shortly.foundShortlink(shortlink);
     } else {
