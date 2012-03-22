@@ -334,8 +334,8 @@ Shortly.prototype = {
     if (this.flagAbort) return 'Aborted';
     
     console.log('Success: ' + shortlink + ' for ' + this.activeTab.url);
-    shortly.displayMessage(shortlink, 'shortlink');
     shortly.markActiveTabAsWorkingState('Ready');
+    shortly.displayMessage(shortlink, 'shortlink');
   },
   reportErrorMessage: function(errorType, message) {
     var shortly = this;
