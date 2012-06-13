@@ -69,7 +69,7 @@ function initializeToolbar(message) {
     $('#-shortly-toolbar input#ipbShortUrl')
       .select()
       .keyup(function(event) {
-        if(event.which === 27) {
+        if(event.which === 27 || event.which === 13) {
           $('#-shortly-toolbar a.hideBar').click();
         }
       });
