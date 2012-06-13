@@ -852,7 +852,7 @@ function validateCommand(event) {
           animationHelper((phase % 12) + 1);
         }, spinSpeed);
       } else {
-        toolbarItem.image = baseURI + 'link23.png';
+        toolbarItem.image = baseURI + 'toolbarShorten.png';
         toolbarItem.shortlyAnimationPlaying = false;
 
         console.log('Animation stopped', (new Date()).toLocaleString());
