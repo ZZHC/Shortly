@@ -612,15 +612,24 @@ Shortly.toggleContextMenu = function(flag) {
   };
   
   var contextMenuEventHandler = function(event) {
-    switch (event.userInfo) { //Reads node name from injected script
-      case 'A':
-      case 'IMG':
-        event.contextMenu.appendContextMenuItem('menu_shortenTarget', 'Shorten Link', 'shortenTarget');
-        console.log('Clicking on a \u201C' + event.userInfo + '.\u201D ContextMenu appended.');
-        break;
-      default:
-        console.log('Node name:', event.userInfo);
-        break;
+    var menuToResponse = event.userInfo;
+
+    if (menuToResponse.length) {
+      for (var i = 0; i < menuToResponse.length; i++) {
+        var menu = menuToResponse[i];
+
+        switch(menu.type) {
+          case 'link':
+            event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget');
+            break;
+          case 'image':
+            event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget');
+            break;
+          default:
+            break;
+        }
+        console.log('Menu added:', menu.type);
+      }
     }
   };
   
