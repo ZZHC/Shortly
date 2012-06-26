@@ -110,7 +110,7 @@ Shortly.prototype = {
   getShortlinkToAddress: function(longUrl, skipNative, service) {
     var shortly = this;
     if (this.flagAbort) return 'Aborted';
-    
+
     service = service || safari.extension.settings.shortenService;
     skipNative = (skipNative === 'skip') || safari.extension.settings.ignoreNative || false;
     
@@ -614,21 +614,21 @@ Shortly.toggleContextMenu = function(flag) {
   var contextMenuEventHandler = function(event) {
     var menuToResponse = event.userInfo;
 
-    if (menuToResponse.length) {
+    if (menuToResponse != null && menuToResponse.length) {
       for (var i = 0; i < menuToResponse.length; i++) {
         var menu = menuToResponse[i];
 
         switch(menu.type) {
           case 'link':
-            event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget');
+            event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget_' + i);
             break;
           case 'image':
-            event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget');
+            event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget_' + i);
             break;
           default:
             break;
         }
-        console.log('Menu added:', menu.type);
+        console.log('Menu added:', menu.type, i);
       }
     } else {
       var contextMenuItems = event.contextMenu.contextMenuItems;
@@ -822,7 +822,12 @@ function performCommand(event) {
     
     if (shortly.flagAbort) shortly.backToWork();
     shortly.markActiveTabAsWorkingState('Shortening');
-    shortly.getShortlinkToCurrentPage();
+
+    if (event.overwriteUrl) {
+      shortly.getShortlinkToAddress(event.overwriteUrl, 'skip');
+    } else {
+      shortly.getShortlinkToCurrentPage();
+    }
     
     /* Abort Shortly and report failure
      * if shortening not finished within 60secs. */
@@ -851,6 +856,30 @@ function performCommand(event) {
     var menuCommand = event.command.split('_')[1];
 
     performMenuCommand(menuCommand);
+  }
+  
+  if (event.command.match(/shortenTarget_/)) {
+    var menuInfoIndex = event.command.split('_')[1],
+        targetLink = event.userInfo[menuInfoIndex];
+    
+    /* Construct a fake SafariCommandEvent */
+    var commandTriggerer = {
+      command: 'shortenURL',
+      target: safari.application.activeBrowserWindow,
+      overwriteUrl: targetLink.src
+    };
+    
+    for (var i in safari.extension.toolbarItems) {
+      var toolbarItem = safari.extension.toolbarItems[i];
+
+      if (toolbarItem.browserWindow = commandTriggerer.target) {
+        commandTriggerer.target = toolbarItem;
+      } else {
+        commandTriggerer.target = safari.application.activeBrowserWindow.activeTab;
+      }
+    }
+    
+    performCommand(commandTriggerer);
   }
 }
 
