@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Zhusee (ZZHC Studio)</string>
 	<key>Builder Version</key>
-	<string>7536.16</string>
+	<string>7536.19</string>
 	<key>CFBundleDisplayName</key>
 	<string>Shortly</string>
 	<key>CFBundleIdentifier</key>
@@ -18,6 +18,17 @@
 	<string>2.3.3</string>
 	<key>Chrome</key>
 	<dict>
+		<key>Context Menu Items</key>
+		<array>
+			<dict>
+				<key>Command</key>
+				<string>shortenTarget</string>
+				<key>Identifier</key>
+				<string>menu_shortenTarget</string>
+				<key>Title</key>
+				<string>Shorten Link</string>
+			</dict>
+		</array>
 		<key>Global Page</key>
 		<string>global.html</string>
 		<key>Menus</key>

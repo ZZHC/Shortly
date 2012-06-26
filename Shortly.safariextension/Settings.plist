@@ -58,6 +58,16 @@
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
+  <dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>enableContextMenu</string>
+		<key>Title</key>
+		<string>Enable Contextual Menu</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
 	<dict>
 		<key>Type</key>
 		<string>Separator</string>
