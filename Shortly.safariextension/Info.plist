@@ -18,17 +18,6 @@
 	<string>2.3.3</string>
 	<key>Chrome</key>
 	<dict>
-		<key>Context Menu Items</key>
-		<array>
-			<dict>
-				<key>Command</key>
-				<string>shortenTarget</string>
-				<key>Identifier</key>
-				<string>menu_shortenTarget</string>
-				<key>Title</key>
-				<string>Shorten Link</string>
-			</dict>
-		</array>
 		<key>Global Page</key>
 		<string>global.html</string>
 		<key>Menus</key>

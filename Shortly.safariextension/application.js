@@ -606,6 +606,32 @@ Shortly.toggleKbHotkey = function(flag) {
     safari.extension.removeContentScript(url.js);
   }
 };
+Shortly.toggleContextMenu = function(flag) {
+  var url = {
+    js: safari.extension.baseURI + 'contextMenu.js'
+  };
+  
+  var contextMenuEventHandler = function(event) {
+    switch (event.userInfo) { //Reads node name from injected script
+      case 'A':
+      case 'IMG':
+        event.contextMenu.appendContextMenuItem('menu_shortenTarget', 'Shorten Link', 'shortenTarget');
+        console.log('Clicking on a \u201C' + event.userInfo + '.\u201D ContextMenu appended.');
+        break;
+      default:
+        console.log('Node name:', event.userInfo);
+        break;
+    }
+  };
+  
+  if (flag) {
+    safari.extension.addContentScriptFromURL(url.js);
+    safari.application.addEventListener('contextmenu', contextMenuEventHandler);
+  } else {
+    safari.extension.removeContentScript(url.js);
+    safari.application.removeEventListener('contextmenu', contextMenuEventHandler);
+  }
+};
 
 Shortly.getLocaleString = function(query) {
   var userLocale = navigator.language.toLowerCase(),
@@ -737,6 +763,7 @@ if (safari.extension.settings.googleAuth) {
   }
 }
 Shortly.toggleKbHotkey(safari.extension.settings.enableKbHotkey);
+Shortly.toggleContextMenu(safari.extension.settings.enableContextMenu);
 
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("validate", validateCommand, false);
