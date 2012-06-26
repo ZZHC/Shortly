@@ -16,10 +16,6 @@ function contextMenuHandler(event) {
       break;
   }
   
-  if (menuToResponse.length == 0) {
-    event.preventDefault(); //Hide the context menus.
-  }
-  
   console.log(menuToResponse);
   safari.self.tab.setContextMenuEventUserInfo(event, menuToResponse);
 }

@@ -630,6 +630,12 @@ Shortly.toggleContextMenu = function(flag) {
         }
         console.log('Menu added:', menu.type);
       }
+    } else {
+      var contextMenuItems = event.contextMenu.contextMenuItems;
+      
+      for (var i = 0; i < contextMenuItems.length; i++) {
+        contextMenuItems[i].disabled = true;
+      }
     }
   };
   
