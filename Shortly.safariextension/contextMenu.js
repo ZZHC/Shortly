@@ -15,8 +15,6 @@ function contextMenuHandler(event) {
     default:
       break;
   }
-  
-  console.log(menuToResponse);
   safari.self.tab.setContextMenuEventUserInfo(event, menuToResponse);
 }
 
