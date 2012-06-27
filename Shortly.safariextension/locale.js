@@ -3,7 +3,7 @@ const shortlyLocaleLib = {
     label: {
       'zh-tw': '縮短網址',
       'zh-cn': '缩短地址',
-      'ja-jp': '短縮アドレス',
+      'ja-jp': 'アドレスを短縮',
       'it-it': 'Accorcia',
       'fr-fr': 'Raccourcir',
       'default': 'Shorten'
@@ -11,7 +11,7 @@ const shortlyLocaleLib = {
     paletteLabel: {
       'zh-tw': '縮短網址',
       'zh-cn': '缩短地址',
-      'ja-jp': '短縮アドレス',
+      'ja-jp': 'アドレスを短縮',
       'it-it': 'Accorcia',
       'fr-fr': 'Raccourcir',
       'default': 'Shorten'
@@ -19,7 +19,7 @@ const shortlyLocaleLib = {
     toolTip: {
       'zh-tw': '縮短目前網頁的網址',
       'zh-cn': '缩短当前页面的地址',
-      'ja-jp': '現在のページのアドレスを短縮する',
+      'ja-jp': '現在のページのアドレスを短縮します',
       'it-it': 'Ottieni un indirizzo breve della pagina corrente',
       'fr-fr': "Obtenir l'adresse raccourcie de la page active",
       'default': 'Get shortened address of the current page'
@@ -44,6 +44,7 @@ const shortlyLocaleLib = {
     },
     popoverTips: {
       'zh-tw': '請按 <kbd>&#8984;-C</kbd> 複製短網址。</small>',
+      'ja-jp': '<kbd>&#8984;-C</kbd>でアドレスをコピー',
       'default': 'Press <kbd>&#8984;-C</kbd> to copy.</small>'
     }
   },
@@ -186,6 +187,18 @@ const shortlyLocaleLib = {
     IgnoreNative: {
       'zh-tw': '忽略官方縮址',
       'default': 'Ignore Native'
+    },
+    shortenTargetLink: {
+      'zh-tw': '縮短連結',
+      'zh-cn': '缩短链接',
+      'ja-jp': 'リンクを短縮',
+      'default': 'Shorten Link'
+    },
+    shortenTargetImage: {
+      'zh-tw': '縮短影像網址',
+      'zh-cn': '缩短图像地址',
+      'ja-jp': 'イメージのアドレスを短縮',
+      'default': 'Shorten Image Address'
     }
   }
 }

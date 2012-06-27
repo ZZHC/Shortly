@@ -628,10 +628,10 @@ Shortly.contextMenuEventHandler = function(event) {
 
       switch(menu.type) {
         case 'link':
-          event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget_' + i);
+          event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', Shortly.getLocaleString('menuItem.shortenTargetLink'), 'shortenTarget_' + i);
           break;
         case 'image':
-          event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget_' + i);
+          event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', Shortly.getLocaleString('menuItem.shortenTargetImage'), 'shortenTarget_' + i);
           break;
         default:
           break;
