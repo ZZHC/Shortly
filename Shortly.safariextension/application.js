@@ -611,40 +611,39 @@ Shortly.toggleContextMenu = function(flag) {
     js: safari.extension.baseURI + 'contextMenu.js'
   };
   
-  var contextMenuEventHandler = function(event) {
-    var menuToResponse = event.userInfo;
-
-    if (menuToResponse != null && menuToResponse.length) {
-      for (var i = 0; i < menuToResponse.length; i++) {
-        var menu = menuToResponse[i];
-
-        switch(menu.type) {
-          case 'link':
-            event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget_' + i);
-            break;
-          case 'image':
-            event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget_' + i);
-            break;
-          default:
-            break;
-        }
-        console.log('Menu added:', menu.type, i);
-      }
-    } else {
-      var contextMenuItems = event.contextMenu.contextMenuItems;
-      
-      for (var i = 0; i < contextMenuItems.length; i++) {
-        contextMenuItems[i].disabled = true;
-      }
-    }
-  };
-  
   if (flag) {
     safari.extension.addContentScriptFromURL(url.js);
-    safari.application.addEventListener('contextmenu', contextMenuEventHandler);
+    safari.application.addEventListener('contextmenu', Shortly.contextMenuEventHandler);
   } else {
     safari.extension.removeContentScript(url.js);
-    safari.application.removeEventListener('contextmenu', contextMenuEventHandler);
+    safari.application.removeEventListener('contextmenu', Shortly.contextMenuEventHandler);
+  }
+};
+Shortly.contextMenuEventHandler = function(event) {
+  var menuToResponse = event.userInfo;
+
+  if (menuToResponse != null && menuToResponse.length) {
+    for (var i = 0; i < menuToResponse.length; i++) {
+      var menu = menuToResponse[i];
+
+      switch(menu.type) {
+        case 'link':
+          event.contextMenu.appendContextMenuItem('menu_shortenTargetLink', 'Shorten Link', 'shortenTarget_' + i);
+          break;
+        case 'image':
+          event.contextMenu.appendContextMenuItem('menu_shortenTargetImage', 'Shorten Image Address', 'shortenTarget_' + i);
+          break;
+        default:
+          break;
+      }
+      console.log('Menu added:', menu.type, i);
+    }
+  } else {
+    var contextMenuItems = event.contextMenu.contextMenuItems;
+    
+    for (var i = 0; i < contextMenuItems.length; i++) {
+      contextMenuItems[i].disabled = true;
+    }
   }
 };
 
