@@ -1009,6 +1009,10 @@ function settingsChanged(event) {
     
     console.log('Shortly hotkey settings updated', newSetting.key, newSetting.value, (new Date()).toLocaleString());
   }
+  
+  if (event.key === "enableContextMenu") {
+    Shortly.toggleContextMenu(event.newValue);
+  }
 }
 
 /* Communications with injected script */
