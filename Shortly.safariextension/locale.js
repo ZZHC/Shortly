@@ -186,6 +186,7 @@ const shortlyLocaleLib = {
     },
     IgnoreNative: {
       'zh-tw': '忽略官方縮址',
+      'zh-cn': '忽略原生短地址',
       'default': 'Ignore Native'
     },
     shortenTargetLink: {
