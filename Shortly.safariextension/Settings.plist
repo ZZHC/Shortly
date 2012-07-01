@@ -58,9 +58,9 @@
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
-  <dict>
+	<dict>
 		<key>DefaultValue</key>
-		<false/>
+		<true/>
 		<key>Key</key>
 		<string>enableContextMenu</string>
 		<key>Title</key>
