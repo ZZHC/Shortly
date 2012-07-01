@@ -71,6 +71,14 @@
 						<key>Title</key>
 						<string>Ignore Native</string>
 					</dict>
+          <dict>
+						<key>Command</key>
+						<string>menuOption_shortenUrl</string>
+						<key>Identifier</key>
+						<string>menuItemShortenUrl</string>
+						<key>Title</key>
+						<string>Shorten URL…</string>
+					</dict>
 				</array>
 			</dict>
 		</array>

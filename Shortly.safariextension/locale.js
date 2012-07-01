@@ -189,6 +189,11 @@ const shortlyLocaleLib = {
       'zh-cn': '忽略原生短地址',
       'default': 'Ignore Native'
     },
+    ShortenUrl: {
+      'zh-tw': '縮短網址⋯',
+      'zh-cn': '缩短地址⋯',
+      'default': 'Shorten Address…'
+    },
     shortenTargetLink: {
       'zh-tw': '縮短連結',
       'zh-cn': '缩短链接',
