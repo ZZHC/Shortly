@@ -1134,6 +1134,30 @@ function performMenuCommand(menuCommand) {
     case 'ignoreNative':
       safari.extension.settings.ignoreNative = !safari.extension.settings.ignoreNative;
       break;
+    case 'shortenUrl':
+      var longUrl = window.prompt(Shortly.getLocaleString('notice.manualShortenBox'));
+      
+      if (longUrl.length === 0) return false; 
+    
+      /* Construct a fake SafariCommandEvent */
+      var commandTriggerer = {
+        command: 'shortenURL',
+        target: safari.application.activeBrowserWindow,
+        overwriteUrl: longUrl
+      };
+      
+      for (var i in safari.extension.toolbarItems) {
+        var toolbarItem = safari.extension.toolbarItems[i];
+
+        if (toolbarItem.browserWindow = commandTriggerer.target) {
+          commandTriggerer.target = toolbarItem;
+        } else {
+          commandTriggerer.target = safari.application.activeBrowserWindow.activeTab;
+        }
+      }
+      
+      performCommand(commandTriggerer);
+      break;
     default:
       break;
   }

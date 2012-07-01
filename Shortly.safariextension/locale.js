@@ -49,6 +49,11 @@ const shortlyLocaleLib = {
       'zh-cn': '请按 <kbd>&#8984;-C</kbd> 复制短地址。</small>',
       'ja-jp': '<kbd>&#8984;-C</kbd>でアドレスをコピー',
       'default': 'Press <kbd>&#8984;-C</kbd> to copy.</small>'
+    },
+    manualShortenBox: {
+      'zh-tw': '請在下方輸入您想縮短的完整網址：',
+      'zh-cn': '请在下方输入您想缩短的完整地址',
+      'default': 'Please enter the long URL you want to shorten below:'
     }
   },
   errorMessage: {
@@ -203,6 +208,7 @@ const shortlyLocaleLib = {
     ShortenUrl: {
       'zh-tw': '縮短網址⋯',
       'zh-cn': '缩短地址⋯',
+      'ja-jp': 'アドレスを短縮⋯',
       'default': 'Shorten Address…'
     },
     shortenTargetLink: {
