@@ -36,14 +36,17 @@ const shortlyLocaleLib = {
     },
     hotkey: {
       'zh-tw': '您必須重新載入已開啟的網頁才能啟用快捷鍵。',
+      'zh-cn': '您必须重新载入已开启的网页才能启用快捷键。',
       'default': 'You have to reload opened pages to enable hotkey.'
     },
     popoverAvailability: {
       'zh-tw': '彈出式視窗 (Popover) 需要 Safari 5.1 以上版本才能使用。',
+      'zh-cn': '弹出窗口 (Popover) 需要 Safari 5.1 以上版本',
       'default': 'Popover is only available in Safari 5.1 or higher version.'
     },
     popoverTips: {
       'zh-tw': '請按 <kbd>&#8984;-C</kbd> 複製短網址。</small>',
+      'zh-cn': '请按 <kbd>&#8984;-C</kbd> 复制短地址。</small>',
       'ja-jp': '<kbd>&#8984;-C</kbd>でアドレスをコピー',
       'default': 'Press <kbd>&#8984;-C</kbd> to copy.</small>'
     }
@@ -128,20 +131,24 @@ const shortlyLocaleLib = {
       processing: {
         message: {
           'zh-tw': 'Shortly 正在處理您的 OAuth 登入資訊，請放輕鬆稍等片刻...',
+          'zh-cn': 'Shortly 正在处理您的 OAuth 登入资讯，请稍等...',
           'default': 'Shorly is processing your OAuth login info, please hold on and relax...'
         }
       },
       success: {
         title: {
           'zh-tw': '恭喜！',
+          'zh-cn': '贺喜！',
           'default': 'Congratulations!'
         },
         message: {
           'zh-tw': '您已經成功的以 OAuth 登入 Google；Shortly 現在開始可以使用您的 Google 帳戶來縮短 goo.gl 網址，並在您的帳戶中留下記錄了。',
+          'zh-cn': '您已经成功的以 OAuth 登入 Google；Shortly 现在开始可以使用您的 Google 帐户来获取 goo.gl 短地址，并在您的帐户中留下记录。',
           'default': "You've finished the OAuth process with Google, and Shortly can now shorten links on behalf of you. All links you shorten from now on will leave a history log on your Google Account."
         },
         moreInfo: {
           'zh-tw': '欲了解更多資訊，請參考：',
+          'zh-cn': '欲了解更多资讯，请参考：',
           'default': 'For more information, please visit:'
         },
         linkAPI: {
@@ -149,16 +156,19 @@ const shortlyLocaleLib = {
         },
         linkRepo: {
           'zh-tw': 'GitHub 上的 Shortly 專案',
+          'zh-cn': 'GitHub 上的 Shortly 专案',
           'default': 'Shortly project on GitHub'
         },
         linkWebsite: {
           'zh-tw': 'Shortly 網站',
+          'zh-cn': 'Shortly 网站',
           'default': 'Shortly Website'
         }
       },
       failure: {
         title: {
           'zh-tw': 'OAuth 設定失敗',
+          'zh-cn': 'OAuth 设定失败',
           'default': 'OAuth configuration failed'
         },
         errorTitle: {
@@ -182,6 +192,7 @@ const shortlyLocaleLib = {
     },
     Endpoint: {
       'zh-tw': '自定服務接點',
+      'zh-cn': '自定义服务接口',
       'default': 'Custom Endpoint'
     },
     IgnoreNative: {
