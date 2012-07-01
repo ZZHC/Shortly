@@ -1,6 +1,6 @@
 /*
  * Shortly Safari Extension
- * Version 2.0
+ * Version 2.4
  * By Zhusee, ZZHC Studio
  *
  * Visit: http://zzhc.org/shortly

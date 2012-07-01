@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.3.3</string>
+	<string>2.4</string>
 	<key>CFBundleVersion</key>
-	<string>2.3.3</string>
+	<string>2.4</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -71,7 +71,7 @@
 						<key>Title</key>
 						<string>Ignore Native</string>
 					</dict>
-          <dict>
+					<dict>
 						<key>Command</key>
 						<string>menuOption_shortenUrl</string>
 						<key>Identifier</key>
