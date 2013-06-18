@@ -5,6 +5,8 @@ Shortly is an extension project aim to provide shortlinks to webpages with nativ
 
 We have packaged Shortly Safari extension available for install on our website (above) and on Apple's Safari Extension Gallery.
 
+A mirror download link is available here: <http://cl.ly/PhkU>
+
 Building Shortly
 ----------------
 
