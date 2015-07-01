@@ -1,5 +1,5 @@
 /node_modules
 /build
 
+source/api-keys.js
 .DS_Store
-static/keychain.js

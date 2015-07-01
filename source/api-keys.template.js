@@ -11,7 +11,7 @@ Instruction:
 
 */
 
-var apiKeyChain = {
-  google: 'put your own api key here',
-  bitly: 'put your own api key here'
+export default {
+  google: 'PUT_YOUR_OWN_API_KEY_HERE',
+  bitly: 'PUT_YOUR_OWN_API_KEY_HERE'
 }

@@ -7,7 +7,7 @@ gulp.task 'build', ['clean'], ->
   gulp.src('static/*')
     .pipe gulp.dest('build/Shortly.safariextension')
 
-  gulp.src('source/app.js')
+  gulp.src('source/!(*.template).js')
     .pipe named()
     .pipe webpack( require('./webpack.config') )
     .pipe gulp.dest('build/Shortly.safariextension')
