@@ -1,5 +1,5 @@
 /node_modules
+/build
 
 .DS_Store
-Shortly.safariextension/keychain.js
-
+static/keychain.js
