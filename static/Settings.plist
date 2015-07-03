@@ -4,7 +4,7 @@
 <array>
 	<dict>
 		<key>DefaultValue</key>
-		<string>goo.gl</string>
+		<string>google</string>
 		<key>Key</key>
 		<string>shortenService</string>
 		<key>Title</key>
@@ -20,8 +20,8 @@
 		<string>PopUpButton</string>
 		<key>Values</key>
 		<array>
-			<string>goo.gl</string>
-			<string>bit.ly</string>
+			<string>google</string>
+			<string>bitly</string>
 			<string>tinyurl</string>
 			<string>endpoint</string>
 		</array>
