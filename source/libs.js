@@ -1,2 +1,5 @@
 import 'whatwg-fetch'
-import 'es6-promise'
+
+if (typeof Promise != 'function') {
+  require('es6-promise');
+}
