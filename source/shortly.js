@@ -7,9 +7,14 @@ class Shortly {
   }
 
   // Instance methods
-  getShortlinkToCurrentPage() {
-    var longUrl = safari.application.activeBrowserWindow.activeTab.url;
-    return this.getShortlinkToAddress(longUrl);
+  getShortlinkToCurrentPageAndDisplay() {
+    var longUrl = safari.application.activeBrowserWindow.activeTab.url,
+        DisplayClass = Displays[safari.extension.settings.displayMethod],
+        display = new DisplayClass;
+
+    this.getShortlinkToAddress(longUrl)
+      .then( result => display.displayShortlink(result) )
+      .catch( error => display.displayError(error) )
   }
 
   getShortlinkToAddress(longUrl, options={skipNative: false, withService: safari.extension.settings.shortenService}) {
@@ -52,7 +57,7 @@ class Shortly {
   _performCommand(event) {
     switch (event.command) {
       case 'shortenURL':
-        this.getShortlinkToCurrentPage();
+        this.getShortlinkToCurrentPageAndDisplay();
         break;
       default:
         console.warn('Not implemented');
