@@ -1,6 +1,6 @@
 export default class CustomEndpointShortener {
-  getShortlink(longUrl) {
-    var queryAPI = safari.extension.settings.customEndpoint || '';
+  getShortlink(longUrl, options={}) {
+    var queryAPI = options.customEndpoint || '';
 
     if (queryAPI === '') {
       return Promise.reject('Error: bad custom endpoint.')

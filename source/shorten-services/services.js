@@ -8,7 +8,12 @@ var ShortenServices = {
   bitly: BitlyShortener,
   tinyurl: TinyUrlShortener,
   custom: CustomEndpointShortener,
-  DefaultService: GoogleShortener
+  DefaultService: GoogleShortener,
+
+  GOOGLE: 'google',
+  BITLY: 'bitly',
+  TINYURL: 'tinyurl',
+  CUSTOM: 'custom'
 };
 
 export default ShortenServices

@@ -1,4 +1,5 @@
 import ShortenSerivces from './shorten-services/services'
+import Displays from './displays/displays'
 
 class Shortly {
   constructor() {
@@ -28,9 +29,22 @@ class Shortly {
       .then( () => {
         // Shorten with preferred service
         var ShortenService = ShortenSerivces[options.withService] || ShortenSerivces.DefaultService,
-            shortener = new ShortenService;
+            shortener = new ShortenService,
+            shortenerOptions = {};
 
-        return shortener.getShortlink(longUrl);
+        switch (options.withService) {
+          case ShortenSerivces.BITLY:
+            shortenerOptions = {
+              bitlyUsername: safari.extension.secureSettings.bitlyUsername,
+              bitlyAPIKey: safari.extension.secureSettings.bitlyAPIKey
+            };
+            break;
+          case ShortenSerivces.CUSTOM:
+            shortenerOptions = {customEndpoint: safari.extension.settings.customEndpoint}
+            break;
+        }
+
+        return shortener.getShortlink(longUrl, shortenerOptions);
       });
   }
 
@@ -38,9 +52,7 @@ class Shortly {
   _performCommand(event) {
     switch (event.command) {
       case 'shortenURL':
-        this.getShortlinkToCurrentPage()
-          .then(  (result) => console.log(result) )
-          .catch( (err) => console.warn(err) );
+        this.getShortlinkToCurrentPage();
         break;
       default:
         console.warn('Not implemented');

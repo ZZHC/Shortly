@@ -4,10 +4,10 @@ const DEFAULT_LOGIN = 'zzhc';
 const DEFAULT_API_KEY = apiKeys.bitly;
 
 export default class BitlyShortener {
-  getShortlink(longUrl) {
+  getShortlink(longUrl, options={}) {
     var queryAPI,
-        userLogin = safari.extension.secureSettings.bitlyUsername || '',
-        userApiKey = safari.extension.secureSettings.bitlyAPIKey || '';
+        userLogin = options.bitlyUsername || '',
+        userApiKey = options.bitlyAPIKey || '';
 
     if ((userLogin === '') && (userApiKey === '')) {
       userLogin = DEFAULT_LOGIN;
