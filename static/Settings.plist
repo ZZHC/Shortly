@@ -28,7 +28,7 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<string>toolbar</string>
+		<string>popover</string>
 		<key>Key</key>
 		<string>displayMethod</string>
 		<key>Title</key>
@@ -36,7 +36,6 @@
 		<key>Titles</key>
 		<array>
 			<string>Popover</string>
-			<string>Toolbar Mode</string>
 			<string>Alert Window</string>
 		</array>
 		<key>Type</key>
@@ -44,7 +43,6 @@
 		<key>Values</key>
 		<array>
 			<string>popover</string>
-			<string>toolbar</string>
 			<string>alert</string>
 		</array>
 	</dict>
