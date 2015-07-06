@@ -13,8 +13,8 @@ class PopoverDisplay {
   }
 
   // Public instance methods
-  displayShortlink(shortlink) {
-    this.displayMessage(shortlink, 'shortlink')
+  displayShortlink(result) {
+    this.displayMessage(result, 'shortlink')
   }
 
   displayError(errorMsg) {

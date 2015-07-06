@@ -9,11 +9,12 @@ class Shortly {
   // Instance methods
   getShortlinkToCurrentPageAndDisplay() {
     var longUrl = safari.application.activeBrowserWindow.activeTab.url,
+        pageTitle = safari.application.activeBrowserWindow.activeTab.title,
         DisplayClass = Displays[safari.extension.settings.displayMethod],
         display = new DisplayClass;
 
     this.getShortlinkToAddress(longUrl)
-      .then( result => display.displayShortlink(result) )
+      .then( result => display.displayShortlink({shortlink: result, title: pageTitle}) )
       .catch( error => display.displayError(error) )
   }
 

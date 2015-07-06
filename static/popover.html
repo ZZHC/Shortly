@@ -23,7 +23,8 @@
 
     switch (type) {
       case 'shortlink':
-        document.querySelector('#ipbShortUrl').value = message;
+        document.querySelector('#shortlink-title').innerText = message.title
+        document.querySelector('#shortlink-input').value = message.shortlink;
         document.querySelector('#result').classList.remove('hidden');
         break;
       case 'error':
@@ -43,7 +44,8 @@
   </header>
 
   <section id="result">
-    <input id="ipbShortUrl" type="text" value="Shortlink" />
+    <h4 id="shortlink-title">Page Title</h4>
+    <input id="shortlink-input" type="text" value="Shortlink" />
     <p><small>Press <kbd>&#8984;-C</kbd> to copy.</small></p>
   </section>
 

@@ -1,6 +1,6 @@
 class AlertDisplay {
-  displayShortlink(shortlink) {
-    this.displayMessage(shortlink);
+  displayShortlink(result) {
+    this.displayMessage(`${result.shortlink}\n\n${result.title}`);
   }
 
   displayError(errorMsg) {
