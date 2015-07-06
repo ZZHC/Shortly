@@ -1,9 +1,10 @@
 class PopoverDisplay {
   constructor() {
-    this._toolbarItem = this.getToolbarItemOnActiveWindow();
-    this._popover = this.getPopover();
+    this._toolbarItem = this._getToolbarItemOnActiveWindow();
+    this._popover = this._getPopover();
   }
 
+  // Public instance methods
   displayShortlink(shortlink) {
     this.displayMessage(shortlink, 'shortlink')
   }
@@ -13,26 +14,27 @@ class PopoverDisplay {
   }
 
   displayMessage(message, type='text') {
-    this.setupTemporaryPopover();
+    this._setupTemporaryPopover();
     this._popover.contentWindow.displayMessage(message, type);
     this._toolbarItem.showPopover();
   }
 
-  getPopover() {
+  // Private methods
+  _getPopover() {
     for (let i in safari.extension.popovers) {
       let popover = safari.extension.popovers[i];
       if (popover.identifier === 'popoverResult') return popover;
     }
   }
 
-  getToolbarItemOnActiveWindow() {
+  _getToolbarItemOnActiveWindow() {
     for (let i in safari.extension.toolbarItems) {
       let toolbarItem = safari.extension.toolbarItems[i];
       if (toolbarItem.browserWindow === safari.application.activeBrowserWindow) return toolbarItem;
     }
   }
 
-  setupTemporaryPopover() {
+  _setupTemporaryPopover() {
     var toolbarMenu = this._toolbarItem.menu;
 
     var popoverSelfBomb = (event) => {

@@ -1,10 +1,14 @@
 class AlertDisplay {
   displayShortlink(shortlink) {
-    window.alert(shortlink);
+    this.displayMessage(shortlink);
   }
 
   displayError(errorMsg) {
-    window.alert(errorMsg);
+    this.displayMessage(errorMsg);
+  }
+
+  displayMessage(message, type='text') {
+    window.alert(message);
   }
 }
 
