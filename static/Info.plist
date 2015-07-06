@@ -88,11 +88,11 @@
 				<key>Filename</key>
 				<string>popover.html</string>
 				<key>Height</key>
-				<real>150</real>
+				<real>168</real>
 				<key>Identifier</key>
 				<string>popoverResult</string>
 				<key>Width</key>
-				<real>250</real>
+				<real>280</real>
 			</dict>
 		</array>
 		<key>Toolbar Items</key>

@@ -2,6 +2,7 @@ class PopoverDisplay {
   constructor() {
     this._toolbarItem = this._getToolbarItemOnActiveWindow();
     this._popover = this._getPopover();
+    this._popover.width = 280;
   }
 
   // Public instance methods
