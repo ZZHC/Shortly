@@ -9,7 +9,7 @@ gulp.task 'clean', ->
   shelljs.rm '-rf', './build'
 
 gulp.task 'build:static', ->
-  gulp.src('static/*')
+  gulp.src(['static/*', 'static/*/*'])
     .pipe gulp.dest(EXTENSION_PATH)
 
 gulp.task 'build:js', ->
