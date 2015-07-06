@@ -1,0 +1,38 @@
+body {
+  width: inherit;
+  background: rgba(255,255,255,.5);
+  margin: 1em;
+}
+header, section {
+  padding: 0;
+  overflow: visible;
+}
+
+h1 {
+  margin-top: 0;
+}
+h1 img {
+  vertical-align: text-top;
+  margin-right: 0.2em;
+}
+input#ipbShortUrl {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+#result p {
+  margin: 0.2em 0;
+}
+#info p {
+  margin: 0;
+}
+#info.error p {
+  background: #FDDFDE;
+  color: #9D261D;
+  border: 1px solid #FBC7C6;
+  padding: 0.5em;
+}

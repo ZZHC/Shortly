@@ -5,12 +5,17 @@ class PopoverDisplay {
   }
 
   displayShortlink(shortlink) {
-    this.setupTemporaryPopover();
-    this._toolbarItem.showPopover();
+    this.displayMessage(shortlink, 'shortlink')
   }
 
   displayError(errorMsg) {
-    console.log(errorMsg);
+    this.displayMessage(errorMsg, 'error')
+  }
+
+  displayMessage(message, type='text') {
+    this.setupTemporaryPopover();
+    this._popover.contentWindow.displayMessage(message, type);
+    this._toolbarItem.showPopover();
   }
 
   getPopover() {

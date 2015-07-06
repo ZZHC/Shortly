@@ -3,92 +3,52 @@
 <head>
 <meta charset="UTF-8" />
 <title>Shortly Popover</title>
+
 <link rel="stylesheet" href="stylesheets/normalize.css" type="text/css" />
 <link rel="stylesheet" href="stylesheets/assetPages.css" type="text/css" />
-<style>
-  body {
-    width: inherit;
-    background: rgba(255,255,255,.5);
-    margin: 1em;
-  }
-  .hidden {
-    display: none;
-  }
-  h1 {
-    margin-top: 0;
-  }
-  h1 img {
-    vertical-align: text-top;
-    margin-right: 0.2em;
-  }
-  input#ipbShortUrl {
-    width: 100%;
-    box-sizing: border-box;
-  }
-  #result p {
-    margin: 0.2em 0;
-  }
-  #info p {
-    margin: 0;
-  }
-  #info.error p {
-    background: #FDDFDE;
-    color: #9D261D;
-    border: 1px solid #FBC7C6;
-    padding: 0.5em;
-  }
-</style>
-<script>
-  function setLocaleString(localeLib) {
-    for (var i in localeLib) {
-      document.querySelector(localeLib[i].query).innerHTML = localeLib[i].string;
-    }
-  }
+<link rel="stylesheet" href="stylesheets/popover.css" type="text/css" />
 
-  function displayMessage(message, type) {
-    function initialize() {
-      var divs = document.querySelectorAll('body > div');
-      
-      for (var i=1; i< divs.length; i++) {
-        divs.item(i).className = 'hidden';
-      }
-      
-      if (!navigator.userAgent.match(/Mac OS X/)) {
-        document.querySelector('#result kbd').innerText = 'Ctrl-C';
-      }
+<script>
+  var initialize, displayMessage;
+
+  initialize = function() {
+    var i, nodes = document.querySelectorAll('section');
+    for (i = 0; i < nodes.length; i++) {
+      nodes[i].className = 'hidden';
     }
+  };
+
+  displayMessage = function(message, type) {
     initialize();
-    
+
     switch (type) {
       case 'shortlink':
         document.querySelector('#ipbShortUrl').value = message;
-        document.querySelector('#result').removeAttribute('class');
+        document.querySelector('#result').classList.remove('hidden');
         break;
       case 'error':
-        document.querySelector('#info p').innerText = message;
-        document.querySelector('#info').className = 'error';
-        break;
-      case 'text':
+        document.querySelector('#info').classList.add('error');
+      case 'test':
       default:
         document.querySelector('#info p').innerText = message;
-        document.querySelector('#info').removeAttribute('class');
-        break;
+        document.querySelector('#info').classList.remove('hidden');
     }
-  }
-  
+  };
 </script>
 </head>
 
 <body>
-  <div>
-    <h1><img src="icon-32.png" />Shortly</h1>
-  </div>
-  <div id="result">
+  <header>
+    <h1><img src="icon-32.png" alt=""/>Shortly</h1>
+  </header>
+
+  <section id="result">
     <input id="ipbShortUrl" type="text" value="Shortlink" />
     <p><small>Press <kbd>&#8984;-C</kbd> to copy.</small></p>
-  </div>
-  <div id="info">
+  </section>
+
+  <section id="info">
     <p>Information</p>
-  </div>
+  </section>
 </body>
 </html>
