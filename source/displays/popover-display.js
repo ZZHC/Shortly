@@ -2,7 +2,14 @@ class PopoverDisplay {
   constructor() {
     this._toolbarItem = this._getToolbarItemOnActiveWindow();
     this._popover = this._getPopover();
+
     this._popover.width = 280;
+    this._popover.contentWindow.document.addEventListener('visibilitychange', () => {
+      var _document = this._popover.contentWindow.document;
+      if (!this._popover.contentWindow.document.hidden) {
+        this._popover.height = this._popover.contentWindow.document.body.offsetHeight + 10;
+      }
+    }, false);
   }
 
   // Public instance methods
