@@ -4,6 +4,7 @@ import TinyUrlShortener from './tinyurl-shortener'
 import CustomEndpointShortener from './custom-shortener'
 
 import FlickrShortener from './flickr-shortener'
+import GithubShortener from './github-shortener'
 
 var ShortenServices = {
   DefaultService: GoogleShortener,
@@ -13,6 +14,7 @@ var ShortenServices = {
   custom: CustomEndpointShortener,
 
   flickr: FlickrShortener,
+  github: GithubShortener,
 
   GOOGLE: 'google',
   BITLY: 'bitly',

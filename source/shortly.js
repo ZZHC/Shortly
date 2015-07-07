@@ -53,10 +53,17 @@ class Shortly {
     const FLICKR_PATTERN = /https?:\/\/w*\.?flickr\.com\/photos\/[^\/]+\/(\d+)\//;
     const GITHUB_PATTERN = /http(s)?:\/\/(gist\.)?github\.com/;
 
+    var shortner;
+
     switch (false) {
       case !FLICKR_PATTERN.test(longUrl):
-        let shortner = new ShortenSerivces['flickr'];
+        shortner = new ShortenSerivces['flickr'];
         return shortner.getShortlink(longUrl);
+
+      case !GITHUB_PATTERN.test(longUrl):
+        shortner = new ShortenSerivces['github'];
+        return shortner.getShortlink(longUrl);
+
       default:
         return Promise.reject('No applicable known native shorteners.')
     }
