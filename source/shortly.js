@@ -13,19 +13,39 @@ class Shortly {
         DisplayClass = Displays[safari.extension.settings.displayMethod],
         display = new DisplayClass;
 
-    this.getShortlinkToAddress(longUrl)
-      .then( result => display.displayShortlink({shortlink: result, title: pageTitle}) )
-      .catch( error => display.displayError(error) )
+    this.getShortlinkFromInjectedScript()
+      .catch( () => this.getShortlinkToAddress(longUrl) )
+      .then(
+        result => { display.displayShortlink({shortlink: result, title: pageTitle}) },
+        error =>  { display.displayError(error) }
+      )
+  }
+
+  getShortlinkFromInjectedScript(options={skipNative: false}) {
+    if (options.skipNative) {
+      return Promise.reject('Skip native.')
+    }
+
+    return new Promise( (resolve, reject) => {
+      var messageListener = (msgEvent) => {
+        if (msgEvent.name === 'shortlinkFromPage') {
+          if (msgEvent.message) {
+            resolve(msgEvent.message);
+          } else {
+            reject('Not found from injected script.')
+          }
+          // Work is done, unmount listener
+          safari.application.removeEventListener('message', messageListener, false);
+        }
+      };
+
+      safari.application.activeBrowserWindow.activeTab.page.dispatchMessage('findShortlink');
+      safari.application.addEventListener('message', messageListener, false);
+    });
   }
 
   getShortlinkToAddress(longUrl, options={skipNative: false, withService: safari.extension.settings.shortenService}) {
     return Promise.resolve()
-      .then( () => {
-        if (options.skipNative) return;
-
-        // Check inject script
-        return;
-      })
       .then( () => {
         if (options.skipNative) return;
 

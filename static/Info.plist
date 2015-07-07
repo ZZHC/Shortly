@@ -119,9 +119,9 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
-			<key>Start</key>
+			<key>End</key>
 			<array>
-				<string>getLinkInsidePage.js</string>
+				<string>js/injected.js</string>
 			</array>
 		</dict>
 	</dict>
