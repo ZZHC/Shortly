@@ -14,6 +14,7 @@ class Shortly {
         display = new DisplayClass;
 
     this.getShortlinkFromInjectedScript()
+      .catch( () => this.getShortlinkWithKnownShortener(longUrl) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
         result => { display.displayShortlink({shortlink: result, title: pageTitle}) },
@@ -44,14 +45,25 @@ class Shortly {
     });
   }
 
-  getShortlinkToAddress(longUrl, options={skipNative: false, withService: safari.extension.settings.shortenService}) {
-    return Promise.resolve()
-      .then( () => {
-        if (options.skipNative) return;
+  getShortlinkWithKnownShortener(longUrl, options={skipNative: false}) {
+    if (options.skipNative) {
+      return Promise.reject('Skip native.')
+    }
 
-        // Check known list and shorten with Bitly
-        return;
-      })
+    const FLICKR_PATTERN = /https?:\/\/w*\.?flickr\.com\/photos\/[^\/]+\/(\d+)\//;
+    const GITHUB_PATTERN = /http(s)?:\/\/(gist\.)?github\.com/;
+
+    switch (false) {
+      case !FLICKR_PATTERN.test(longUrl):
+        let shortner = new ShortenSerivces['flickr'];
+        return shortner.getShortlink(longUrl);
+      default:
+        return Promise.reject('No applicable known native shorteners.')
+    }
+  }
+
+  getShortlinkToAddress(longUrl, options={withService: safari.extension.settings.shortenService}) {
+    return Promise.resolve()
       .then( () => {
         // Shorten with preferred service
         var ShortenService = ShortenSerivces[options.withService] || ShortenSerivces.DefaultService,
