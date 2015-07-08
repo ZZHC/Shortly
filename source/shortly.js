@@ -10,11 +10,12 @@ class Shortly {
   getShortlinkToCurrentPageAndDisplay() {
     var longUrl = safari.application.activeBrowserWindow.activeTab.url,
         pageTitle = safari.application.activeBrowserWindow.activeTab.title,
+        skipNative = safari.extension.settings.ignoreNative,
         DisplayClass = Displays[safari.extension.settings.displayMethod],
         display = new DisplayClass;
 
-    this.getShortlinkFromInjectedScript()
-      .catch( () => this.getShortlinkWithKnownShortener(longUrl) )
+    this.getShortlinkFromInjectedScript({skipNative})
+      .catch( () => this.getShortlinkWithKnownShortener(longUrl, {skipNative}) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
         result => { display.displayShortlink({shortlink: result, title: pageTitle}) },
