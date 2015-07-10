@@ -10,6 +10,6 @@
 
 import Shortly from './shortly'
 
-var shortly = new Shortly();
+window.shortly = new Shortly();
 
 safari.application.addEventListener('command',  shortly._performCommand, false);

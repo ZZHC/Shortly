@@ -1,9 +1,12 @@
 import ShortenSerivces from './shorten-services/services'
 import Displays from './displays/displays'
+import ShortenTask from './components/shorten-task'
+import TaskQueue from './components/task-queue'
 
 class Shortly {
   constructor() {
     this._performCommand = this._performCommand.bind(this)
+    this._taskQueue = new TaskQueue
   }
 
   // Instance methods
@@ -12,15 +15,23 @@ class Shortly {
         pageTitle = safari.application.activeBrowserWindow.activeTab.title,
         skipNative = safari.extension.settings.ignoreNative,
         DisplayClass = Displays[safari.extension.settings.displayMethod],
-        display = new DisplayClass;
+        display = new DisplayClass,
+        taskPromise, shortenTask;
 
-    this.getShortlinkFromInjectedScript({skipNative})
+    taskPromise = this.getShortlinkFromInjectedScript({skipNative})
       .catch( () => this.getShortlinkWithKnownShortener(longUrl, {skipNative}) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
         result => { display.displayShortlink({shortlink: result, title: pageTitle}) },
         error =>  { display.displayError(error) }
       )
+      .then( () => this._taskQueue.remove(shortenTask) )
+
+    shortenTask = new ShortenTask({
+      promise: taskPromise,
+      browserWindow: safari.application.activeBrowserWindow
+    });
+    this._taskQueue.push(shortenTask)
   }
 
   getShortlinkFromInjectedScript(options={skipNative: false}) {
