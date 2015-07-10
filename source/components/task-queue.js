@@ -15,7 +15,7 @@ class TaskQueue extends EventEmitter {
     var queueIndex = this._queueArray.indexOf(task);
     if (queueIndex < 0) return false;
 
-    this._queueArray.slice(queueIndex, 1);
+    this._queueArray.splice(queueIndex, 1);
     this.emit('change');
   }
 
