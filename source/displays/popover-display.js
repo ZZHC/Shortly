@@ -24,6 +24,7 @@ class PopoverDisplay {
   displayMessage(message, type='text') {
     this._setupTemporaryPopover();
     this._popover.contentWindow.displayMessage(message, type);
+    this._toolbarItem.disabled = false;
     this._toolbarItem.showPopover();
   }
 

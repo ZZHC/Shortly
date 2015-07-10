@@ -13,3 +13,4 @@ import Shortly from './shortly'
 window.shortly = new Shortly();
 
 safari.application.addEventListener('command',  shortly._performCommand, false);
+safari.application.addEventListener('validate',  shortly._validateCommand, false);

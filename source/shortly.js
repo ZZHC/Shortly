@@ -2,11 +2,17 @@ import ShortenSerivces from './shorten-services/services'
 import Displays from './displays/displays'
 import ShortenTask from './components/shorten-task'
 import TaskQueue from './components/task-queue'
+import ToolbarItemValidator from './ui/toolbar-item-validator'
 
 class Shortly {
   constructor() {
-    this._performCommand = this._performCommand.bind(this)
-    this._taskQueue = new TaskQueue
+    this._taskQueue = new TaskQueue;
+    this._validator = new ToolbarItemValidator(this);
+
+    this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
+
+    this._performCommand = this._performCommand.bind(this);
+    this._validateCommand = this._validateCommand.bind(this);
   }
 
   // Instance methods
@@ -31,7 +37,8 @@ class Shortly {
       promise: taskPromise,
       browserWindow: safari.application.activeBrowserWindow
     });
-    this._taskQueue.push(shortenTask)
+
+    this._taskQueue.push(shortenTask);
   }
 
   getShortlinkFromInjectedScript(options={skipNative: false}) {
@@ -112,7 +119,17 @@ class Shortly {
         this.getShortlinkToCurrentPageAndDisplay();
         break;
       default:
-        console.warn('Not implemented');
+        console.warn('Not implemented:', event);
+    }
+  }
+
+  _validateCommand(event) {
+    switch (event.command) {
+      case 'shortenURL':
+        this._validator.validate(event.target);
+        break;
+      default:
+        console.warn('Not implemented:', event);
     }
   }
 }
