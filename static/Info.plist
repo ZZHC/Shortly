@@ -29,7 +29,7 @@
 				<array>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_selectGoogle</string>
+						<string>setService-google</string>
 						<key>Identifier</key>
 						<string>menuItemGoogle</string>
 						<key>Title</key>
@@ -37,7 +37,7 @@
 					</dict>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_selectBitly</string>
+						<string>setService-bitly</string>
 						<key>Identifier</key>
 						<string>menuItemBitly</string>
 						<key>Title</key>
@@ -45,7 +45,7 @@
 					</dict>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_selectTinyURL</string>
+						<string>setService-tinyurl</string>
 						<key>Identifier</key>
 						<string>menuItemTinyurl</string>
 						<key>Title</key>
@@ -53,7 +53,7 @@
 					</dict>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_selectEndpoint</string>
+						<string>setService-custom</string>
 						<key>Identifier</key>
 						<string>menuItemEndpoint</string>
 						<key>Title</key>
@@ -65,7 +65,7 @@
 					</dict>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_ignoreNative</string>
+						<string>toggleIgnoreNative</string>
 						<key>Identifier</key>
 						<string>menuItemIgnoreNative</string>
 						<key>Title</key>
@@ -73,7 +73,7 @@
 					</dict>
 					<dict>
 						<key>Command</key>
-						<string>menuOption_shortenUrl</string>
+						<string>shortenInputURL</string>
 						<key>Identifier</key>
 						<string>menuItemShortenUrl</string>
 						<key>Title</key>
