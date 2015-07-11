@@ -10,9 +10,7 @@ class ToolbarItemValidator {
 
   validate(toolbarItem) {
     var browserWindow = toolbarItem.browserWindow,
-        ongoingTask = this._parent._taskQueue.findWithBrowserWindow(browserWindow);
-
-    console.log('validate', ongoingTask);
+        ongoingTask = this._parent._taskQueue.findWithKey('browserWindow', {value: browserWindow});
 
     if (ongoingTask) {
       toolbarItem.disabled = true;

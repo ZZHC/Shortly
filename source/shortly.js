@@ -1,12 +1,12 @@
 import ShortenSerivces from './shorten-services/services'
 import Displays from './displays/displays'
 import ShortenTask from './components/shorten-task'
-import TaskQueue from './components/task-queue'
+import SimpleSet from './components/simple-set'
 import ToolbarItemValidator from './ui/toolbar-item-validator'
 
 class Shortly {
   constructor() {
-    this._taskQueue = new TaskQueue;
+    this._taskQueue = new SimpleSet;
     this._validator = new ToolbarItemValidator(this);
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
