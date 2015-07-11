@@ -3,11 +3,15 @@ import Displays from './displays/displays'
 import ShortenTask from './components/shorten-task'
 import SimpleSet from './components/simple-set'
 import ToolbarItemValidator from './ui/toolbar-item-validator'
+import MenuValidator from './ui/menu-validator'
 
 class Shortly {
   constructor() {
     this._taskQueue = new SimpleSet;
-    this._validator = new ToolbarItemValidator(this);
+    this._validators = {
+      toolbarItem: new ToolbarItemValidator(this),
+      menu: new MenuValidator(this)
+    };
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
 
@@ -124,9 +128,12 @@ class Shortly {
   }
 
   _validateCommand(event) {
-    switch (event.command) {
-      case 'shortenURL':
-        this._validator.validate(event.target);
+    switch (false) {
+      case !(event.command === 'shortenURL'):
+        this._validators['toolbarItem'].validate(event.target);
+        break;
+      case !(event.target.identifier.match(/^menuItem/)):
+        this._validators['menu'].validate(event.target);
         break;
       default:
         console.warn('Not implemented:', event);
