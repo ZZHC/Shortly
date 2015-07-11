@@ -12,14 +12,15 @@ class ToolbarItemValidator {
 
   validate(toolbarItem) {
     var browserWindow = toolbarItem.browserWindow,
+        activeTab = browserWindow.activeTab,
         ongoingTask = this._parent._taskQueue.findWithKey('browserWindow', {value: browserWindow});
 
     if (ongoingTask) {
       toolbarItem.disabled = true;
       ToolbarItemAnimator.startAnimationFor(toolbarItem)
     } else {
-      toolbarItem.disabled = false;
       ToolbarItemAnimator.stopAnimationFor(toolbarItem)
+      toolbarItem.disabled = !activeTab.url || activeTab.url.match(/^safari-extension:/);
     }
   }
 }
