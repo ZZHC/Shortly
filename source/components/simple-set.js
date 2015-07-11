@@ -31,7 +31,7 @@ class SimpleSet extends EventEmitter {
   }
 
   toArray() {
-    this._setArray.slice();
+    return this._setArray.slice();
   }
 }
 
