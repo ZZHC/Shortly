@@ -22,8 +22,13 @@ class Shortly {
   // Instance methods
   getShortlinkToCurrentPageAndDisplay() {
     var longUrl = safari.application.activeBrowserWindow.activeTab.url,
-        pageTitle = safari.application.activeBrowserWindow.activeTab.title,
-        skipNative = safari.extension.settings.ignoreNative,
+        pageTitle = safari.application.activeBrowserWindow.activeTab.title;
+
+    this.getShortlinkToURLAndDisplay(longUrl, {title: pageTitle})
+  }
+
+  getShortlinkToURLAndDisplay(longUrl, options={title: longUrl}) {
+    var skipNative = safari.extension.settings.ignoreNative,
         DisplayClass = Displays[safari.extension.settings.displayMethod],
         display = new DisplayClass,
         taskPromise, shortenTask;
@@ -32,7 +37,7 @@ class Shortly {
       .catch( () => this.getShortlinkWithKnownShortener(longUrl, {skipNative}) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
-        result => { display.displayShortlink({shortlink: result, title: pageTitle}) },
+        result => { display.displayShortlink({shortlink: result, title: options.title}) },
         error =>  { display.displayError(error) }
       )
       .then( () => this._taskQueue.remove(shortenTask) )
@@ -118,9 +123,26 @@ class Shortly {
 
   // Event listener hanlders
   _performCommand(event) {
+    var cmdMatch = event.command.match(/^setService-(\w+)/),
+        inputURL = '';
+
+    if (cmdMatch) {
+      safari.extension.settings.shortenService = cmdMatch[1];
+      return
+    }
+
     switch (event.command) {
       case 'shortenURL':
         this.getShortlinkToCurrentPageAndDisplay();
+        break;
+      case 'toggleIgnoreNative':
+        safari.extension.settings.ignoreNative = !safari.extension.settings.ignoreNative;
+        break;
+      case 'shortenInputURL':
+        inputURL = window.prompt('Please enter the URL you want to shorten below:');
+        if (inputURL.length < 1) return false;
+
+        this.getShortlinkToURLAndDisplay(inputURL);
         break;
       default:
         console.warn('Not implemented:', event);
