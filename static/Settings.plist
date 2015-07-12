@@ -81,6 +81,16 @@
 		<string>CheckBox</string>
 	</dict>
 	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>clearGoogleAuth</string>
+		<key>Title</key>
+		<string>Check here to reset Google login info</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
 		<key>Title</key>
 		<string>Shorten bit.ly links with my own account</string>
 		<key>Type</key>
@@ -121,16 +131,6 @@
 		<string>Endpoint API</string>
 		<key>Type</key>
 		<string>TextField</string>
-	</dict>
-	<dict>
-		<key>DefaultValue</key>
-		<false/>
-		<key>Key</key>
-		<string>clearOAuth</string>
-		<key>Title</key>
-		<string>Reset stored OAuth login info</string>
-		<key>Type</key>
-		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>Type</key>
