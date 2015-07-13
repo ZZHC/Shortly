@@ -1,4 +1,5 @@
 import {googleOAuth} from '../api-keys';
+import AlertDisplay from '../displays/alert-display';
 
 const CLIENT_ID = googleOAuth.clientId;
 const CLIENT_SECRET = googleOAuth.secret;
@@ -8,11 +9,23 @@ const AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth?response_type=c
 const TOKEN_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/token';
 
 class GoogleOAuth {
+  static getStoredCredentials() {
+    return safari.extension.secureSettings.googleOAuthCredentials;
+  }
+
+  static saveCredentials(credentialObj) {
+    safari.extension.secureSettings.googleOAuthCredentials = JSON.stringify(credentialObj);
+  }
+
   authenticate() {
     this.requestAuthCode()
       .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( tokens => console.log(tokens) )
-      .catch( error => console.error(error) )
+      .then( credentials => GoogleOAuth.saveCredentials(credentials) )
+      .catch( error => {
+        var display = new AlertDisplay;
+        display.displayError(error);
+        console.warn(error);
+      })
   }
 
   requestAuthCode() {

@@ -208,5 +208,11 @@
 		<key>Key</key>
 		<string>knownBitlyNativeList</string>
 	</dict>
+	<dict>
+		<key>Key</key>
+		<string>googleOAuthCredentials</string>
+		<key>Secure</key>
+		<true/>
+	</dict>
 </array>
 </plist>
