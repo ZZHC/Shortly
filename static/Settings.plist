@@ -74,7 +74,7 @@
 		<key>DefaultValue</key>
 		<false/>
 		<key>Key</key>
-		<string>googleAuth</string>
+		<string>useGoogleOAuth</string>
 		<key>Title</key>
 		<string>Shorten goo.gl links with my Google account</string>
 		<key>Type</key>
