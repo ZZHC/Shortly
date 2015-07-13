@@ -10,17 +10,61 @@ const TOKEN_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/token';
 
 class GoogleOAuth {
   static getStoredCredentials() {
-    return safari.extension.secureSettings.googleOAuthCredentials;
+    return JSON.parse(safari.extension.secureSettings.googleOAuthCredentials);
   }
 
-  static saveCredentials(credentialObj) {
+  static saveCredentials(credentialObj, options={last_update: undefined}) {
+    credentialObj.last_update = options.last_update || Date.now();
     safari.extension.secureSettings.googleOAuthCredentials = JSON.stringify(credentialObj);
+  }
+
+  static refreshAccessToken(refreshToken) {
+    if (!refreshToken) {
+      return Promise.reject('You must provide refreshToken to exchange for new access token.');
+    }
+
+    return fetch(TOKEN_ENDPOINT, {
+      method: 'post',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'refresh_token=' + refreshToken + '&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&grant_type=refresh_token'
+    }).then( response => response.json() )
+      .then( credentials => {
+        var timestamp = Date.now();
+
+        credentials.refresh_token = refreshToken;
+        GoogleOAuth.saveCredentials(credentials, {last_update: timestamp});
+
+        credentials.last_update = timestamp;
+        return credentials;
+      });
+  }
+
+  static getAuthenticateHeader() {
+    var credentials = GoogleOAuth.getStoredCredentials();
+
+    if (!credentials) {
+      return Promise.reject('Google OAuth credentials missing. Please try to authorize Shortly again.');
+    }
+
+    return Promise.resolve()
+      .then( () => {
+        var accessTokenExpired = (Date.now() - credentials.last_update) >= (credentials.expires_in * 1000);
+
+        if (accessTokenExpired) {
+          return GoogleOAuth.refreshAccessToken(credentials.refresh_token);
+        } else {
+          return credentials;
+        }
+      })
+      .then( credentials => {
+        return `${credentials.token_type} ${credentials.access_token}`;
+      });
   }
 
   authenticate() {
     this.requestAuthCode()
       .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( credentials => GoogleOAuth.saveCredentials(credentials) )
+      .then( credentials => GoogleOAuth.saveCredentials(credentials, {last_update: Date.now()}) )
       .catch( error => {
         var display = new AlertDisplay;
         display.displayError(error);
@@ -51,9 +95,9 @@ class GoogleOAuth {
   }
 
   exchangeAuthCodeForToken(authCode) {
-    var data = new FormData();
-
-    if (!authCode) return Promise.reject('You must provide authCode to exchange for tokens.');
+    if (!authCode) {
+      return Promise.reject('You must provide authCode to exchange for tokens.');
+    }
 
     return fetch(TOKEN_ENDPOINT, {
       method: 'post',
