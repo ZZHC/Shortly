@@ -139,11 +139,18 @@ class Shortly {
 
   // Event listener hanlders
   _performCommand(event) {
-    var cmdMatch = event.command.match(/^setService-(\w+)/),
+    var menuMatch = event.command.match(/^setService-(\w+)/),
+        contextMenuMatch = event.command.match(/^shortenTarget-(\w+)/),
         inputURL = '';
 
-    if (cmdMatch) {
-      safari.extension.settings.shortenService = cmdMatch[1];
+    if (menuMatch) {
+      safari.extension.settings.shortenService = menuMatch[1];
+      return
+    }
+
+    if (contextMenuMatch) {
+      let key = contextMenuMatch[1];
+      this.getShortlinkToURLAndDisplay(event.userInfo[key]);
       return
     }
 
