@@ -39,7 +39,7 @@ class GoogleOAuth {
       });
   }
 
-  static getAuthenticateHeader() {
+  static getAuthorizationHeader() {
     var credentials = GoogleOAuth.getStoredCredentials();
 
     if (!credentials) {
@@ -61,7 +61,7 @@ class GoogleOAuth {
       });
   }
 
-  authenticate() {
+  authorize() {
     this.requestAuthCode()
       .then( authCode => this.exchangeAuthCodeForToken(authCode) )
       .then( credentials => GoogleOAuth.saveCredentials(credentials, {last_update: Date.now()}) )

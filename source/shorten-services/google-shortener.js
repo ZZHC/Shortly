@@ -27,7 +27,7 @@ export default class GoogleShortener {
   }
 
   _shortenWithOAuthToken(longUrl) {
-    return GoogleOAuth.getAuthenticateHeader().then( authString => {
+    return GoogleOAuth.getAuthorizationHeader().then( authString => {
       return fetch(API_ENDPOINT, {
         method: 'post',
         headers: {
