@@ -1,5 +1,4 @@
 import {googleOAuth} from '../api-keys';
-import AlertDisplay from '../displays/alert-display';
 
 const CLIENT_ID = googleOAuth.clientId;
 const CLIENT_SECRET = googleOAuth.secret;
@@ -16,6 +15,10 @@ class GoogleOAuth {
   static saveCredentials(credentialObj, options={last_update: undefined}) {
     credentialObj.last_update = options.last_update || Date.now();
     safari.extension.secureSettings.googleOAuthCredentials = JSON.stringify(credentialObj);
+  }
+
+  static clearStoredCredentials() {
+    safari.extension.secureSettings.removeItem('googleOAuthCredentials');
   }
 
   static refreshAccessToken(refreshToken) {
@@ -62,14 +65,9 @@ class GoogleOAuth {
   }
 
   authorize() {
-    this.requestAuthCode()
+    return this.requestAuthCode()
       .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( credentials => GoogleOAuth.saveCredentials(credentials, {last_update: Date.now()}) )
-      .catch( error => {
-        var display = new AlertDisplay;
-        display.displayError(error);
-        console.warn(error);
-      })
+      .then( credentials => GoogleOAuth.saveCredentials(credentials, {last_update: Date.now()}) );
   }
 
   requestAuthCode() {

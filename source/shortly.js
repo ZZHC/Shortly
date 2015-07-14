@@ -4,6 +4,7 @@ import ShortenTask from './components/shorten-task'
 import SimpleSet from './components/simple-set'
 import ToolbarItemValidator from './ui/toolbar-item-validator'
 import MenuValidator from './ui/menu-validator'
+import SettingsResponder from './components/settings-responder'
 
 class Shortly {
   constructor() {
@@ -12,11 +13,13 @@ class Shortly {
       toolbarItem: new ToolbarItemValidator(this),
       menu: new MenuValidator(this)
     };
+    this._settingsResponder = new SettingsResponder;
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
 
     this._performCommand = this._performCommand.bind(this);
     this._validateCommand = this._validateCommand.bind(this);
+    this._settingsChanged = this._settingsChanged.bind(this);
   }
 
   // Instance methods
@@ -160,6 +163,10 @@ class Shortly {
       default:
         console.warn('Not implemented:', event);
     }
+  }
+
+  _settingsChanged(event) {
+    this._settingsResponder.respondToEvent(event);
   }
 }
 
