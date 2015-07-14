@@ -9,7 +9,9 @@ const TOKEN_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/token';
 
 class GoogleOAuth {
   static getStoredCredentials() {
-    return JSON.parse(safari.extension.secureSettings.googleOAuthCredentials);
+    var credentials = safari.extension.secureSettings.googleOAuthCredentials;
+
+    if (credentials) return JSON.parse(credentials);
   }
 
   static saveCredentials(credentialObj, options={last_update: undefined}) {
