@@ -15,6 +15,8 @@ class SettingsResponder {
       case 'clearGoogleAuth':
         this._clearGoogleAuth();
         break;
+      case 'enableContextMenu':
+        this._parent.toggleContextMenu(event.newValue);
       default:
         break;
     }

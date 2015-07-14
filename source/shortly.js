@@ -13,9 +13,10 @@ class Shortly {
       toolbarItem: new ToolbarItemValidator(this),
       menu: new MenuValidator(this)
     };
-    this._settingsResponder = new SettingsResponder;
+    this._settingsResponder = new SettingsResponder(this);
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
+    this.toggleContextMenu(safari.extension.settings.enableContextMenu);
 
     this._performCommand = this._performCommand.bind(this);
     this._validateCommand = this._validateCommand.bind(this);
@@ -122,6 +123,16 @@ class Shortly {
 
         return shortener.getShortlink(longUrl, shortenerOptions);
       });
+  }
+
+  toggleContextMenu(enabled) {
+    var pathToInject = safari.extension.baseURI + 'js/contextMenuInjected.js';
+
+    if (enabled) {
+      safari.extension.addContentScriptFromURL(pathToInject);
+    } else {
+      safari.extension.removeContentScript(pathToInject);
+    }
   }
 
   // Event listener hanlders
