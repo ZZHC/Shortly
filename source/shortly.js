@@ -5,13 +5,15 @@ import SimpleSet from './components/simple-set'
 import ToolbarItemValidator from './ui/toolbar-item-validator'
 import MenuValidator from './ui/menu-validator'
 import SettingsResponder from './components/settings-responder'
+import ContextMenuValidator from './ui/context-menu-validator'
 
 class Shortly {
   constructor() {
     this._taskQueue = new SimpleSet;
     this._validators = {
       toolbarItem: new ToolbarItemValidator(this),
-      menu: new MenuValidator(this)
+      menu: new MenuValidator(this),
+      contextMenu: new ContextMenuValidator(this)
     };
     this._settingsResponder = new SettingsResponder(this);
 
@@ -171,6 +173,10 @@ class Shortly {
       case !(event.target.identifier.match(/^menuItem/)):
         this._validators['menu'].validate(event.target);
         break;
+      case !(event.target.identifier.match(/^contextMenuItem/)):
+        this._validators['contextMenu'].validateWithEvent(event);
+        break;
+
       default:
         console.warn('Not implemented:', event);
     }
