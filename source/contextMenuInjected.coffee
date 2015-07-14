@@ -3,13 +3,11 @@ contextMenuHandler = (event) ->
   linkCandidates = {}
 
   switch nodeName
-    when 'IMG'
-      linkCandidates['image'] = event.target.src
-    when 'A'
-      linkCandidates['link'] = event.target.href
-      return
+    when 'IMG' then linkCandidates['image'] = event.target.src
+    when 'A'   then linkCandidates['link'] = event.target.href
 
   do _findHyperlinkParent = ->
+    return if nodeName is 'A'
     targetNode = event.target.parentNode
 
     while targetNode and targetNode.nodeType isnt Node.DOCUMENT_NODE
