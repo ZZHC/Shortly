@@ -13,7 +13,7 @@ class SettingsResponder {
         this._googleOAuthChanged(event);
         break;
       case 'clearGoogleAuth':
-        this._clearGoogleAuth();
+        this._clearGoogleAuth(event);
         break;
       case 'enableContextMenu':
         this._parent.toggleContextMenu(event.newValue);
@@ -38,12 +38,14 @@ class SettingsResponder {
     }
   }
 
-  _clearGoogleAuth() {
+  _clearGoogleAuth(event) {
     GoogleOAuth.clearStoredCredentials();
     safari.extension.settings.useGoogleOAuth = false;
-    safari.extension.settings.clearGoogleAuth = false;
 
-    this._display.displayMessage('Your Google login info has been deleted from Shortly.');
+    if (event.newValue) {
+      safari.extension.settings.clearGoogleAuth = false;
+      this._display.displayMessage('Your Google login info has been deleted from Shortly.');
+    }
   }
 }
 
