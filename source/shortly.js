@@ -128,7 +128,7 @@ class Shortly {
   }
 
   toggleContextMenu(enabled) {
-    var pathToInject = safari.extension.baseURI + 'js/contextMenuInjected.js';
+    var pathToInject = safari.extension.baseURI + 'js/injected/context-menu.js';
 
     if (enabled) {
       safari.extension.addContentScriptFromURL(pathToInject);

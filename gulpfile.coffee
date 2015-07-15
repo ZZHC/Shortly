@@ -20,9 +20,9 @@ gulp.task 'build:js', ->
     .pipe webpack( require('./webpack.config') )
     .pipe gulp.dest(EXTENSION_PATH + '/js')
 
-  gulp.src(['source/injected.coffee', 'source/contextMenuInjected.coffee'])
+  gulp.src(['source/injected/*.coffee'])
     .pipe coffee().on('error', gutil.log)
-    .pipe gulp.dest(EXTENSION_PATH + '/js')
+    .pipe gulp.dest(EXTENSION_PATH + '/js/injected')
 
 gulp.task('build', ['clean', 'build:static', 'build:js'])
 

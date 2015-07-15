@@ -140,7 +140,7 @@
 		<dict>
 			<key>End</key>
 			<array>
-				<string>js/injected.js</string>
+				<string>js/injected/shortlink.js</string>
 			</array>
 		</dict>
 	</dict>
