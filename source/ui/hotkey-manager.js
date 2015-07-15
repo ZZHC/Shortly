@@ -4,15 +4,18 @@ class HotkeyManager {
   constructor(shortly) {
     this._parent = shortly
     this.enabled = false
+    this._messageListener = this._messageListener.bind(this);
   }
 
   run() {
     safari.extension.addContentScriptFromURL(SCRIPT_PATH);
+    safari.application.addEventListener('message', this._messageListener, false);
     this.enabled = true;
   }
 
   stop() {
     safari.extension.removeContentScript(SCRIPT_PATH);
+    safari.application.removeEventListener('message', this._messageListener);
     this.enabled = false;
   }
 
@@ -37,6 +40,17 @@ class HotkeyManager {
       altKey:   safari.extension.settings.kbHotkeyAltKey,
       ctrlKey:  safari.extension.settings.kbHotkeyCtrlKey,
       shiftKey: safari.extension.settings.kbHotkeyShiftKey
+    }
+  }
+
+  _messageListener(event) {
+    switch (event.name) {
+      case 'readHotkeySettings':
+        this.broadcastSettings();
+        break;
+      case 'hotkeyCaptured':
+        this._parent.getShortlinkToCurrentPageAndDisplay();
+        break;
     }
   }
 }
