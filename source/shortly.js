@@ -6,6 +6,7 @@ import ToolbarItemValidator from './ui/toolbar-item-validator'
 import MenuValidator from './ui/menu-validator'
 import SettingsResponder from './components/settings-responder'
 import ContextMenuValidator from './ui/context-menu-validator'
+import HotkeyManager from './ui/hotkey-manager'
 
 class Shortly {
   constructor() {
@@ -16,9 +17,11 @@ class Shortly {
       contextMenu: new ContextMenuValidator(this)
     };
     this._settingsResponder = new SettingsResponder(this);
+    this._hotkeyManager = new HotkeyManager(this)
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
     this.toggleContextMenu(safari.extension.settings.enableContextMenu);
+    this._hotkeyManager.toggle(safari.extension.settings.enableKbHotkey);
 
     this._performCommand = this._performCommand.bind(this);
     this._validateCommand = this._validateCommand.bind(this);

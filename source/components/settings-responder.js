@@ -17,8 +17,19 @@ class SettingsResponder {
         break;
       case 'enableContextMenu':
         this._parent.toggleContextMenu(event.newValue);
+        break;
+      case 'enableKbHotkey':
+        this._parent._hotkeyManager.toggle(event.newValue);
+        break;
+      case 'kbHotkeyChar':
+        this._formatHotkeyChar(event.newValue)
+        break;
       default:
         break;
+    }
+
+    if (event.key.match(/^kbHotkey/)) {
+      this._parent._hotkeyManager.broadcastSettings();
     }
   }
 
@@ -45,6 +56,12 @@ class SettingsResponder {
     if (event.newValue) {
       safari.extension.settings.clearGoogleAuth = false;
       this._display.displayMessage('Your Google login info has been deleted from Shortly.');
+    }
+  }
+
+  _formatHotkeyChar(hotkeyChar) {
+    if (hotkeyChar) {
+      safari.settings.kbHotkeyChar = hotkeyChar.charAt(0).toUpperCase()
     }
   }
 }
