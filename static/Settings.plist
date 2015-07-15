@@ -164,7 +164,7 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
-		<false/>
+		<true/>
 		<key>Key</key>
 		<string>kbHotkeyMetaKey</string>
 		<key>Title</key>
@@ -178,7 +178,7 @@
 		<key>Key</key>
 		<string>kbHotkeyAltKey</string>
 		<key>Title</key>
-		<string>⌥ Option/Alt</string>
+		<string>⌥ Option</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
@@ -188,7 +188,7 @@
 		<key>Key</key>
 		<string>kbHotkeyCtrlKey</string>
 		<key>Title</key>
-		<string>⌃ Control/Ctrl</string>
+		<string>⌃ Control</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
