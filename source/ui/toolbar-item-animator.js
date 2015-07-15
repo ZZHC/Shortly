@@ -52,8 +52,9 @@ class ToolbarItemAnimator {
   }
 
   _getNextFrame(frame) {
-    var nextFrame = (frame % 12) + 2; // [1...12] + 1
+    var nextFrame = (frame % 12) + 1; // [1...12]
     this._toolbarItem.image = `${BASE_URI}spin/${frame}.png`;
+    console.log(this._toolbarItem.image);
 
     if (this._status === PLAYING) {
       setTimeout( () => { this._getNextFrame(nextFrame) }, SPIN_SPEED);
