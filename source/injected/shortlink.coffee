@@ -1,8 +1,8 @@
+return false unless window.top is window
+
 KKBOX_PATTERN = /^https?\:\/\/\w*\.?kkbox.com\/.*(album|song)\//
 
 responseToRequest = (request) ->
-  return unless window.top is window
-
   switch request.name
     when 'findShortlink'
       shortlink = findShortlink()
