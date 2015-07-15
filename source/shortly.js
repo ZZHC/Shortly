@@ -7,6 +7,7 @@ import MenuValidator from './ui/menu-validator'
 import SettingsResponder from './components/settings-responder'
 import ContextMenuValidator from './ui/context-menu-validator'
 import HotkeyManager from './ui/hotkey-manager'
+import Helpers from './helpers'
 
 class Shortly {
   constructor() {
@@ -90,20 +91,29 @@ class Shortly {
     const FLICKR_PATTERN = /https?:\/\/w*\.?flickr\.com\/photos\/[^\/]+\/(\d+)\//;
     const GITHUB_PATTERN = /http(s)?:\/\/(gist\.)?github\.com/;
 
-    var shortner;
+    var isBitlyNative = Helpers.isKnownBitlyNative(longUrl),
+        shortener;
 
     switch (false) {
       case !FLICKR_PATTERN.test(longUrl):
-        shortner = new ShortenSerivces['flickr'];
-        return shortner.getShortlink(longUrl);
+        shortener = new ShortenSerivces['flickr'];
+        break;
 
       case !GITHUB_PATTERN.test(longUrl):
-        shortner = new ShortenSerivces['github'];
-        return shortner.getShortlink(longUrl);
+        shortener = new ShortenSerivces['github'];
+        break;
+
+      case !isBitlyNative:
+        shortener = new ShortenSerivces['bitly'];
+        break;
 
       default:
         return Promise.reject('No applicable known native shorteners.')
     }
+
+
+
+    return shortener.getShortlink(longUrl);
   }
 
   getShortlinkToAddress(longUrl, options={withService: safari.extension.settings.shortenService}) {
