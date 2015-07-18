@@ -54,7 +54,6 @@ class Shortly {
           display.displayShortlink({shortlink: result, title: options.title});
         },
         error => {
-          console.log(error, navigator.onLine);
           if (!navigator.onLine) {
             display.displayError(I18n.t('error.offline'));
           } else {

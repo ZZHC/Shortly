@@ -131,6 +131,8 @@
 		<string>Endpoint API</string>
 		<key>Type</key>
 		<string>TextField</string>
+		<key>DefaultValue</key>
+		<string>http://example.com/shorten?url=%@</string>
 	</dict>
 	<dict>
 		<key>Type</key>

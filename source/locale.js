@@ -92,7 +92,22 @@ const LocaleLib = {
       'ja-jp': 'お使いのコンピュータはインターネットに接続していません。',
       'it-it': 'Servizio non disponibile, oppure il tuo computer non è connesso a Internet.',
       'fr-fr': "Service indisponible, ou votre ordinateur n'est pas connecté à Internet."
-    }
+    },
+    badEndpoint: {
+      'default': 'Invalid endpoint URL pattern. Please check your settings and try again.',
+      'zh-tw': '自定接點的網址格式錯誤。請檢查您的設定後再試一次。',
+      'zh-cn': '自定接点的地址格式错误。请检查您的设置后再试一次。',
+      'it-it': 'URL finale invalido. Per favore controlla le tue impostazioni e prova di nuovo.',
+      'fr-fr': 'URL invalide. Vérfiez vos préférences et réessayez.'
+    },
+    invalidResponse: {
+      'default': 'Error while shortening: Invalid server response.',
+      'zh-tw': '縮短網址時發生錯誤：收到不正確的回應。',
+      'zh-cn': '缩短地址时发生错误：收到不正确的回应。',
+      'ja-jp': 'Error while shortening: Invalid server response.',
+      'it-it': "Errore nell'accorciare l'indirizzo: risposta del server invalida.",
+      'fr-fr': "Erreur lors du raccourcissement: Réponse invalide du serveur."
+    },
   }
 }
 
