@@ -65,7 +65,25 @@ const LocaleLib = {
       'ja-jp': 'イメージのアドレスを短縮',
       'default': 'Shorten Image Address'
     }
-  }
+  },
+  notice: {
+    hotkey: {
+      'zh-tw': '您必須重新載入已開啟的網頁才能啟用快捷鍵。',
+      'zh-cn': '您必须重新载入已开启的网页才能启用快捷键。',
+      'default': 'You have to reload opened pages to enable hotkey.'
+    },
+    popoverTips: {
+      'zh-tw': '請按 <kbd>&#8984;-C</kbd> 複製短網址。</small>',
+      'zh-cn': '请按 <kbd>&#8984;-C</kbd> 复制短地址。</small>',
+      'ja-jp': '<kbd>&#8984;-C</kbd>でアドレスをコピー',
+      'default': 'Press <kbd>&#8984;-C</kbd> to copy.</small>'
+    },
+    shortenInputPrompt: {
+      'zh-tw': '請在下方輸入您想縮短的完整網址：',
+      'zh-cn': '请在下方输入您想缩短的完整地址：',
+      'default': 'Please enter the long URL you want to shorten below:'
+    }
+  },
 }
 
 export default LocaleLib

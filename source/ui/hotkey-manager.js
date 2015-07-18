@@ -1,3 +1,6 @@
+import AlertDisplay from '../displays/alert-display'
+import I18n from '../components/i18n'
+
 const SCRIPT_PATH = safari.extension.baseURI + 'js/injected/hotkey.js';
 
 class HotkeyManager {
@@ -8,9 +11,13 @@ class HotkeyManager {
   }
 
   run() {
+    var display = new AlertDisplay;
+
     safari.extension.addContentScriptFromURL(SCRIPT_PATH);
     safari.application.addEventListener('message', this._messageListener, false);
     this.enabled = true;
+
+    display.displayMessage(I18n.t('notice.hotkey'));
   }
 
   stop() {

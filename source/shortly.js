@@ -8,6 +8,7 @@ import SettingsResponder from './components/settings-responder'
 import ContextMenuValidator from './ui/context-menu-validator'
 import HotkeyManager from './ui/hotkey-manager'
 import Helpers from './helpers'
+import I18n from './components/i18n'
 
 class Shortly {
   constructor() {
@@ -175,7 +176,7 @@ class Shortly {
         safari.extension.settings.ignoreNative = !safari.extension.settings.ignoreNative;
         break;
       case 'shortenInputURL':
-        inputURL = window.prompt('Please enter the URL you want to shorten below:');
+        inputURL = window.prompt(I18n.t('notice.shortenInputPrompt'));
         if (!inputURL) return false;
 
         this.getShortlinkToURLAndDisplay(inputURL);
