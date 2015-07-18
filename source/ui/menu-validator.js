@@ -1,3 +1,5 @@
+import I18n from '../components/i18n'
+
 const {CHECKED, UNCHECKED, MIXED} = SafariExtensionMenuItem
 
 class MenuValidator {
@@ -9,8 +11,10 @@ class MenuValidator {
     var serviceMatch = menuItem.command.match(/^setService-(\w+)/),
         shortenServicePref = safari.extension.settings.shortenService,
         ignoreNativePref = safari.extension.settings.ignoreNative,
-        customEndpointPref = safari.extension.settings.customEndpoint;
+        customEndpointPref = safari.extension.settings.customEndpoint,
+        localeIdentifier = menuItem.identifier.match(/^menuItem(\w+)/)[1];
 
+    // Set checked state
     if (serviceMatch) {
       menuItem.checkedState = (serviceMatch[1] === shortenServicePref) ? CHECKED : UNCHECKED;
     }
@@ -25,6 +29,9 @@ class MenuValidator {
       case 'shortenInputURL':
         break;
     }
+
+    // Set locale
+    menuItem.title = I18n.t(`menuItem.${localeIdentifier}`)
   }
 }
 

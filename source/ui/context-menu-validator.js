@@ -9,6 +9,8 @@
  *
  */
 
+import I18n from '../components/i18n'
+
 class ContextMenuValidator {
   constructor(shortly) {
     this._parent = shortly
@@ -18,8 +20,10 @@ class ContextMenuValidator {
     var menuItem = validateEvent.target,
         linkCandidates = validateEvent.userInfo,
         command = '',
-        key = '';
+        key = '',
+        localeIdentifier = menuItem.identifier.match(/^contextMenuItem(\w+)/)[1];
 
+    // Disable unqualified context menu items
     menuItem.disabled = true;
 
     for (key in linkCandidates) {
@@ -27,9 +31,12 @@ class ContextMenuValidator {
 
       if (menuItem.command === command) {
         menuItem.disabled = false;
-        return
+        break;
       }
     }
+
+    // Set locale
+    menuItem.title = I18n.t(`contextMenuItem.${localeIdentifier}`);
   }
 }
 
