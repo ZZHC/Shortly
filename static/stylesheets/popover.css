@@ -31,8 +31,9 @@ h1 img {
   width: 100%;
   box-sizing: border-box;
 }
-#result p {
-  margin: 0.2em 0;
+#tip {
+  font-size: 85%;
+  margin: 0.6em 0;
 }
 
 #info p {

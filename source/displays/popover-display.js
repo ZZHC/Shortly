@@ -1,9 +1,13 @@
+import I18n from '../components/i18n';
+
 class PopoverDisplay {
   constructor() {
     this._toolbarItem = this._getToolbarItemOnActiveWindow();
     this._popover = this._getPopover();
 
     this._popover.width = 280;
+    this._popover.contentWindow.updateLocale(I18n.t('notice.popoverTip'));
+
     this._popover.contentWindow.document.addEventListener('visibilitychange', () => {
       var _document = this._popover.contentWindow.document;
       if (!this._popover.contentWindow.document.hidden) {

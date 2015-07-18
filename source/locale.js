@@ -72,7 +72,7 @@ const LocaleLib = {
       'zh-cn': '您必须重新载入已开启的网页才能启用快捷键。',
       'default': 'You have to reload opened pages to enable hotkey.'
     },
-    popoverTips: {
+    popoverTip: {
       'zh-tw': '請按 <kbd>&#8984;-C</kbd> 複製短網址。</small>',
       'zh-cn': '请按 <kbd>&#8984;-C</kbd> 复制短地址。</small>',
       'ja-jp': '<kbd>&#8984;-C</kbd>でアドレスをコピー',

@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="stylesheets/popover.css" type="text/css" />
 
 <script>
-  var initialize, displayMessage;
+  var initialize, displayMessage, updateLocale;
 
   initialize = function() {
     var i, nodes = document.querySelectorAll('section');
@@ -35,6 +35,10 @@
         document.querySelector('#info').classList.remove('hidden');
     }
   };
+
+  updateLocale = function(localeString) {
+    document.querySelector('#tip').innerHTML = localeString;
+  }
 </script>
 </head>
 
@@ -46,7 +50,7 @@
   <section id="result">
     <h4 id="shortlink-title">Page Title</h4>
     <input id="shortlink-input" type="text" value="Shortlink" />
-    <p><small>Press <kbd>&#8984;-C</kbd> to copy.</small></p>
+    <p id="tip">Press <kbd>&#8984;-C</kbd> to copy.</p>
   </section>
 
   <section id="info">
