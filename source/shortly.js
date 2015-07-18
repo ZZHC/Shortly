@@ -176,7 +176,7 @@ class Shortly {
         break;
       case 'shortenInputURL':
         inputURL = window.prompt('Please enter the URL you want to shorten below:');
-        if (inputURL.length < 1) return false;
+        if (!inputURL) return false;
 
         this.getShortlinkToURLAndDisplay(inputURL);
         break;
