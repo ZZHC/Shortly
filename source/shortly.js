@@ -10,6 +10,8 @@ import HotkeyManager from './ui/hotkey-manager'
 import Helpers from './helpers'
 import I18n from './components/i18n'
 
+const TIMEOUT_MS = 5000;
+
 class Shortly {
   constructor() {
     this._taskQueue = new SimpleSet;
@@ -76,17 +78,31 @@ class Shortly {
     }
 
     return new Promise( (resolve, reject) => {
-      var messageListener = (msgEvent) => {
+      var messageListener, unmount, timeoutID;
+
+      messageListener = (msgEvent) => {
         if (msgEvent.name === 'shortlinkFromPage') {
           if (msgEvent.message) {
             resolve(msgEvent.message);
           } else {
             reject('Not found from injected script.')
           }
-          // Work is done, unmount listener
-          safari.application.removeEventListener('message', messageListener, false);
+
+          unmount();
         }
       };
+      unmount = () => {
+        // Work is done, unmount listener
+        safari.application.removeEventListener('message', messageListener);
+
+        // Prevent from timeout being executed
+        window.clearTimeout(timeoutID);
+      }
+
+      timeoutID = setTimeout(() => {
+        reject('Injected script timed out.');
+        unmount();
+      }, TIMEOUT_MS);
 
       safari.application.activeBrowserWindow.activeTab.page.dispatchMessage('findShortlink');
       safari.application.addEventListener('message', messageListener, false);
