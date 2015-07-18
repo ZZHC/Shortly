@@ -48,8 +48,17 @@ class Shortly {
       .catch( () => this.getShortlinkWithKnownShortener(longUrl, {skipNative}) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
-        result => { display.displayShortlink({shortlink: result, title: options.title}) },
-        error =>  { display.displayError(error) }
+        result => {
+          display.displayShortlink({shortlink: result, title: options.title});
+        },
+        error => {
+          console.log(error, navigator.onLine);
+          if (!navigator.onLine) {
+            display.displayError(I18n.t('error.offline'));
+          } else {
+            display.displayError(error);
+          }
+        }
       )
       .then( () => this._taskQueue.remove(shortenTask) )
 

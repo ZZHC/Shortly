@@ -84,6 +84,16 @@ const LocaleLib = {
       'default': 'Please enter the long URL you want to shorten below:'
     }
   },
+  error: {
+    offline: {
+      'default': 'Service unavaiable, or your computer isn’t connected to the Internet.',
+      'zh-tw': '服務暫時無法使用，或是您的電腦並沒有連接 Internet。',
+      'zh-cn': '服务暂时无法使用，或是您的电脑没有连接在互联网上。',
+      'ja-jp': 'お使いのコンピュータはインターネットに接続していません。',
+      'it-it': 'Servizio non disponibile, oppure il tuo computer non è connesso a Internet.',
+      'fr-fr': "Service indisponible, ou votre ordinateur n'est pas connecté à Internet."
+    }
+  }
 }
 
 export default LocaleLib
