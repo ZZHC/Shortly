@@ -71,6 +71,12 @@
 		<string>Separator</string>
 	</dict>
 	<dict>
+		<key>Title</key>
+		<string>Use my own Google account</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
 		<key>DefaultValue</key>
 		<false/>
 		<key>Key</key>
@@ -92,31 +98,29 @@
 	</dict>
 	<dict>
 		<key>Title</key>
-		<string>Shorten bit.ly links with my own account</string>
+		<string>Use my own Bitly account</string>
 		<key>Type</key>
 		<string>Group</string>
 	</dict>
 	<dict>
+		<key>DefaultValue</key>
+		<false/>
 		<key>Key</key>
-		<string>bitlyUsername</string>
-		<key>Secure</key>
-		<true/>
+		<string>useBitlyOAuth</string>
 		<key>Title</key>
-		<string>Username</string>
+		<string>Shorten bit.ly links with my Bitly account</string>
 		<key>Type</key>
-		<string>TextField</string>
+		<string>CheckBox</string>
 	</dict>
 	<dict>
+		<key>DefaultValue</key>
+		<false/>
 		<key>Key</key>
-		<string>bitlyAPIKey</string>
-		<key>Password</key>
-		<true/>
-		<key>Secure</key>
-		<true/>
+		<string>clearBitlyAuth</string>
 		<key>Title</key>
-		<string>API Key</string>
+		<string>Check here to reset Bitly login info</string>
 		<key>Type</key>
-		<string>TextField</string>
+		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>Title</key>
@@ -213,6 +217,12 @@
 	<dict>
 		<key>Key</key>
 		<string>googleOAuthCredentials</string>
+		<key>Secure</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>bitlyOAuthCredentials</string>
 		<key>Secure</key>
 		<true/>
 	</dict>
