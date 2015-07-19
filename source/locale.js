@@ -108,6 +108,20 @@ const LocaleLib = {
       'it-it': "Errore nell'accorciare l'indirizzo: risposta del server invalida.",
       'fr-fr': "Erreur lors du raccourcissement: Réponse invalide du serveur."
     },
+    bitly: {
+      badLogin: {
+        'default': 'Unable to login your bit.ly account. Please check your login info and try again.',
+        'zh-tw': '無法登入您的 bit.ly 帳戶。請檢查您的登入資訊後再試一次。',
+        'zh-cn': '无法登录您的 bit.ly 户口。请检查您的登录信息后再试一次。',
+        'it-it': '[bit.ly] Impossibile connettersi al tuo account. Per favore controlla le tue credenziali e prova di nuovo.',
+        'fr-fr': '[bit.ly] Connexion impossible à votre compte. Veuillez vérifier vos informations puis réessayer.'
+      },
+      limitExceeded: {
+        'default': 'Shared limit for bit.ly has exceeded. Please try to shorten with your own bit.ly account.',
+        'zh-tw': '已超過 bit.ly 共用縮址數量上限。請嘗試登入您的 bit.ly 帳戶以繼續使用。',
+        'zh-cn': '已超过 bit.ly 共用缩址数量上限。请尝试登录您的 bit.ly 户口以继续使用。'
+      }
+    }
   }
 }
 
