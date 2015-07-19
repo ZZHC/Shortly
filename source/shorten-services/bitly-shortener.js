@@ -1,20 +1,11 @@
 import apiKeys from '../api-keys'
 import I18n from '../components/i18n'
 
-const DEFAULT_LOGIN = 'zzhc';
-const DEFAULT_API_KEY = apiKeys.bitly;
+const ACCESS_TOKEN = apiKeys.bitly;
 
 export default class BitlyShortener {
-  getShortlink(longUrl, options={}) {
-    var queryAPI,
-        userLogin = options.bitlyUsername || '',
-        userApiKey = options.bitlyAPIKey || '';
-
-    if ((userLogin === '') && (userApiKey === '')) {
-      userLogin = DEFAULT_LOGIN;
-      userApiKey = DEFAULT_API_KEY;
-    }
-    queryAPI = `http://api.bitly.com/v3/shorten?login=${ userLogin }&apiKey=${ userApiKey }&longUrl=${ encodeURIComponent(longUrl) }`
+  getShortlink(longUrl, options={useOAuth: false}) {
+    var queryAPI = `https://api-ssl.bitly.com/v3/shorten?access_token=${ ACCESS_TOKEN }&longUrl=${ encodeURIComponent(longUrl) }`;
 
     return fetch(queryAPI)
       .then( response => response.json() )
