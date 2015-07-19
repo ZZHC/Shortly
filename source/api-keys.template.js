@@ -13,5 +13,15 @@ Instruction:
 
 export default {
   google: 'PUT_YOUR_OWN_API_KEY_HERE',
-  bitly: 'PUT_YOUR_OWN_API_KEY_HERE'
+  bitly: 'PUT_YOUR_OWN_API_KEY_HERE',
+}
+
+export var googleOAuth = {
+  clientId: 'PUT_YOUR_OWN_CLIENT_ID_HERE',
+  secret: 'PUT_YOUR_OWN_CLIENT_SECRET_HERE'
+}
+
+export var bitlyOAuth = {
+  clientId: 'PUT_YOUR_OWN_CLIENT_ID_HERE',
+  secret: 'PUT_YOUR_OWN_CLIENT_SECRET_HERE'
 }
