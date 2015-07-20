@@ -1,5 +1,6 @@
-import GoogleOAuth from './google-oauth';
 import AlertDisplay from '../displays/alert-display';
+import GoogleOAuth from './google-oauth';
+import BitlyOAuth from './bitly-oauth';
 
 class SettingsResponder {
   constructor(shortly) {
@@ -14,6 +15,12 @@ class SettingsResponder {
         break;
       case 'clearGoogleAuth':
         this._clearGoogleAuth(event);
+        break;
+      case 'useBitlyOAuth':
+        this._bitlyOAuthChanged(event);
+        break;
+      case 'clearBitlyAuth':
+        this._clearBitlyAuth(event);
         break;
       case 'enableContextMenu':
         this._parent.toggleContextMenu(event.newValue);
@@ -35,14 +42,12 @@ class SettingsResponder {
 
   _googleOAuthChanged(event) {
     var storedCredentials = GoogleOAuth.getStoredCredentials();
-
     if (storedCredentials) return true;
 
     if (event.newValue) {
       var oauth = new GoogleOAuth;
 
-      oauth.authorize().catch( () => {
-
+      oauth.authorize().catch( error => {
         this._display.displayError(error);
         safari.extension.settings.useGoogleOAuth = false;
       });
@@ -54,8 +59,32 @@ class SettingsResponder {
     safari.extension.settings.useGoogleOAuth = false;
 
     if (event.newValue) {
-      safari.extension.settings.clearGoogleAuth = false;
+      safari.extension.settings.clearBitlyAuth = false;
       this._display.displayMessage('Your Google login info has been deleted from Shortly.');
+    }
+  }
+
+  _bitlyOAuthChanged(event) {
+    var storedCredentials = BitlyOAuth.getStoredCredentials();
+    if (storedCredentials) return true;
+
+    if (event.newValue) {
+      var oauth = new BitlyOAuth;
+
+      oauth.authorize().catch( error => {
+        this._display.displayError(error);
+        safari.extension.settings.useBitlyOAuth = false;
+      });
+    }
+  }
+
+  _clearBitlyAuth(event) {
+    BitlyOAuth.clearStoredCredentials();
+    safari.extension.settings.useBitlyOAuth = false;
+
+    if (event.newValue) {
+      safari.extension.settings.clearBitlyAuth = false;
+      this._display.displayMessage('Your Bitly login info has been deleted from Shortly.');
     }
   }
 
