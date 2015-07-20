@@ -1,3 +1,13 @@
+/*
+ * Google OAuth Credentials
+ * {
+ *   access_token: 'TOKEN',
+ *   expires_in: 3600,
+ *   token_type: 'Bearer',
+ *   last_update: 141624560 (custom-added, Date.now())
+ * }
+ */
+
 import {googleOAuth} from '../api-keys';
 
 const CLIENT_ID = googleOAuth.clientId;
