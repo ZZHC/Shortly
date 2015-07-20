@@ -72,7 +72,7 @@
 	</dict>
 	<dict>
 		<key>Title</key>
-		<string>Use my own Google account</string>
+		<string>Connect to my Google account</string>
 		<key>Type</key>
 		<string>Group</string>
 	</dict>
@@ -92,13 +92,13 @@
 		<key>Key</key>
 		<string>clearGoogleAuth</string>
 		<key>Title</key>
-		<string>Check here to reset Google login info</string>
+		<string>Check here to log out from Google</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>
 	<dict>
 		<key>Title</key>
-		<string>Use my own Bitly account</string>
+		<string>Connect to my Bitly account</string>
 		<key>Type</key>
 		<string>Group</string>
 	</dict>
@@ -118,7 +118,7 @@
 		<key>Key</key>
 		<string>clearBitlyAuth</string>
 		<key>Title</key>
-		<string>Check here to reset Bitly login info</string>
+		<string>Check here to log out from Bitly</string>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>

@@ -25,6 +25,7 @@ class BitlyOAuth {
   static saveCredentials(credentialObj, options={last_update: undefined}) {
     credentialObj.last_update = options.last_update || Date.now();
     safari.extension.secureSettings.bitlyOAuthCredentials = JSON.stringify(credentialObj);
+    return credentialObj;
   }
 
   static clearStoredCredentials() {

@@ -84,6 +84,30 @@ const LocaleLib = {
       'default': 'Please enter the long URL you want to shorten below:'
     }
   },
+  google: {
+    oauthSuccess: {
+      'default': 'You have logged in your Google account successfully.\nYour goo.gl shortlinks will now be saved in your own account.',
+      'zh-tw': '您已經成功登入您的 Google 帳戶。\n現在開始，您的 goo.gl 短網址都會儲存在您自己的帳號上。',
+      'zh-cn': '您已经成功登录您的 Google 户口。\n现在开始，您的 goo.gl 短网址都会存储在您自己的户口上。'
+    },
+    oauthClear: {
+      'default': 'You have now logged out from your Google account successfully.',
+      'zh-tw': '您已成功登出您的 Google 帳戶。',
+      'zh-cn': '您已成功退出您的 Google 户口。'
+    }
+  },
+  bitly: {
+    oauthSuccess: {
+      'default': 'You have logged in your Bitly account successfully.\nYour bit.ly shortlinks will now be saved in your own account.',
+      'zh-tw': '您已經成功登入您的 Bitly 帳戶。\n現在開始，您的 bit.ly 短網址都會儲存在您自己的帳號上。',
+      'zh-cn': '您已经成功登录您的 Bitly 户口。\n现在开始，您的 bit.ly 短网址都会存储在您自己的户口上。'
+    },
+    oauthClear: {
+      'default': 'You have now logged out from your Bitly account successfully.',
+      'zh-tw': '您已成功登出您的 Bitly 帳戶。',
+      'zh-cn': '您已成功退出您的 Bitly 户口。'
+    }
+  },
   error: {
     offline: {
       'default': 'Service unavaiable, or your computer isn’t connected to the Internet.',

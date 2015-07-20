@@ -1,3 +1,4 @@
+import I18n from './i18n';
 import AlertDisplay from '../displays/alert-display';
 import GoogleOAuth from './google-oauth';
 import BitlyOAuth from './bitly-oauth';
@@ -47,10 +48,10 @@ class SettingsResponder {
     if (event.newValue) {
       var oauth = new GoogleOAuth;
 
-      oauth.authorize().catch( error => {
-        this._display.displayError(error);
-        safari.extension.settings.useGoogleOAuth = false;
-      });
+      oauth.authorize().then(
+        credentials => { this._display.displayMessage(I18n.t('google.oauthSuccess')); },
+        error => { safari.extension.settings.useGoogleOAuth = false; }
+      );
     }
   }
 
@@ -59,8 +60,8 @@ class SettingsResponder {
     safari.extension.settings.useGoogleOAuth = false;
 
     if (event.newValue) {
-      safari.extension.settings.clearBitlyAuth = false;
-      this._display.displayMessage('Your Google login info has been deleted from Shortly.');
+      safari.extension.settings.clearGoogleAuth = false;
+      this._display.displayMessage(I18n.t('google.oauthClear'));
     }
   }
 
@@ -71,10 +72,10 @@ class SettingsResponder {
     if (event.newValue) {
       var oauth = new BitlyOAuth;
 
-      oauth.authorize().catch( error => {
-        this._display.displayError(error);
-        safari.extension.settings.useBitlyOAuth = false;
-      });
+      oauth.authorize().then(
+        credentials => { this._display.displayMessage(I18n.t('bitly.oauthSuccess')); },
+        error => { safari.extension.settings.useBitlyOAuth = false; }
+      );
     }
   }
 
@@ -84,7 +85,7 @@ class SettingsResponder {
 
     if (event.newValue) {
       safari.extension.settings.clearBitlyAuth = false;
-      this._display.displayMessage('Your Bitly login info has been deleted from Shortly.');
+      this._display.displayMessage(I18n.t('bitly.oauthClear'));
     }
   }
 
