@@ -21,7 +21,7 @@ class OAuth {
   authorize() {
     return this.requestAuthCode()
       .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( credentials => this.saveCredentials(credentials, {last_update: Date.now()}) );
+      .then( credentials => this.constructor.saveCredentials(credentials, {last_update: Date.now()}) );
   }
 
   requestAuthCode() {
