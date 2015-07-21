@@ -1,11 +1,19 @@
 import apiKeys from '../api-keys'
+import BitlyOAuth from '../components/bitly-oauth'
 import I18n from '../components/i18n'
 
 const ACCESS_TOKEN = apiKeys.bitly;
 
 export default class BitlyShortener {
   getShortlink(longUrl, options={useOAuth: false}) {
-    var queryAPI = `https://api-ssl.bitly.com/v3/shorten?access_token=${ ACCESS_TOKEN }&longUrl=${ encodeURIComponent(longUrl) }`;
+    var token, credentials, queryAPI;
+
+    if (safari.extension.settings.useBitlyOAuth && (credentials = BitlyOAuth.getStoredCredentials())) {
+      token = credentials.access_token;
+    } else {
+      token = ACCESS_TOKEN;
+    }
+    queryAPI = `https://api-ssl.bitly.com/v3/shorten?access_token=${ token }&longUrl=${ encodeURIComponent(longUrl) }`;
 
     return fetch(queryAPI)
       .then( response => response.json() )
