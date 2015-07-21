@@ -8,6 +8,7 @@
  * }
  */
 
+import OAuth from './oauth'
 import {googleOAuth} from '../api-keys';
 
 const CLIENT_ID = googleOAuth.clientId;
@@ -17,21 +18,9 @@ const REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob:auto';
 const AUTH_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI + '&scope=https://www.googleapis.com/auth/urlshortener';
 const TOKEN_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/token';
 
-class GoogleOAuth {
-  static getStoredCredentials() {
-    var credentials = safari.extension.secureSettings.googleOAuthCredentials;
-
-    if (credentials) return JSON.parse(credentials);
-  }
-
-  static saveCredentials(credentialObj, options={last_update: undefined}) {
-    credentialObj.last_update = options.last_update || Date.now();
-    safari.extension.secureSettings.googleOAuthCredentials = JSON.stringify(credentialObj);
-    return credentialObj;
-  }
-
-  static clearStoredCredentials() {
-    safari.extension.secureSettings.removeItem('googleOAuthCredentials');
+class GoogleOAuth extends OAuth {
+  static init() {
+    this.storageKey = 'googleOAuthCredentials';
   }
 
   static refreshAccessToken(refreshToken) {
@@ -77,12 +66,6 @@ class GoogleOAuth {
       });
   }
 
-  authorize() {
-    return this.requestAuthCode()
-      .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( credentials => GoogleOAuth.saveCredentials(credentials, {last_update: Date.now()}) );
-  }
-
   requestAuthCode() {
     var authWindow = safari.application.openBrowserWindow();
 
@@ -117,5 +100,6 @@ class GoogleOAuth {
     }).then( response => response.json() );
   }
 }
+GoogleOAuth.init();
 
 export default GoogleOAuth

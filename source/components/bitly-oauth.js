@@ -6,6 +6,7 @@
  * }
  */
 
+import OAuth from './oauth'
 import {bitlyOAuth} from '../api-keys';
 
 const CLIENT_ID = bitlyOAuth.clientId;
@@ -15,70 +16,9 @@ const REDIRECT_URI = safari.extension.baseURI.replace(/\/\w+\/$/, '/callback/');
 const AUTH_ENDPOINT = 'https://bitly.com/oauth/authorize?client_id=' + CLIENT_ID + '&redirect_uri=' + REDIRECT_URI;
 const TOKEN_ENDPOINT = 'https://api-ssl.bitly.com/oauth/access_token';
 
-class BitlyOAuth {
-  static getStoredCredentials() {
-    var credentials = safari.extension.secureSettings.bitlyOAuthCredentials;
-
-    if (credentials) return JSON.parse(credentials);
-  }
-
-  static saveCredentials(credentialObj, options={last_update: undefined}) {
-    credentialObj.last_update = options.last_update || Date.now();
-    safari.extension.secureSettings.bitlyOAuthCredentials = JSON.stringify(credentialObj);
-    return credentialObj;
-  }
-
-  static clearStoredCredentials() {
-    safari.extension.secureSettings.removeItem('bitlyOAuthCredentials');
-  }
-
-  static refreshAccessToken(refreshToken) {
-    if (!refreshToken) {
-      return Promise.reject('You must provide refreshToken to exchange for new access token.');
-    }
-
-    return fetch(TOKEN_ENDPOINT, {
-      method: 'post',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: 'refresh_token=' + refreshToken + '&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&grant_type=refresh_token'
-    }).then( response => response.json() )
-      .then( credentials => {
-        var timestamp = Date.now();
-
-        credentials.refresh_token = refreshToken;
-        BitlyOAuth.saveCredentials(credentials, {last_update: timestamp});
-
-        credentials.last_update = timestamp;
-        return credentials;
-      });
-  }
-
-  static getAuthorizationHeader() {
-    var credentials = BitlyOAuth.getStoredCredentials();
-
-    if (!credentials) {
-      return Promise.reject('Google OAuth credentials missing. Please try to authorize Shortly again.');
-    }
-
-    return Promise.resolve()
-      .then( () => {
-        var accessTokenExpired = (Date.now() - credentials.last_update) >= (credentials.expires_in * 1000);
-
-        if (accessTokenExpired) {
-          return BitlyOAuth.refreshAccessToken(credentials.refresh_token);
-        } else {
-          return credentials;
-        }
-      })
-      .then( credentials => {
-        return `${credentials.token_type} ${credentials.access_token}`;
-      });
-  }
-
-  authorize() {
-    return this.requestAuthCode()
-      .then( authCode => this.exchangeAuthCodeForToken(authCode) )
-      .then( credentials => BitlyOAuth.saveCredentials(credentials, {last_update: Date.now()}) );
+class BitlyOAuth extends OAuth {
+  static init() {
+    this.storageKey = 'bitlyOAuthCredentials';
   }
 
   requestAuthCode() {
@@ -119,5 +59,6 @@ class BitlyOAuth {
     }).then( response => response.json() );
   }
 }
+BitlyOAuth.init();
 
 export default BitlyOAuth
