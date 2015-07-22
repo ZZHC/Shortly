@@ -5,8 +5,8 @@ const API_ENDPOINT = 'https://www.googleapis.com/urlshortener/v1/url'
 const API_KEY = apiKeys.google
 
 export default class GoogleShortener {
-  getShortlink(longUrl) {
-    if (safari.extension.settings.useGoogleOAuth) {
+  getShortlink(longUrl, options={useOAuth: false}) {
+    if (options.useOAuth) {
       return this._shortenWithOAuthToken(longUrl);
     } else {
       return this._shortenWithApiKey(longUrl);

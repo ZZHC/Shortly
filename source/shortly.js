@@ -117,7 +117,7 @@ class Shortly {
     const GITHUB_PATTERN = /http(s)?:\/\/(gist\.)?github\.com/;
 
     var isBitlyNative = Helpers.isKnownBitlyNative(longUrl),
-        shortener;
+        shortener, shortenerOptions;
 
     switch (false) {
       case !FLICKR_PATTERN.test(longUrl):
@@ -130,6 +130,7 @@ class Shortly {
 
       case !isBitlyNative:
         shortener = new ShortenSerivces['bitly'];
+        shortenerOptions = {useOAuth: safari.extension.settings.useBitlyOAuth};
         break;
 
       default:
@@ -138,7 +139,7 @@ class Shortly {
 
 
 
-    return shortener.getShortlink(longUrl);
+    return shortener.getShortlink(longUrl, shortenerOptions);
   }
 
   getShortlinkToAddress(longUrl, options={withService: safari.extension.settings.shortenService}) {
@@ -150,11 +151,11 @@ class Shortly {
             shortenerOptions = {};
 
         switch (options.withService) {
+          case ShortenSerivces.GOOGLE:
+            shortenerOptions = {useOAuth: safari.extension.settings.useGoogleOAuth};
+            break;
           case ShortenSerivces.BITLY:
-            shortenerOptions = {
-              bitlyUsername: safari.extension.secureSettings.bitlyUsername,
-              bitlyAPIKey: safari.extension.secureSettings.bitlyAPIKey
-            };
+            shortenerOptions = {useOAuth: safari.extension.settings.useBitlyOAuth};
             break;
           case ShortenSerivces.CUSTOM:
             shortenerOptions = {customEndpoint: safari.extension.settings.customEndpoint}

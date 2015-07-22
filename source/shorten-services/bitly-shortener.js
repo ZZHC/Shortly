@@ -8,7 +8,7 @@ export default class BitlyShortener {
   getShortlink(longUrl, options={useOAuth: false}) {
     var token, credentials, queryAPI;
 
-    if (safari.extension.settings.useBitlyOAuth && (credentials = BitlyOAuth.getStoredCredentials())) {
+    if (options.useOAuth && (credentials = BitlyOAuth.getStoredCredentials())) {
       token = credentials.access_token;
     } else {
       token = ACCESS_TOKEN;
