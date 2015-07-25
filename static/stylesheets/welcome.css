@@ -1,0 +1,148 @@
+body {
+  color: #555;
+  font-size: 100%;  /* 16px */
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  color: #111;
+  margin: 0;
+}
+h1 {
+  font-size: 250%;  /* 40px */
+  font-weight: 300;
+}
+
+
+a, a:visited {
+  color: #087CF6;
+}
+a:hover, a:focus, a:active {
+  color: #004A98;
+}
+
+button {
+  background: none;
+  color: #087CF6;
+  padding: 0.3125em 0.625em;  /* 5px 10px */
+  border: 1px solid;
+  border-radius: 0.3125em;  /* 5px */
+  -webkit-appearance: none;
+}
+button:hover, button:focus, button:active {
+  color: #004A98;
+  border-color: #004A98;
+}
+
+header {
+  margin-bottom: 1.25em;  /* 20px */
+}
+
+.container {
+  max-width: 40em;  /* 640px */
+  margin: 2em auto;  /* 32px */
+}
+
+.lead {
+  font-size: 137.5%;  /* 22px */
+  font-weight: 200;
+  margin: 0;
+}
+.assurance {
+  color: #999;
+  margin: 1em 0 2em;
+}
+
+.accounts-list {
+  width: auto;
+  text-align: left;
+  list-style: none;
+  display: inline-block;
+  margin: 1em 0;
+  padding: 0;
+}
+.account-item {
+  position: relative;
+  padding-left: 5em;
+}
+.account-item + .account-item {
+  margin-top: 3em;
+}
+
+.account-title {
+  font-size: 100%;
+  font-weight: 600;
+  margin-bottom: 0.3125em;  /* 5px */
+}
+.account-help {
+  margin-top: 0;
+}
+
+.account-icon,
+.account-icon::before {
+  background: -webkit-linear-gradient(#58C6FA, #087CF6);
+  background: linear-gradient(#58C6FA, #087CF6);
+}
+#account-google .account-icon,
+#account-google .account-icon::before {
+  background: -webkit-linear-gradient(#FC715F, #820000);
+  background: linear-gradient(#FC715F, #820000);
+}
+#account-bitly .account-icon,
+#account-bitly .account-icon::before {
+  background: -webkit-linear-gradient(#EEA523, #E54D0A);
+  background: linear-gradient(#EEA523, #E54D0A);
+}
+
+.account-icon {
+  width: 1.875em;  /* 60px */
+  height: 1.875em;
+  font-size: 200%;  /* 32px */
+  line-height: 1.875em;
+  font-weight: 200;
+  text-align: center;
+  display: block;
+  border-radius: 50%;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+.account-icon::before {
+  content: '';
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  -webkit-mask-image: radial-gradient(circle, transparent, transparent 28px, black 29px) !important;
+}
+
+#account-google .account-icon {
+  padding-left: 0.05em;
+}
+#account-bitly .account-icon {
+  padding-left: 0.12em;
+}
+
+footer {
+  margin-top: 2.5em;  /* 40px */
+}
+.close-button {
+  background-color: #777;
+  color: white;
+  font-size: 112.5%;  /* 18px */
+  font-weight: 200;
+  border: none;
+  padding: 0.625em 3.5em;
+}
+.close-button:hover, .close-button:focus, .close-button:active {
+  background-color: #555;
+  color: white;
+}
+
