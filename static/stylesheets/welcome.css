@@ -93,6 +93,9 @@ header {
 .account-help {
   margin-top: 0;
 }
+.account-help a {
+  display: inline-block;
+}
 
 .account-icon,
 .account-icon::before {
