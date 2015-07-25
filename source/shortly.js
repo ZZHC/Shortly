@@ -137,8 +137,6 @@ class Shortly {
         return Promise.reject('No applicable known native shorteners.')
     }
 
-
-
     return shortener.getShortlink(longUrl, shortenerOptions);
   }
 
