@@ -1,4 +1,4 @@
-const THREE_DAYS_MS = 1000 * 60 * 60 * 24 * 3;
+const ONE_WEEK_MS = 1000 * 60 * 60 * 24 * 7;
 const UPDATE_URL = 'https://github.com/ZZHC/Shortly/raw/master/knownBitlyNativeList.json';
 
 class BitlyNativeMatcher {
@@ -22,7 +22,7 @@ class BitlyNativeMatcher {
         lastCheckTime = safari.extension.settings.knownBitlyNativeLastCheck,
         timeDiff = currentTime - lastCheckTime;
 
-    if (timeDiff < THREE_DAYS_MS) return false;
+    if (timeDiff < ONE_WEEK_MS) return false;
 
     fetch(UPDATE_URL)
       .then( response => response.json() )
