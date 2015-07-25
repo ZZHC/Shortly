@@ -15,7 +15,7 @@ gulp.task 'build:static', ->
     .pipe gulp.dest(EXTENSION_PATH)
 
 gulp.task 'build:js', ->
-  gulp.src(['source/app.js', 'source/libs.js', 'source/api-keys.js'])
+  gulp.src(['source/app.js', 'source/libs.js'])
     .pipe named()
     .pipe webpack( require('./webpack.config') )
     .pipe gulp.dest(EXTENSION_PATH + '/js')
