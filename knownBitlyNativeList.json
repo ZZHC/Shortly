@@ -1,10 +1,10 @@
 {
-  "lastUpdate": 1341146344195,
+  "lastUpdate": 1437808737166,
   "list": [
     "www.facebook.com"
-    "(www|news).bbc.co.uk",
+    "www.bbc.com",
     "www.reuters.com",
     "www.amazon.com",
-    "(www.)?theverge.com"
+    "www.apple.com"
   ]
 }
