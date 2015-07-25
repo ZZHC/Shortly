@@ -210,6 +210,12 @@
 	</dict>
 	<dict>
 		<key>DefaultValue</key>
+		<string>0</string>
+		<key>Key</key>
+		<string>knownBitlyNativeLastCheck</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
 		<string>["www.facebook.com"]</string>
 		<key>Key</key>
 		<string>knownBitlyNativeList</string>

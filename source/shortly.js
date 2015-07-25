@@ -7,7 +7,7 @@ import MenuValidator from './ui/menu-validator'
 import SettingsResponder from './components/settings-responder'
 import ContextMenuValidator from './ui/context-menu-validator'
 import HotkeyManager from './ui/hotkey-manager'
-import Helpers from './helpers'
+import BitlyNativeMatcher from './components/bitly-native-matcher'
 import I18n from './components/i18n'
 
 const TIMEOUT_MS = 5000;
@@ -22,6 +22,7 @@ class Shortly {
     };
     this._settingsResponder = new SettingsResponder(this);
     this._hotkeyManager = new HotkeyManager(this)
+    this._bitlyNativeMatcher = new BitlyNativeMatcher();
 
     this._taskQueue.on('change', () => ToolbarItemValidator.validateAll());
     this.toggleContextMenu(safari.extension.settings.enableContextMenu);
@@ -116,7 +117,7 @@ class Shortly {
     const FLICKR_PATTERN = /https?:\/\/w*\.?flickr\.com\/photos\/[^\/]+\/(\d+)\//;
     const GITHUB_PATTERN = /http(s)?:\/\/(gist\.)?github\.com/;
 
-    var isBitlyNative = Helpers.isKnownBitlyNative(longUrl),
+    var isBitlyNative = this._bitlyNativeMatcher.matchUrl(longUrl),
         shortener, shortenerOptions;
 
     switch (false) {
