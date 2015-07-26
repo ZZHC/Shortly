@@ -15,6 +15,8 @@ updatePageLocale = (localePackage) ->
   for button in document.querySelectorAll('.connect-button')
     button.innerText = localePackage.connect
 
+  document.querySelector('.container').classList.add('ready')
+
 respondToMessage = (event) ->
   switch event.name
     when 'localePackage'

@@ -1,3 +1,14 @@
+@-webkit-keyframes entry {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(1.5em);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
 html {
   height: 100%;
 }
@@ -68,6 +79,13 @@ header {
 .container {
   max-width: 40em;  /* 640px */
   margin: 2em;  /* 32px */
+  opacity: 0;
+  pointer-events: none;
+}
+.container.ready {
+  opacity: 1;
+  pointer-events: all;
+  -webkit-animation: entry 750ms;
 }
 
 .lead {
