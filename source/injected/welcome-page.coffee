@@ -1,5 +1,5 @@
 updatePageLocale = (localePackage) ->
-  document.body.parentElement.lang = localePackage.langProp
+  document.body.lang = localePackage.langProp
   document.title = localePackage.title
 
   document.querySelector('h1').innerText = localePackage.title

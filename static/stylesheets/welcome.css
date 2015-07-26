@@ -19,6 +19,17 @@ body {
   justify-content: center;
   align-items: center;
 }
+body[lang^=zh] {
+  font-size: 93.75%;  /* 15px */
+}
+body[lang=zh-tw],
+body[lang=zh-hant] {
+  font-family: "PingFang TC", "Lantinghei TC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+body[lang=zh-cn],
+body[lang=zh-hans] {
+  font-family: "PingFang SC", "Lantinghei SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
 h1, h2, h3 {
   color: #111;
@@ -128,6 +139,9 @@ header {
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
+body[lang^=zh] .account-icon {
+  font-size: 213.333%;  /* 32px based on 15px */
+}
 .account-icon::before {
   content: '';
   width: 100%;
@@ -136,7 +150,7 @@ header {
   position: absolute;
   left: 0;
   top: 0;
-  -webkit-mask-image: radial-gradient(circle, transparent, transparent 28px, black 29px) !important;
+  -webkit-mask-image: radial-gradient(circle, transparent, transparent calc(0.9375em - 2px), black calc(0.9375em - 1px)) !important;
 }
 
 #account-google .account-icon {
@@ -150,12 +164,14 @@ footer {
   margin-top: 2.5em;  /* 40px */
 }
 .close-button {
+  width: 11em;  /* 198px */
+  max-width: 100%;
   background-color: #777;
   color: white;
   font-size: 112.5%;  /* 18px */
   font-weight: 200;
   border: none;
-  padding: 0.625em 3.5em;
+  padding: 0.625em 0;
 }
 .close-button:hover, .close-button:focus, .close-button:active {
   background-color: #555;

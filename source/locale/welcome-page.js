@@ -24,7 +24,7 @@ export default {
     },
     continue: {
       'default': 'Continue',
-      'zh-tw': '繼續'
+      'zh-tw': '繼續使用'
     },
     google: {
       title: {
@@ -43,7 +43,7 @@ export default {
       },
       helpText: {
         'default': 'You can then find all your <i>bit.ly</i> or links like <i>on.fb.me</i> over <a href="https://bitly.com/" target="_blank">Bitly.com</a>.',
-        'zh-tw': '之後您可以在 <a href="https://bitly.com/" target="_blank">Bitly.com</a> 找到您所有的 <i>bit.ly</i> 或是如 <i>on.fb.me</i> 之類的短網址。'
+        'zh-tw': '之後您可以在 <a href="https://bitly.com/" target="_blank">Bitly.com</a> 找到您所有的 <i>bit.ly</i> 或是 <i>on.fb.me</i> 之類的短網址。'
       }
     }
   }
