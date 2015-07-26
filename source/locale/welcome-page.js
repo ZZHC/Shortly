@@ -25,6 +25,11 @@ export default {
       'zh-tw': '連接帳戶',
       'zh-cn': '连接户口'
     },
+    connected: {
+      'default': 'Connected',
+      'zh-tw': '已連接',
+      'zh-cn': '已连接'
+    },
     continue: {
       'default': 'Continue',
       'zh-tw': '繼續使用',

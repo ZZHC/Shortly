@@ -113,6 +113,12 @@ header {
 .account-item + .account-item {
   margin-top: 3em;
 }
+.account-item.connected {
+  opacity: .5;
+}
+.account-item.connected .connect-button {
+  pointer-events: none;
+}
 
 .account-title {
   font-size: 100%;
