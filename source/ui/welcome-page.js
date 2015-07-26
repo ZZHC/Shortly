@@ -36,7 +36,7 @@ class WelcomePage {
     this._pageTab.addEventListener('message', this._messageReceived,false);
     this._pageTab.url = PAGE_PATH;
 
-    //safari.extension.settings.welcomePageShown = true;
+    safari.extension.settings.welcomePageShown = true;
   }
 
   _getLocalePackage() {
