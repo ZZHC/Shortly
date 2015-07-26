@@ -9,8 +9,11 @@
  */
 
 import Shortly from './shortly'
+import WelcomePage from './ui/welcome-page'
 
 window.shortly = new Shortly();
+
+WelcomePage.showIfFirstTime();
 
 safari.application.addEventListener('command', shortly._performCommand, false);
 safari.application.addEventListener('validate', shortly._validateCommand, false);

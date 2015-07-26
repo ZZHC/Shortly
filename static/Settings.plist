@@ -232,5 +232,11 @@
 		<key>Secure</key>
 		<true/>
 	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>welcomePageShown</string>
+	</dict>
 </array>
 </plist>
