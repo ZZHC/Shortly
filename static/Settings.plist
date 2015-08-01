@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>DefaultValue</key>
+		<string>google</string>
+		<key>Key</key>
+		<string>shortenService</string>
+		<key>Title</key>
+		<string>Preferred Service</string>
+		<key>Titles</key>
+		<array>
+			<string>goo.gl</string>
+			<string>bit.ly</string>
+			<string>TinyURL</string>
+			<string>Custom endpoint</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>google</string>
+			<string>bitly</string>
+			<string>tinyurl</string>
+			<string>endpoint</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>popover</string>
+		<key>Key</key>
+		<string>displayMethod</string>
+		<key>Title</key>
+		<string>Message display</string>
+		<key>Titles</key>
+		<array>
+			<string>Popover</string>
+			<string>Alert Window</string>
+		</array>
+		<key>Type</key>
+		<string>PopUpButton</string>
+		<key>Values</key>
+		<array>
+			<string>popover</string>
+			<string>alert</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>ignoreNative</string>
+		<key>Title</key>
+		<string>Ignore native shortlinks (like youtu.be)</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>enableContextMenu</string>
+		<key>Title</key>
+		<string>Enable Contextual Menu</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Type</key>
+		<string>Separator</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Connect to my Google account</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>useGoogleOAuth</string>
+		<key>Title</key>
+		<string>Shorten goo.gl links with my Google account</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>clearGoogleAuth</string>
+		<key>Title</key>
+		<string>Check here to log out from Google</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Connect to my Bitly account</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>useBitlyOAuth</string>
+		<key>Title</key>
+		<string>Shorten bit.ly links with my Bitly account</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>clearBitlyAuth</string>
+		<key>Title</key>
+		<string>Check here to log out from Bitly</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Use custom shortener endpoint</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>customEndpoint</string>
+		<key>Title</key>
+		<string>Endpoint API</string>
+		<key>Type</key>
+		<string>TextField</string>
+		<key>DefaultValue</key>
+		<string>http://example.com/shorten?url=%@</string>
+	</dict>
+	<dict>
+		<key>Type</key>
+		<string>Separator</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>enableKbHotkey</string>
+		<key>Title</key>
+		<string>Enable keyboard hotkey for shortening</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>Title</key>
+		<string>Hotkey combination</string>
+		<key>Type</key>
+		<string>Group</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>S</string>
+		<key>Key</key>
+		<string>kbHotkeyChar</string>
+		<key>Title</key>
+		<string>Hotkey (0-9/A-Z)</string>
+		<key>Type</key>
+		<string>TextField</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>kbHotkeyMetaKey</string>
+		<key>Title</key>
+		<string>⌘ Command</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<true/>
+		<key>Key</key>
+		<string>kbHotkeyAltKey</string>
+		<key>Title</key>
+		<string>⌥ Option</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>kbHotkeyCtrlKey</string>
+		<key>Title</key>
+		<string>⌃ Control</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>kbHotkeyShiftKey</string>
+		<key>Title</key>
+		<string>⇧ Shift</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>0</string>
+		<key>Key</key>
+		<string>knownBitlyNativeLastCheck</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>["www.facebook.com"]</string>
+		<key>Key</key>
+		<string>knownBitlyNativeList</string>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>googleOAuthCredentials</string>
+		<key>Secure</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>Key</key>
+		<string>bitlyOAuthCredentials</string>
+		<key>Secure</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<false/>
+		<key>Key</key>
+		<string>welcomePageShown</string>
+	</dict>
+</array>
+</plist>

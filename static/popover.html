@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Shortly Popover</title>
+
+<link rel="stylesheet" href="stylesheets/normalize.css" type="text/css" />
+<link rel="stylesheet" href="stylesheets/assetPages.css" type="text/css" />
+<link rel="stylesheet" href="stylesheets/popover.css" type="text/css" />
+
+<script>
+  var initialize, displayMessage, updateLocale;
+
+  initialize = function() {
+    var i, nodes = document.querySelectorAll('section');
+    for (i = 0; i < nodes.length; i++) {
+      nodes[i].className = 'hidden';
+    }
+  };
+
+  displayMessage = function(message, type) {
+    initialize();
+
+    switch (type) {
+      case 'shortlink':
+        document.querySelector('#shortlink-title').innerText = message.title
+        document.querySelector('#shortlink-input').value = message.shortlink;
+        document.querySelector('#result').classList.remove('hidden');
+        break;
+      case 'error':
+        document.querySelector('#info').classList.add('error');
+      case 'test':
+      default:
+        document.querySelector('#info p').innerText = message;
+        document.querySelector('#info').classList.remove('hidden');
+    }
+  };
+
+  updateLocale = function(localeString) {
+    document.querySelector('#tip').innerHTML = localeString;
+  }
+</script>
+</head>
+
+<body>
+  <header>
+    <h1><img src="icon-32.png" alt=""/>Shortly</h1>
+  </header>
+
+  <section id="result">
+    <h4 id="shortlink-title">Page Title</h4>
+    <input id="shortlink-input" type="text" value="Shortlink" />
+    <p id="tip">Press <kbd>&#8984;-C</kbd> to copy.</p>
+  </section>
+
+  <section id="info">
+    <p>Information</p>
+  </section>
+</body>
+</html>

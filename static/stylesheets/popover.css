@@ -1,0 +1,47 @@
+body {
+  width: inherit;
+  background: rgba(255,255,255,.5);
+  padding: 1em;
+}
+header, section {
+  padding: 0;
+  overflow: visible;
+}
+
+h1 {
+  margin: 0 0 0.5em;
+}
+h1 img {
+  vertical-align: text-top;
+  margin-right: 0.2em;
+}
+
+.hidden {
+  display: none;
+}
+
+#shortlink-title {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 0.5em;
+}
+#shortlink-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+#tip {
+  font-size: 85%;
+  margin: 0.6em 0;
+}
+
+#info p {
+  margin: 0;
+}
+#info.error p {
+  background: #FDDFDE;
+  color: #9D261D;
+  border: 1px solid #FBC7C6;
+  padding: 0.5em;
+}

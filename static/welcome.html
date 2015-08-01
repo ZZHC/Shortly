@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Shortly.</title>
+
+  <link rel="stylesheet" href="stylesheets/normalize.css" type="text/css" />
+  <link rel="stylesheet" href="stylesheets/welcome.css" type="text/css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="icon-128.png" alt="" width="64">
+      <h1>Welcome to Shortly.</h1>
+    </header>
+
+    <p class="lead">
+      You can now connect to your accounts below to save all goo.gl or Bitly-powered shortlinks into your own accounts, so you can track all your shortlinks whenever you want.
+    </p>
+    <p class="assurance">
+      &#x1F512; <span>Shortly will never save your password.</span>
+    </p>
+
+    <ul class="accounts-list">
+      <li class="account-item" id="account-google">
+        <span class="account-icon">G</span>
+        <h3 class="account-title">Connect to my Google account</h3>
+        <p class="account-help">
+          You can then find all your <i>goo.gl</i> links over
+          <a href="https://goo.gl/" target="_blank">Google URL Shortener</a>.
+        </p>
+        <button type="button" class="connect-button" data-action="googleAuth">
+          Connect
+        </button>
+      </li>
+
+      <li class="account-item" id="account-bitly">
+        <span class="account-icon">B</span>
+        <h3 class="account-title">Connect to my Bitly account</h3>
+        <p class="account-help">
+          You can then find all your <i>bit.ly</i> or links like <i>on.fb.me</i> over
+          <a href="https://bitly.com/" target="_blank">Bitly.com</a>.
+        </p>
+        <button type="button" class="connect-button" data-action="bitlyAuth">
+          Connect
+        </button>
+      </li>
+    </ul>
+
+    <footer>
+      <button class="close-button" data-action="close">Continue</button>
+    </footer>
+  </div>
+
+  <script src="js/injected/welcome-page.js"></script>
+</body>
+</html>

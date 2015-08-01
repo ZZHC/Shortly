@@ -1,0 +1,204 @@
+@-webkit-keyframes entry {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(1.5em);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  color: #555;
+  font-size: 100%;  /* 16px */
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  display: -webkit-flex;
+  -webkit-justify-content: center;
+  -webkit-align-items: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body[lang^=zh] {
+  font-size: 93.75%;  /* 15px */
+}
+body[lang=zh-tw],
+body[lang=zh-hant] {
+  font-family: "PingFang TC", "Lantinghei TC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+body[lang=zh-cn],
+body[lang=zh-hans] {
+  font-family: "PingFang SC", "Lantinghei SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3 {
+  color: #111;
+  margin: 0;
+}
+h1 {
+  font-size: 250%;  /* 40px */
+  font-weight: 300;
+}
+
+
+a, a:visited {
+  color: #087CF6;
+}
+a:hover, a:focus, a:active {
+  color: #004A98;
+}
+
+button {
+  background: none;
+  color: #087CF6;
+  padding: 0.3125em 0.625em;  /* 5px 10px */
+  border: 1px solid;
+  border-radius: 0.3125em;  /* 5px */
+  -webkit-appearance: none;
+}
+button:hover, button:focus, button:active {
+  color: #004A98;
+  border-color: #004A98;
+}
+
+header {
+  margin-bottom: 1.25em;  /* 20px */
+}
+
+.container {
+  max-width: 40em;  /* 640px */
+  margin: 2em;  /* 32px */
+  opacity: 0;
+  pointer-events: none;
+}
+.container.ready {
+  opacity: 1;
+  pointer-events: all;
+  -webkit-animation: entry 750ms;
+}
+
+.lead {
+  font-size: 137.5%;  /* 22px */
+  font-weight: 200;
+  margin: 0;
+}
+.assurance {
+  color: #999;
+  margin: 1em 0 2em;
+}
+
+.accounts-list {
+  width: auto;
+  text-align: left;
+  list-style: none;
+  display: inline-block;
+  margin: 1em 0;
+  padding: 0;
+}
+.account-item {
+  position: relative;
+  padding-left: 5em;
+}
+.account-item + .account-item {
+  margin-top: 3em;
+}
+.account-item.connected {
+  opacity: .5;
+}
+.account-item.connected .connect-button {
+  pointer-events: none;
+}
+
+.account-title {
+  font-size: 100%;
+  font-weight: 600;
+  margin-bottom: 0.3125em;  /* 5px */
+}
+.account-help {
+  margin-top: 0;
+}
+.account-help a {
+  display: inline-block;
+}
+
+.account-icon,
+.account-icon::before {
+  background: -webkit-linear-gradient(#58C6FA, #087CF6);
+  background: linear-gradient(#58C6FA, #087CF6);
+}
+#account-google .account-icon,
+#account-google .account-icon::before {
+  background: -webkit-linear-gradient(#FC715F, #820000);
+  background: linear-gradient(#FC715F, #820000);
+}
+#account-bitly .account-icon,
+#account-bitly .account-icon::before {
+  background: -webkit-linear-gradient(#EEA523, #E54D0A);
+  background: linear-gradient(#EEA523, #E54D0A);
+}
+
+.account-icon {
+  width: 1.875em;  /* 60px */
+  height: 1.875em;
+  font-size: 200%;  /* 32px */
+  line-height: 1.875em;
+  font-weight: 200;
+  text-align: center;
+  display: block;
+  border-radius: 50%;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+body[lang^=zh] .account-icon {
+  font-size: 213.333%;  /* 32px based on 15px */
+}
+.account-icon::before {
+  content: '';
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  -webkit-mask-image: radial-gradient(circle, transparent, transparent calc(0.9375em - 2px), black calc(0.9375em - 1px)) !important;
+}
+
+#account-google .account-icon {
+  padding-left: 0.05em;
+}
+#account-bitly .account-icon {
+  padding-left: 0.12em;
+}
+
+footer {
+  margin-top: 2.5em;  /* 40px */
+}
+.close-button {
+  width: 11em;  /* 198px */
+  max-width: 100%;
+  background-color: #777;
+  color: white;
+  font-size: 112.5%;  /* 18px */
+  font-weight: 200;
+  border: none;
+  padding: 0.625em 0;
+}
+.close-button:hover, .close-button:focus, .close-button:active {
+  background-color: #555;
+  color: white;
+}
+
