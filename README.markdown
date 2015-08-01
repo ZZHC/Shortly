@@ -1,30 +1,22 @@
 Shortly
 =======
 
-Shortly is an extension project aim to provide shortlinks to webpages with native shortlinks support in simply one click. More information please visit http://zzhc.org/shortly/
+Shortly is a Safari extension that helps getting showtlinks to webpages in just one click. Shortly also tries to support native shortlinks like `youtu.be`, `flic.kr` or `git.io`. For more information please visit http://zzhc.org/shortly/
 
-We have packaged Shortly Safari extension available for install on our website (above) and on Apple's Safari Extension Gallery.
+You can install Shortly from Apple's Safari Extension Gallery or from our website listed above.
 
-A mirror download link is available here: <http://cl.ly/PhkU>
 
-Building Shortly
-----------------
+Building your own Shortly
+-------------------------
 
-The source code of Shortly hosted on GitHub does not come with API keys for shortener services like goo.gl and bit.ly. If you want to build your own copy of Shortly, please follow the instructions:
+The source code of Shortly hosted on GitHub does not come with API keys for Google URL Shortener and Bitly. If you want to build your own copy of Shortly, please follow the instructions:
 
-  1. Please ensure you have Safari developer certification installed, and then import the `Shortly.safariextension/` folder into Extension Builder.
-  2. Fill in your own API keys into `keychain.template.js`
-  3. Rename `keychain.template.js` to `keychain.js`
+  1. Find `api-keys.template.js` in `source/`.
+  2. Fill in your API keys or access token, and rename it to `api-keys.js`.
+  3. Run `npm install`, and then `gulp build`.
+  4. You should be able to find a `Shortly.safariextension/` folder under `build/`.
+  5. Import it to your Safari Extension Builder and happy building!
 
-Then you should be able to build a working copy of Shortly.
-
-Credits and Thanks
-------------------
-  - [jsOAuth JavaScript library](https://github.com/bytespider/jsOAuth/) developed by @bytespider
-  - Italian translation by Raffaele Viggiani
-  - French translation by François MARCEAU
-  - Simplified Chinese translation by @catjia1990
-  - Japanese translation by @aurcinus
 
 License
 -------
