@@ -10,8 +10,6 @@ import HotkeyManager from './ui/hotkey-manager'
 import BitlyNativeMatcher from './components/bitly-native-matcher'
 import I18n from './components/i18n'
 
-const TIMEOUT_MS = 5000;
-
 class Shortly {
   constructor() {
     this._taskQueue = new SimpleSet;
@@ -73,40 +71,13 @@ class Shortly {
   }
 
   getShortlinkFromInjectedScript(options={skipNative: false}) {
+    const TARGET_PAGE = safari.application.activeBrowserWindow.activeTab.page,
+          shortener = new ShortenSerivces['injectedPage'];
+
     if (options.skipNative) {
-      return Promise.reject('Skip native.')
+      return Promise.reject('Skip native.');
     }
-
-    return new Promise( (resolve, reject) => {
-      var messageListener, unmount, timeoutID;
-
-      messageListener = (msgEvent) => {
-        if (msgEvent.name === 'shortlinkFromPage') {
-          if (msgEvent.message) {
-            resolve(msgEvent.message);
-          } else {
-            reject('Not found from injected script.')
-          }
-
-          unmount();
-        }
-      };
-      unmount = () => {
-        // Work is done, unmount listener
-        safari.application.removeEventListener('message', messageListener);
-
-        // Prevent from timeout being executed
-        window.clearTimeout(timeoutID);
-      }
-
-      timeoutID = setTimeout(() => {
-        reject('Injected script timed out.');
-        unmount();
-      }, TIMEOUT_MS);
-
-      safari.application.activeBrowserWindow.activeTab.page.dispatchMessage('findShortlink');
-      safari.application.addEventListener('message', messageListener, false);
-    });
+    return shortener.getShortlink({page: TARGET_PAGE});
   }
 
   getShortlinkWithKnownShortener(longUrl, options={skipNative: false}) {
