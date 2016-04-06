@@ -45,7 +45,15 @@ class Shortly {
         display = new DisplayClass,
         taskPromise, shortenTask;
 
-    taskPromise = this.getShortlinkFromInjectedScript({skipNative})
+    taskPromise = Promise.resolve()
+      .then( () => {
+        if (options.fetchPage) {
+          const shortener = new ShortenSerivces['fetchPage'];
+          return shortener.getShortlink(longUrl);
+        } else {
+          return this.getShortlinkFromInjectedScript({skipNative})
+        }
+      })
       .catch( () => this.getShortlinkWithKnownShortener(longUrl, {skipNative}) )
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
@@ -159,7 +167,7 @@ class Shortly {
 
     if (contextMenuMatch) {
       let key = contextMenuMatch[1];
-      this.getShortlinkToURLAndDisplay(event.userInfo[key]);
+      this.getShortlinkToURLAndDisplay(event.userInfo[key], {fetchPage: true});
       return
     }
 
@@ -174,7 +182,7 @@ class Shortly {
         inputURL = window.prompt(I18n.t('notice.shortenInputPrompt'));
         if (!inputURL) return false;
 
-        this.getShortlinkToURLAndDisplay(inputURL);
+        this.getShortlinkToURLAndDisplay(inputURL, {fetchPage: true});
         break;
       default:
         console.warn('Not implemented:', event);

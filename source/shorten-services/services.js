@@ -7,6 +7,7 @@ import FlickrShortener from './flickr-shortener'
 import GithubShortener from './github-shortener'
 
 import InjectedPageShortener from './injected-page-shortener'
+import FetchPageShortener from './fetch-page-shortener'
 
 var ShortenServices = {
   DefaultService: GoogleShortener,
@@ -19,6 +20,7 @@ var ShortenServices = {
   github: GithubShortener,
 
   injectedPage: InjectedPageShortener,
+  fetchPage: FetchPageShortener,
 
   GOOGLE: 'google',
   BITLY: 'bitly',
