@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Zhusee (ZZHC)</string>
 	<key>Builder Version</key>
-	<string>10600.7.12</string>
+	<string>11601.5.17.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>Shortly</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0</string>
+	<string>3.1</string>
 	<key>CFBundleVersion</key>
-	<string>3.0.0.8</string>
+	<string>3.1.0.18</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Context Menu Items</key>
