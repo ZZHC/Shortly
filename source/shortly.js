@@ -39,7 +39,7 @@ class Shortly {
     this.getShortlinkToURLAndDisplay(longUrl, {title: pageTitle})
   }
 
-  getShortlinkToURLAndDisplay(longUrl, options={title: longUrl}) {
+  getShortlinkToURLAndDisplay(longUrl, {title=longUrl, fetchPage=false}) {
     var skipNative = safari.extension.settings.ignoreNative,
         DisplayClass = Displays[safari.extension.settings.displayMethod],
         display = new DisplayClass,
@@ -47,7 +47,7 @@ class Shortly {
 
     taskPromise = Promise.resolve()
       .then( () => {
-        if (options.fetchPage) {
+        if (fetchPage) {
           const shortener = new ShortenSerivces['fetchPage'];
           return shortener.getShortlink(longUrl);
         } else {
@@ -58,7 +58,7 @@ class Shortly {
       .catch( () => this.getShortlinkToAddress(longUrl) )
       .then(
         result => {
-          display.displayShortlink({shortlink: result, title: options.title});
+          display.displayShortlink({shortlink: result, title: title});
         },
         error => {
           if (!navigator.onLine) {
